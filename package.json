@@ -1,0 +1,188 @@
+{
+  "name": "ausgaben-rheactor",
+  "description": "Ausgaben – Your personal spendings tracker",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev-server": "environment=development ./node_modules/.bin/nodemon -e 'js,html,css' -w ./server -w ./util -d 1 ./server/server.js",
+    "test": "environment=testing ./node_modules/.bin/mocha --reporter=dot --timeout=1350 test/\\*\\*/\\*.js",
+    "test:api": "environment=testing ./node_modules/.bin/mocha --reporter=dot --timeout=1350 test/yadda/\\*\\*/\\*.js",
+    "test:backend": "environment=testing ./node_modules/.bin/mocha --reporter=dot --timeout=1350 test/mocha/\\*\\*/\\*.js",
+    "test:coverage": "environment=testing ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R dot --timeout=1350 test/\\*\\*/\\*.js && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage && rm -rf ./coverage",
+    "lint": "./node_modules/.bin/standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ausgaben/ausgaben-rheactor.git"
+  },
+  "keywords": [
+    "personal",
+    "spending",
+    "tracker"
+  ],
+  "author": "Markus Tacker <m@cto.hiv>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ausgaben/ausgaben-rheactor/issues"
+  },
+  "homepage": "https://github.com/ausgaben/ausgaben-rheactor#readme",
+  "dependencies": {
+    "angular": "^1.5.6",
+    "angular-bluebird-promises": "^1.0.1",
+    "angular-moment": "^1.0.0-beta.6",
+    "angular-sanitize": "^1.5.6",
+    "angular-ui-router": "^0.3.1",
+    "angular-validation-match": "^1.9.0",
+    "aws-sdk": "^2.3.18",
+    "bluebird": "^3.4.0",
+    "bootstrap": "git://github.com/twbs/bootstrap.git#v4-dev",
+    "browserify": "^13.0.1",
+    "browserify-shim": "^3.8.12",
+    "colors": "^1.1.2",
+    "commander": "^2.9.0",
+    "event-source-polyfill": "0.0.7",
+    "express": "^4.13.4",
+    "glob": "^7.0.3",
+    "isemail": "^2.1.2",
+    "joi": "^8.4.1",
+    "jquery": "^2.2.4",
+    "keycode": "^2.1.2",
+    "keypair": "^1.0.0",
+    "lodash": "^4.13.1",
+    "material-design-icons": "^2.2.3",
+    "moment": "^2.13.0",
+    "nconf": "^0.8.4",
+    "ng-file-upload": "^12.0.4",
+    "node-sass": "^3.7.0",
+    "rheactor-build-views": "^1.3.0",
+    "rheactor-event-store": "^2.1.0",
+    "rheactor-server": "^2.0.0",
+    "rheactor-value-objects": "^1.1.0",
+    "rheactor-web-app": "^1.6.0",
+    "showdown": "^1.4.1",
+    "template-mailer-aws-lambda-client": "^1.0.0",
+    "tether": "^1.3.2",
+    "transactional-emails": "^1.10.1",
+    "uglifycss": "0.0.20",
+    "uglifyjs": "^2.4.10"
+  },
+  "devDependencies": {
+    "aliasify": "^2.0.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babelify": "^7.3.0",
+    "chai": "^3.5.0",
+    "codacy-coverage": "^1.1.3",
+    "ghooks": "^1.2.3",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.5.3",
+    "mocha-lcov-reporter": "^1.2.0",
+    "nodemon": "^1.9.2",
+    "rheactor-yadda-feature-runner": "^1.0.0",
+    "simple-mock": "^0.7.0",
+    "standard": "^7.1.2",
+    "supertest": "^1.2.0",
+    "toposort": "^1.0.0",
+    "validate-commit-msg": "^2.6.1",
+    "yadda": "^0.17.9"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run lint",
+      "commit-msg": "validate-commit-msg"
+    }
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ],
+          "only": [
+            "/frontend/js/*.js",
+            "/frontend/js/**/*.js",
+            "/util/*.js",
+            "/vendor/*.js",
+            "/vendor/**/*.js"
+          ]
+        }
+      ],
+      "browserify-shim",
+      "aliasify"
+    ]
+  },
+  "browser": {
+    "jquery": "./node_modules/jquery/dist/jquery.js",
+    "angular": "./node_modules/angular/angular.js",
+    "angular-ui-router": "./node_modules/angular-ui-router/release/angular-ui-router.js",
+    "angular-sanitize": "./node_modules/angular-sanitize/angular-sanitize.js",
+    "angular-validation-match": "./node_modules/angular-validation-match/dist/angular-validation-match.js",
+    "showdown": "./node_modules/showdown/dist/showdown.js",
+    "tether": "./node_modules/tether/dist/js/tether.js",
+    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
+    "bluebird": "./node_modules/bluebird/js/browser/bluebird.js",
+    "moment": "./node_modules/moment/moment.js",
+    "angular-moment": "./node_modules/angular-moment/angular-moment.js"
+  },
+  "browserify-shim": {
+    "jquery": {
+      "exports": "$"
+    },
+    "angular": {
+      "exports": "angular",
+      "depends": "jquery"
+    },
+    "angular-ui-router": {
+      "depends": "angular"
+    },
+    "angular-validation-match": {
+      "depends": "angular"
+    },
+    "angular-sanitize": {
+      "depends": "angular"
+    },
+    "bootstrap": {
+      "exports": "bootstrap",
+      "depends": [
+        "tether",
+        "jquery"
+      ]
+    }
+  },
+  "aliasify": {
+    "aliases": {
+      "rheactor-web-app/js/bootstrap": "./vendor/rheactor-web-app/bootstrap",
+      "rheactor-web-app/js/controller/account": "./vendor/rheactor-web-app/controller/account",
+      "rheactor-web-app/js/controller/activation": "./vendor/rheactor-web-app/controller/activation",
+      "rheactor-web-app/js/controller/app-update": "./vendor/rheactor-web-app/controller/app-update",
+      "rheactor-web-app/js/controller/bluebird": "./vendor/rheactor-web-app/controller/bluebird",
+      "rheactor-web-app/js/controller/body": "./vendor/rheactor-web-app/controller/body",
+      "rheactor-web-app/js/controller/login": "./vendor/rheactor-web-app/controller/login",
+      "rheactor-web-app/js/controller/logout": "./vendor/rheactor-web-app/controller/logout",
+      "rheactor-web-app/js/controller/navigation": "./vendor/rheactor-web-app/controller/navigation",
+      "rheactor-web-app/js/controller/password-change": "./vendor/rheactor-web-app/controller/password-change",
+      "rheactor-web-app/js/controller/register": "./vendor/rheactor-web-app/controller/register",
+      "rheactor-web-app/js/controller/window-title": "./vendor/rheactor-web-app/controller/window-title",
+      "rheactor-web-app/js/decorators/index": "./vendor/rheactor-web-app/decorators/index",
+      "rheactor-web-app/js/directives/index": "./vendor/rheactor-web-app/directives/index",
+      "rheactor-web-app/js/filters/index": "./vendor/rheactor-web-app/filters/index",
+      "rheactor-web-app/js/model/aggregate": "./vendor/rheactor-web-app/model/aggregate",
+      "rheactor-web-app/js/model/http-problem": "./vendor/rheactor-web-app/model/http-problem",
+      "rheactor-web-app/js/model/jsonwebtoken": "./vendor/rheactor-web-app/model/jsonwebtoken",
+      "rheactor-web-app/js/model/list": "./vendor/rheactor-web-app/model/list",
+      "rheactor-web-app/js/model/status": "./vendor/rheactor-web-app/model/status",
+      "rheactor-web-app/js/model/user": "./vendor/rheactor-web-app/model/user",
+      "rheactor-web-app/js/services/generic": "./vendor/rheactor-web-app/services/generic",
+      "rheactor-web-app/js/services/index": "./vendor/rheactor-web-app/services/index",
+      "rheactor-web-app/js/util/event-source-connection": "./vendor/rheactor-web-app/util/event-source-connection",
+      "rheactor-web-app/js/util/http": "./vendor/rheactor-web-app/util/http",
+      "rheactor-web-app/js/util/jsonld": "./vendor/rheactor-web-app/util/jsonld",
+      "rheactor-web-app/js/util/live-collection": "./vendor/rheactor-web-app/util/live-collection",
+      "rheactor-web-app/js/util/logger": "./vendor/rheactor-web-app/util/logger",
+      "rheactor-web-app/js/util/wait-for": "./vendor/rheactor-web-app/util/wait-for",
+      "rheactor-value-objects/errors": "./vendor/rheactor-value-objects/errors",
+      "rheactor-value-objects": "./vendor/rheactor-value-objects"
+    }
+  }
+}

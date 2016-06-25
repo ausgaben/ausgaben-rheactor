@@ -3,12 +3,6 @@
 let Joi = require('joi')
 let ValidationFailedException = require('rheactor-value-objects/errors').ValidationFailedException
 
-SpendingTypeValue.INCOME = 'income'
-SpendingTypeValue.SPENDING = 'spending'
-SpendingTypeValue.SAVING = 'saving'
-
-let allowedTypes = [SpendingTypeValue.INCOME, SpendingTypeValue.SPENDING, SpendingTypeValue.SAVING]
-
 /**
  * @param {String} type
  * @constructor
@@ -29,6 +23,11 @@ function SpendingTypeValue (type) {
 SpendingTypeValue.prototype.toString = function () {
   return this.type
 }
+SpendingTypeValue.INCOME = 'income'
+SpendingTypeValue.SPENDING = 'spending'
+SpendingTypeValue.SAVING = 'saving'
+
+let allowedTypes = [SpendingTypeValue.INCOME, SpendingTypeValue.SPENDING, SpendingTypeValue.SAVING]
 
 SpendingTypeValue.types = allowedTypes
 

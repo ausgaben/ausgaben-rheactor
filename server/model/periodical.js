@@ -8,21 +8,6 @@ const AggregateRoot = require('rheactor-event-store/aggregate-root')
 const _reduce = require('lodash/reduce')
 const Errors = require('rheactor-value-objects/errors')
 
-PeriodicalModel.monthFlags = [
-  1,
-  2,
-  4,
-  8,
-  16,
-  32,
-  64,
-  128,
-  256,
-  512,
-  1024,
-  2048
-]
-
 /**
  * @param {String} account
  * @param {String} author
@@ -92,5 +77,20 @@ PeriodicalModel.prototype.applyEvent = function (event) {
       throw new Errors.UnhandledDomainEvent(event.name)
   }
 }
+
+PeriodicalModel.monthFlags = [
+  1,
+  2,
+  4,
+  8,
+  16,
+  32,
+  64,
+  128,
+  256,
+  512,
+  1024,
+  2048
+]
 
 module.exports = PeriodicalModel

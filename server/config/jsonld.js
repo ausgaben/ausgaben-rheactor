@@ -1,7 +1,7 @@
 'use strict'
 
 const _trimEnd = require('lodash/trimEnd')
-const jsonld = require('rheactor-server/api/jsonld')
+const Jsonld = require('rheactor-server/api/jsonld')
 const User = require('rheactor-web-app/js/model/user')
 const Token = require('rheactor-web-app/js/model/jsonwebtoken')
 const Status = require('rheactor-web-app/js/model/status')
@@ -14,7 +14,7 @@ const CheckingAccount = require('../../frontend/js/model/checking-account')
  */
 module.exports = function (apiHost) {
   let apiBase = _trimEnd(apiHost, '/') + '/api'
-  let relations = new jsonld()
+  let relations = new Jsonld()
 
   relations.mapType(User.$context, new URIValue(apiBase + '/user/:id'))
   relations.mapType(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id'))

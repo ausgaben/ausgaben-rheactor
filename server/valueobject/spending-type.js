@@ -10,7 +10,7 @@ let ValidationFailedException = require('rheactor-value-objects/errors').Validat
  */
 function SpendingTypeValue (type) {
   let schema = Joi.object().keys({
-    type: Joi.string().trim().required().only(allowedTypes)
+    type: Joi.string().trim().required().only(SpendingTypeValue.types)
   })
   Joi.validate({type}, schema, (err, data) => {
     if (err) {

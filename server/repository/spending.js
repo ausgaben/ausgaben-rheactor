@@ -23,7 +23,7 @@ util.inherits(SpendingRepository, AggregateRepository)
 SpendingRepository.prototype.add = function (spending) {
   let self = this
   let data = {
-    account: spending.account,
+    checkingAccount: spending.checkingAccount,
     author: spending.author,
     type: spending.type.toString(),
     category: spending.category,

@@ -22,6 +22,6 @@ module.exports = (repos, emitter, config, templateMailerClient) => {
     let handler = require(match)
     // Bind the repository based on the subfolder name
     let repoName = _camelCase(_last(path.dirname(match).split(path.sep)))
-    c.addHandler(handler.command, handler.handler.bind(null, repos[repoName]))
+    c.addHandler(handler.command, handler.handler.bind(null, emitter, repos[repoName]))
   })
 }

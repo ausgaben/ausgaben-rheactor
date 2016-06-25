@@ -9,7 +9,7 @@ const _reduce = require('lodash/reduce')
 const Errors = require('rheactor-value-objects/errors')
 
 /**
- * @param {String} account
+ * @param {String} checkingAccount
  * @param {String} author
  * @param {SpendingTypeValue} type
  * @param {String} category
@@ -20,10 +20,10 @@ const Errors = require('rheactor-value-objects/errors')
  * @constructor
  * @throws ValidationFailedException if the creation fails due to invalid data
  */
-function PeriodicalModel (account, author, type, category, title, amount, estimate, startsAt) {
+function PeriodicalModel (checkingAccount, author, type, category, title, amount, estimate, startsAt) {
   AggregateRoot.call(this)
   let schema = Joi.object().keys({
-    account: Joi.string().min(1).required().trim(),
+    checkingAccount: Joi.string().min(1).required().trim(),
     author: Joi.string().min(1).required().trim(),
     type: Joi.object().type(SpendingTypeValue).required(),
     category: Joi.string().min(1).required().trim(),
@@ -32,11 +32,11 @@ function PeriodicalModel (account, author, type, category, title, amount, estima
     estimate: Joi.boolean().required(),
     startsAt: Joi.number().integer().min(1).required()
   })
-  Joi.validate({account, author, type, category, title, amount, estimate, startsAt}, schema, (err, data) => {
+  Joi.validate({checkingAccount, author, type, category, title, amount, estimate, startsAt}, schema, (err, data) => {
     if (err) {
       throw new ValidationFailedException('PeriodicalModel validation failed: ' + err, data, err)
     }
-    this.account = data.account
+    this.checkingAccount = data.checkingAccount
     this.author = data.author
     this.type = data.type
     this.category = data.category
@@ -61,7 +61,7 @@ PeriodicalModel.prototype.applyEvent = function (event) {
   let data = event.data
   switch (event.name) {
     case 'PeriodicalCreatedEvent':
-      self.account = data.account
+      self.checkingAccount = data.checkingAccount
       self.author = data.author
       self.type = new SpendingTypeValue(data.type)
       self.category = data.category

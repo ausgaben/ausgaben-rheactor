@@ -11,36 +11,36 @@ const AggregateRoot = require('rheactor-event-store/aggregate-root')
  * @constructor
  * @throws ValidationFailedException if the creation fails due to invalid data
  */
-function AccountModel (name) {
+function CheckingAccountModel (name) {
   AggregateRoot.call(this)
   let schema = Joi.object().keys({
     name: Joi.string().min(1).required().trim()
   })
   Joi.validate({name}, schema, (err, data) => {
     if (err) {
-      throw new ValidationFailedException('AccountModel validation failed: ' + err, data, err)
+      throw new ValidationFailedException('CheckingAccountModel validation failed: ' + err, data, err)
     }
     this.name = data.name
   })
 }
-util.inherits(AccountModel, AggregateRoot)
+util.inherits(CheckingAccountModel, AggregateRoot)
 
 /**
  * Applies the event
  *
  * @param {ModelEvent} event
  */
-AccountModel.prototype.applyEvent = function (event) {
+CheckingAccountModel.prototype.applyEvent = function (event) {
   let data = event.data
   switch (event.name) {
-    case 'AccountCreatedEvent':
+    case 'CheckingAccountCreatedEvent':
       this.name = data.name
       this.persisted(event.aggregateId, event.createdAt)
       break
     default:
-      console.error('Unhandled AccountModel event', event.name)
+      console.error('Unhandled CheckingAccountModel event', event.name)
       throw new Errors.UnhandledDomainEvent(event.name)
   }
 }
 
-module.exports = AccountModel
+module.exports = CheckingAccountModel

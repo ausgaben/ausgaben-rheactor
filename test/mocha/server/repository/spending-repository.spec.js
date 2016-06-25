@@ -37,7 +37,7 @@ describe('SpendingRepository', () => {
           )
           .spread((s1, s2) => {
             expect(s1.aggregateId()).to.be.above(0)
-            expect(s1.account).to.equal('42')
+            expect(s1.checkingAccount).to.equal('42')
             expect(s1.author).to.equal('17')
             expect(s1.type.toString()).to.equal(SpendingTypeValue.INCOME)
             expect(s1.category).to.equal('Salary')
@@ -46,7 +46,7 @@ describe('SpendingRepository', () => {
             expect(s1.bookedAt).to.equal(new Date('2015-01-01').getTime())
             expect(s1.booked).to.equal(true)
             expect(s2.aggregateId()).to.be.above(0)
-            expect(s2.account).to.equal('42')
+            expect(s2.checkingAccount).to.equal('42')
             expect(s2.author).to.equal('17')
             expect(s2.type.toString()).to.equal(SpendingTypeValue.INCOME)
             expect(s2.category).to.equal('Salary')

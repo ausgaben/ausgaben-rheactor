@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird')
 const _reverse = require('lodash/reverse')
+const CheckingAccountUserCreatedEvent = require('../event/checking-account-user/created')
 
 /**
  * The search service knows about the various repositories and how to use their indices to optimize the search
@@ -17,6 +18,40 @@ function Search (repositories, redis, emitter) {
   Object.defineProperty(this, 'repositories', {value: repositories})
   Object.defineProperty(this, 'redis', {value: redis})
   Object.defineProperty(this, 'emitter', {value: emitter})
+  emitter.on(emitter.toEventName(CheckingAccountUserCreatedEvent),
+    /**
+     * @param {CheckingAccountUserCreatedEvent} event
+     */
+    (event) => {
+      redis.saddAsync('search:user-checking-account:' + event.data.user, event.data.checkingAccount)
+    }
+  )
+}
+
+/**
+ * Search checking accounts
+ *
+ * @param {Object} query
+ * @param {Pagination} pagination
+ * @return PaginatedResult
+ */
+Search.prototype.searchCheckingAccounts = function (query, pagination) {
+  let self = this
+  let sets = [
+    'search:user-checking-account:' + query.user
+  ]
+  let total
+  return Promise
+    .resolve(self.redis.sinterAsync.apply(self.redis, sets))
+    .then(_reverse.bind(null))
+    .then((ids) => {
+      total = ids.length
+      return pagination.splice(ids)
+    })
+    .map(self.repositories.checkingAccount.getById.bind(self.repositories.checkingAccount))
+    .then((items) => {
+      return pagination.result(items, total, query)
+    })
 }
 
 module.exports = Search

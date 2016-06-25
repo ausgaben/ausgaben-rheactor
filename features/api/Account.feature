@@ -1,8 +1,8 @@
 @After=Registration
-Feature: User Profile
+Feature: User account
   As a user
-  I want to fetch my profile
-  so that I can fetch my accounts
+  I want to fetch my account
+  so that I can fetch my checking accounts
 
   Background: Client defaults
 
@@ -22,6 +22,7 @@ Feature: User Profile
     And "firstname" should equal "[firstname]"
     And "lastname" should equal "[lastname]"
     And "password" should not exist
+    And I store the link to the list "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#CheckingAccount" as "[storeName]CheckingAccounts"
 
   Where:
     storeName | email                          | firstname | lastname

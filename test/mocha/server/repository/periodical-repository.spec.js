@@ -37,7 +37,7 @@ describe('PeriodicalRepository', () => {
           )
           .spread((p1, p2) => {
             expect(p1.aggregateId()).to.be.above(0)
-            expect(p1.account).to.equal('42')
+            expect(p1.checkingAccount).to.equal('42')
             expect(p1.author).to.equal('17')
             expect(p1.type.toString()).to.equal(SpendingTypeValue.INCOME)
             expect(p1.category).to.equal('Salary')
@@ -47,7 +47,7 @@ describe('PeriodicalRepository', () => {
             expect(p1.estimate).to.equal(false)
             expect(p1.enabledIn).to.equal(4095)
             expect(p2.aggregateId()).to.be.above(0)
-            expect(p2.account).to.equal('42')
+            expect(p2.checkingAccount).to.equal('42')
             expect(p2.author).to.equal('17')
             expect(p2.type.toString()).to.equal(SpendingTypeValue.INCOME)
             expect(p2.category).to.equal('Salary')

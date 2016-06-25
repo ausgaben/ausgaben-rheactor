@@ -9,7 +9,7 @@ const PeriodicalModel = require('./periodical')
 const Errors = require('rheactor-value-objects/errors')
 
 /**
- * @param {String} account
+ * @param {String} checkingAccount
  * @param {String} author
  * @param {SpendingTypeValue} type
  * @param {String} category
@@ -20,11 +20,11 @@ const Errors = require('rheactor-value-objects/errors')
  * @constructor
  * @throws ValidationFailedException if the creation fails due to invalid data
  */
-function SpendingModel (account, author, type, category, title, amount, booked, bookedAt) {
+function SpendingModel (checkingAccount, author, type, category, title, amount, booked, bookedAt) {
   AggregateRoot.call(this)
   booked = booked || false
   let schema = Joi.object().keys({
-    account: Joi.string().min(1).required().trim(),
+    checkingAccount: Joi.string().min(1).required().trim(),
     author: Joi.string().min(1).required().trim(),
     type: Joi.object().type(SpendingTypeValue).required(),
     category: Joi.string().min(1).required().trim(),
@@ -33,11 +33,11 @@ function SpendingModel (account, author, type, category, title, amount, booked, 
     booked: Joi.boolean().required(),
     bookedAt: Joi.number().integer().min(1)
   })
-  Joi.validate({account, author, type, category, title, amount, booked, bookedAt}, schema, (err, data) => {
+  Joi.validate({checkingAccount, author, type, category, title, amount, booked, bookedAt}, schema, (err, data) => {
     if (err) {
       throw new ValidationFailedException('SpendingModel validation failed: ' + err, data, err)
     }
-    this.account = data.account
+    this.checkingAccount = data.checkingAccount
     this.author = data.author
     this.type = data.type
     this.category = data.category
@@ -67,7 +67,7 @@ SpendingModel.fromPeriodical = function (periodical, bookedAt) {
       }, err)
     }
     let spending = new SpendingModel(
-      data.periodical.account,
+      data.periodical.checkingAccount,
       data.periodical.author,
       data.periodical.type,
       data.periodical.category,
@@ -91,7 +91,7 @@ SpendingModel.prototype.applyEvent = function (event) {
   let data = event.data
   switch (event.name) {
     case 'SpendingCreatedEvent':
-      self.account = data.account
+      self.checkingAccount = data.checkingAccount
       self.author = data.author
       self.type = new SpendingTypeValue(data.type)
       self.category = data.category

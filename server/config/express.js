@@ -31,4 +31,6 @@ module.exports = (app, config, repositories, search, emitter) => {
     res.header('X-GitHub', 'https://github.com/ausgaben/ausgaben-rheactor')
     next()
   })
+
+  require('../api/checking-account')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
 }

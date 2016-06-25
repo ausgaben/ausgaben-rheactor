@@ -23,7 +23,7 @@ util.inherits(PeriodicalRepository, AggregateRepository)
 PeriodicalRepository.prototype.add = function (periodical) {
   let self = this
   let data = {
-    account: periodical.account,
+    checkingAccount: periodical.checkingAccount,
     author: periodical.author,
     type: periodical.type.toString(),
     category: periodical.category,

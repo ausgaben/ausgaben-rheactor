@@ -4,7 +4,7 @@
 
 const expect = require('chai').expect
 const helper = require('../helper')
-const AccountRepository = require('../../../../server/repository/account-repository')
+const AccountRepository = require('../../../../server/repository/account')
 const AccountModel = require('../../../../server/model/account')
 const Promise = require('bluebird')
 const ModelEvent = require('rheactor-event-store/model-event')

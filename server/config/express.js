@@ -1,7 +1,7 @@
 'use strict'
 
 const rheactorExpressConfig = require('rheactor-server/config/express')
-const CaRHdModelTransformer = require('../api/transformer')
+const AusgabenModelTransformer = require('../api/transformer')
 const JSONLD = require('../config/jsonld')
 
 /**
@@ -13,7 +13,7 @@ const JSONLD = require('../config/jsonld')
  */
 module.exports = (app, config, repositories, search, emitter) => {
   let jsonld = JSONLD(config.get('api_host'))
-  let modelTransformer = new CaRHdModelTransformer()
+  let modelTransformer = new AusgabenModelTransformer()
   let transformer = (jsonld, model, extra) => {
     return modelTransformer.transform(jsonld, model, extra)
   }
@@ -24,11 +24,11 @@ module.exports = (app, config, repositories, search, emitter) => {
   let deployVersion = config.get('deployVersion')
   let environment = config.get('environment')
   app.use((req, res, next) => {
-    res.header('X-caRHds-version', version)
-    res.header('X-caRHds-deployVersion', deployVersion)
-    res.header('X-caRHds-environment', environment)
-    res.header('X-Made-By', 'Resourceful Humans GmbH with <3 in many places worldwide. http://resourceful-humans.com/')
-    res.header('X-GitHub', 'https://github.com/ResourcefulHumans/')
+    res.header('X-Ausgaben-version', version)
+    res.header('X-Ausgaben-deployVersion', deployVersion)
+    res.header('X-Ausgaben-environment', environment)
+    res.header('X-Made-By', 'Markus Tacker | https://cto.hiv/')
+    res.header('X-GitHub', 'https://github.com/ausgaben/ausgaben-rheactor')
     next()
   })
 }

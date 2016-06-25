@@ -4,7 +4,7 @@
 
 const expect = require('chai').expect
 const helper = require('../helper')
-const PeriodicalRepository = require('../../../../server/repository/periodical-repository')
+const PeriodicalRepository = require('../../../../server/repository/periodical')
 const PeriodicalModel = require('../../../../server/model/periodical')
 const SpendingTypeValue = require('../../../../server/valueobject/spending-type')
 const Promise = require('bluebird')

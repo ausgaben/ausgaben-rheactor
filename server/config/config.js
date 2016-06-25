@@ -39,7 +39,7 @@ const port = nconf.get('port') || 8080
 // Set defaults
 nconf.defaults({
   'environment': 'development',
-  'mime_type': 'application/vnd.resourceful-humans.carhds.v1+json',
+  'mime_type': 'application/vnd.ausgaben.v1+json',
   'port': port,
   'host': host,
   'api_host': 'http://' + host + ':' + port,
@@ -63,13 +63,12 @@ nconf.defaults({
     'credentials': null,
     'endpoint': null,
     'api_key': null,
-    'from': 'info@carhds.de',
-    'name': 'caRHds by Resourceful Humans',
-    'smtp_config': 'carhds',
-    'password_change_template': 'carhds-password-change',
-    'email_verification_template': 'carhds-email-verification',
-    'invite_to_meeting_template': 'carhds-invite-to-meeting',
-    'template_prefix': 'carhds-'
+    'from': 'team@ausgaben.me',
+    'name': 'Ausgaben',
+    'smtp_config': 'ausgaben',
+    'password_change_template': 'password-change',
+    'email_verification_template': 'email-verification',
+    'template_prefix': 'ausgaben-'
   },
   'force_mails': false,
   'disable_mails': false,
@@ -77,8 +76,8 @@ nconf.defaults({
     'region': 'eu-central-1',
     'access_key_id': 'secret',
     'secret_access_key': 'secret',
-    'avatar_bucket': 'carhds-avatars',
-    'website_bucket': 'carhds.me'
+    'avatar_bucket': 'ausgaben-avatars',
+    'website_bucket': 'ausgaben.me'
   },
   'slack': {
     'webhook': false

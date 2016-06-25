@@ -19,13 +19,12 @@ node_js:
   - 'stable'
 before_install:
   - npm i -g npm@^2.0.0
-#before_script:
-#  - npm prune
+before_script:
+  - npm prune
 script:
 #  - npm run lint
-#  - npm run test
-  - npm run test:backend
-#after_success:
+  - npm run test:coverage
+after_success:
 #  - npm run semantic-release
 branches:
   except:

@@ -1,5 +1,6 @@
 {
   "name": "ausgaben-rheactor",
+  "appName": "Ausgaben",
   "description": "Ausgaben – Your personal spendings tracker",
   "main": "server/server.js",
   "scripts": {

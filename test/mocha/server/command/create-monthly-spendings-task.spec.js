@@ -3,8 +3,8 @@
 /* global describe, it, after */
 
 const CreateMonthlySpendingsCommand = require('../../../../server/command/create-monthly-spendings')
-const PeriodicalsRepository = require('../../../../server/repository/periodical-repository')
-const SpendingsRepository = require('../../../../server/repository/spending-repository')
+const PeriodicalsRepository = require('../../../../server/repository/periodical')
+const SpendingsRepository = require('../../../../server/repository/spending')
 const PeriodicalModel = require('../../../../server/model/periodical')
 const SpendingTypeValue = require('../../../../server/valueobject/spending-type')
 const Promise = require('bluebird')

@@ -4,7 +4,7 @@
 
 const expect = require('chai').expect
 const helper = require('../helper')
-const SpendingRepository = require('../../../../server/repository/spending-repository')
+const SpendingRepository = require('../../../../server/repository/spending')
 const SpendingModel = require('../../../../server/model/spending')
 const SpendingTypeValue = require('../../../../server/valueobject/spending-type')
 const Promise = require('bluebird')

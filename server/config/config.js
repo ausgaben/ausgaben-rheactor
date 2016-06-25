@@ -40,8 +40,8 @@ const port = nconf.get('port') || 8080
 nconf.defaults({
   'environment': 'development',
   'mime_type': 'application/vnd.ausgaben.v1+json',
-  'port': port,
-  'host': host,
+  port,
+  host,
   'api_host': 'http://' + host + ':' + port,
   'web_host': 'http://' + host + ':' + port,
   'deployVersion': +new Date(),

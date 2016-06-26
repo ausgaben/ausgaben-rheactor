@@ -61,25 +61,35 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
    * Create a checking account
    */
   app.post('/api/checking-account', tokenAuth, function (req, res) {
-    userRepo.getById(req.user)
-      .then((user) => {
-        let cmd = new CreateCheckingAccountCommand(
-          req.body.name,
-          user
-        )
-        return emitter.emit(cmd)
+    let schema = Joi.object().keys({
+      name: Joi.string().min(1).required().trim()
+    })
+    Promise
+      .try(() => {
+        let v = Joi.validate(req.body, schema)
+        if (v.error) {
+          throw new Errors.ValidationFailedException('Validation failed', req.body, v.error)
+        }
+        return userRepo.getById(req.user)
+          .then((user) => {
+            let cmd = new CreateCheckingAccountCommand(
+              v.value.name,
+              user
+            )
+            return emitter.emit(cmd)
+          })
+          .then(
+            /**
+             * @param {CheckingAccountCreatedEvent} event
+             * @returns {*}
+             */
+            (event) => {
+              return res
+                .header('Location', jsonld.createId(CheckingAccount.$context, event.aggregateId))
+                .status(201)
+                .send()
+            })
       })
-      .then(
-        /**
-         * @param {CheckingAccountCreatedEvent} event
-         * @returns {*}
-         */
-        (event) => {
-          return res
-            .header('Location', jsonld.createId(CheckingAccount.$context, event.aggregateId))
-            .status(201)
-            .send()
-        })
       .catch(sendHttpProblem.bind(null, res))
   })
 
@@ -90,7 +100,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
         checkingAccountUserRepo.findByCheckingAccountId(req.params.id)
       )
       .spread((checkingAccount, checkingAccountUser) => {
-        if (!checkingAccountUser) {
+        if (!checkingAccountUser && checkingAccountUser.user !== req.user) {
           throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
         }
         return res.send(transformer(checkingAccount))

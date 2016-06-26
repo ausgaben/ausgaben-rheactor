@@ -9,7 +9,7 @@ Feature: User account
     Given "application/vnd.ausgaben.v1+json; charset=utf-8" is the Accept header
     Given "application/vnd.ausgaben.v1+json; charset=utf-8" is the Content-Type header
 
-  Scenario: GET
+  Scenario: Fetch my account
 
     Given "Bearer {[storeName]Token}" is the Authorization header
     When I GET {[storeName]TokenJwt.sub}

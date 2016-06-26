@@ -7,6 +7,7 @@ const Token = require('rheactor-web-app/js/model/jsonwebtoken')
 const Status = require('rheactor-web-app/js/model/status')
 const URIValue = require('rheactor-value-objects/uri')
 const CheckingAccount = require('../../frontend/js/model/checking-account')
+const Spending = require('../../frontend/js/model/spending')
 
 /**
  * @param apiHost
@@ -18,6 +19,7 @@ module.exports = function (apiHost) {
 
   relations.mapType(User.$context, new URIValue(apiBase + '/user/:id'))
   relations.mapType(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id'))
+  relations.mapType(Spending.$context, new URIValue(apiBase + '/spending/:id'))
 
   relations.addLink('index', new URIValue(apiBase + '/status'), Status.$context, 'status')
   relations.addLink('index', new URIValue(apiBase + '/login'), Token.$context, 'login')
@@ -32,6 +34,9 @@ module.exports = function (apiHost) {
 
   relations.addLink('index', new URIValue(apiBase + '/checking-account'), CheckingAccount.$context, 'create-checking-account')
   relations.addLink(User.$context, new URIValue(apiBase + '/search/checking-account'), CheckingAccount.$context, 'my-checking-accounts', true)
+
+  relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/search/spending'), Spending.$context, 'spendings', true)
+  relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/spending'), Spending.$context, 'create-spending')
 
   return relations
 }

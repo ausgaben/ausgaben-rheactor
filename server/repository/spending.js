@@ -1,10 +1,11 @@
 'use strict'
 
 const AggregateRepository = require('rheactor-event-store/aggregate-repository')
-const ModelEvent = require('rheactor-event-store/model-event')
+const AggregateRelation = require('rheactor-event-store/aggregate-relation')
 const util = require('util')
 const SpendingModel = require('../model/spending')
 const Promise = require('bluebird')
+const SpendingCreatedEvent = require('../event/spending/created')
 
 /**
  * Creates a new spending repository
@@ -14,6 +15,7 @@ const Promise = require('bluebird')
  */
 var SpendingRepository = function (redis) {
   AggregateRepository.call(this, SpendingModel, 'spending', redis)
+  this.relation = new AggregateRelation(this, redis)
 }
 util.inherits(SpendingRepository, AggregateRepository)
 
@@ -36,10 +38,16 @@ SpendingRepository.prototype.add = function (spending) {
   }
   return Promise
     .resolve(self.redis.incrAsync(self.aggregateAlias + ':id'))
-    .then((id) => {
-      let event = new ModelEvent(id, 'SpendingCreatedEvent', data)
+    .then((aggregateId) => {
+      let event = new SpendingCreatedEvent({
+        aggregateId,
+        data
+      })
       return this.eventStore
         .persist(event)
+        .then(() => {
+          self.relation.addRelatedId('checkingAccount', data.checkingAccount, aggregateId)
+        })
         .then(() => {
           spending.applyEvent(event)
           return event

@@ -28,6 +28,8 @@ Feature: CheckingAccount
     And "$context" should equal "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#CheckingAccount"
     And "name" should equal "My first checking account"
     And "$version" should equal 1
+    And I store the link to the list "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending" as "ListSpendingsEndpoint"
+    And I store the link to "create-spending" as "CreateSpendingEndpoint"
 
   Scenario: List all my accounts
 

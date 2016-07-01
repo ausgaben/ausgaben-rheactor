@@ -1,6 +1,6 @@
 'use strict'
 
-let EmittedEventsHandlerRegistry = require('rheactor-server/services/emitted-events-handler-registry')
+// let EmittedEventsHandlerRegistry = require('rheactor-server/services/emitted-events-handler-registry')
 
 /**
  * @param {Array.<AggregateRepository>} repos
@@ -9,5 +9,5 @@ let EmittedEventsHandlerRegistry = require('rheactor-server/services/emitted-eve
  * @param {nconf} config
  */
 module.exports = (repos, emitter, config, templateMailerClient) => {
-  let c = new EmittedEventsHandlerRegistry(emitter)
+  // let c = new EmittedEventsHandlerRegistry(emitter)
 }

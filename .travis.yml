@@ -11,8 +11,6 @@ addons:
 cache:
   directories:
     - node_modules
-notifications:
-  email: false
 services:
   - redis-server
 node_js:

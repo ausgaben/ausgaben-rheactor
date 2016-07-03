@@ -4,7 +4,6 @@ const AggregateRepository = require('rheactor-event-store/aggregate-repository')
 const AggregateRelation = require('rheactor-event-store/aggregate-relation')
 const util = require('util')
 const SpendingModel = require('../model/spending')
-const Promise = require('bluebird')
 const SpendingCreatedEvent = require('../event/spending/created')
 
 /**
@@ -36,8 +35,7 @@ SpendingRepository.prototype.add = function (spending) {
   if (spending.bookedAt) {
     data.bookedAt = spending.bookedAt
   }
-  return Promise
-    .resolve(self.redis.incrAsync(self.aggregateAlias + ':id'))
+  return self.redis.incrAsync(self.aggregateAlias + ':id')
     .then((aggregateId) => {
       let event = new SpendingCreatedEvent({
         aggregateId,

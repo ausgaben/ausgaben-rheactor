@@ -4,6 +4,8 @@ const ModelTransformer = require('rheactor-server/api/transformer')
 const util = require('util')
 const CheckingAccount = require('../../frontend/js/model/checking-account')
 const Spending = require('../../frontend/js/model/spending')
+const Periodical = require('../../frontend/js/model/periodical')
+const PeriodicalModel = require('../model/periodical')
 
 /**
  * @constructor
@@ -47,6 +49,33 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         amount: model.amount,
         booked: model.booked,
         bookedAt: model.bookedAt ? new Date(model.bookedAt) : undefined
+      })
+    case 'PeriodicalModel':
+      return new Periodical({
+        $id: jsonld.createId(Spending.$context, model.aggregateId()),
+        $version: model.aggregateVersion(),
+        $links: jsonld.createLinks(Spending.$context, model.aggregateId()),
+        $createdAt: model.createdAt(),
+        $updatedAt: model.updatedAt(),
+        $deletedAt: model.deletedAt(),
+        type: model.type.toString(),
+        category: model.category,
+        title: model.title,
+        amount: model.amount,
+        estimate: model.estimate,
+        startsAt: model.startsAt ? new Date(model.startsAt) : undefined,
+        enabledIn01: !!(model.enabledIn & PeriodicalModel.monthFlags[0]),
+        enabledIn02: !!(model.enabledIn & PeriodicalModel.monthFlags[1]),
+        enabledIn03: !!(model.enabledIn & PeriodicalModel.monthFlags[2]),
+        enabledIn04: !!(model.enabledIn & PeriodicalModel.monthFlags[3]),
+        enabledIn05: !!(model.enabledIn & PeriodicalModel.monthFlags[4]),
+        enabledIn06: !!(model.enabledIn & PeriodicalModel.monthFlags[5]),
+        enabledIn07: !!(model.enabledIn & PeriodicalModel.monthFlags[6]),
+        enabledIn08: !!(model.enabledIn & PeriodicalModel.monthFlags[7]),
+        enabledIn09: !!(model.enabledIn & PeriodicalModel.monthFlags[8]),
+        enabledIn10: !!(model.enabledIn & PeriodicalModel.monthFlags[9]),
+        enabledIn11: !!(model.enabledIn & PeriodicalModel.monthFlags[10]),
+        enabledIn12: !!(model.enabledIn & PeriodicalModel.monthFlags[11])
       })
   }
 }

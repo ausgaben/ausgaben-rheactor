@@ -77,4 +77,29 @@ Search.prototype.searchSpendings = function (query, pagination) {
     })
 }
 
+/**
+ * Search periodicals
+ *
+ * @param {Object} query
+ * @param {Pagination} pagination
+ * @return PaginatedResult
+ */
+Search.prototype.searchPeriodicals = function (query, pagination) {
+  let self = this
+  let sets = [
+    self.repositories.periodical.aggregateAlias + ':checkingAccount:' + query.checkingAccount
+  ]
+  let total
+  return Promise
+    .resolve(self.redis.sinterAsync.apply(self.redis, sets))
+    .then((ids) => {
+      total = ids.length
+      return pagination.splice(ids)
+    })
+    .map(self.repositories.periodical.getById.bind(self.repositories.periodical))
+    .then((items) => {
+      return pagination.result(items, total, query)
+    })
+}
+
 module.exports = Search

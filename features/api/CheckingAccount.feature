@@ -30,6 +30,8 @@ Feature: CheckingAccount
     And "$version" should equal 1
     And I store the link to the list "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending" as "ListSpendingsEndpoint"
     And I store the link to "create-spending" as "CreateSpendingEndpoint"
+    And I store the link to "create-periodical" as "CreatePeriodicalEndpoint"
+    And I store the link to the list "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Periodical" as "ListPeriodicalsEndpoint"
 
   Scenario: List all my accounts
 

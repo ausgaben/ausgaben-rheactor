@@ -1,10 +1,10 @@
 'use strict'
 
 const AggregateRepository = require('rheactor-event-store/aggregate-repository')
-const ModelEvent = require('rheactor-event-store/model-event')
+const AggregateRelation = require('rheactor-event-store/aggregate-relation')
 const util = require('util')
 const PeriodicalModel = require('../model/periodical')
-const Promise = require('bluebird')
+const PeriodicalCreatedEvent = require('../event/periodical/created')
 
 /**
  * Creates a new periodical repository
@@ -14,6 +14,7 @@ const Promise = require('bluebird')
  */
 var PeriodicalRepository = function (redis) {
   AggregateRepository.call(this, PeriodicalModel, 'periodical', redis)
+  this.relation = new AggregateRelation(this, redis)
 }
 util.inherits(PeriodicalRepository, AggregateRepository)
 
@@ -33,12 +34,14 @@ PeriodicalRepository.prototype.add = function (periodical) {
     startsAt: periodical.startsAt,
     enabledIn: periodical.enabledIn
   }
-  return Promise
-    .resolve(self.redis.incrAsync(self.aggregateAlias + ':id'))
-    .then((id) => {
-      let event = new ModelEvent(id, 'PeriodicalCreatedEvent', data)
+  return self.redis.incrAsync(self.aggregateAlias + ':id')
+    .then((aggregateId) => {
+      let event = new PeriodicalCreatedEvent({aggregateId, data})
       return this.eventStore
         .persist(event)
+        .then(() => {
+          self.relation.addRelatedId('checkingAccount', data.checkingAccount, aggregateId)
+        })
         .then(() => {
           periodical.applyEvent(event)
           return event

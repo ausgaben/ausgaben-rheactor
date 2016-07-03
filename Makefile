@@ -9,7 +9,7 @@ build: build/css/styles.min.css build/js/app.min.js build/index.html build/favic
 build/js:
 	mkdir -p build/js
 
-vendorjs: vendor/*.js vendor/**/*.js vendor/**/**/*.js
+vendorjs: node_modules/isemail/lib/index.js node_modules/rheactor-value-objects/*.js node_modules/rheactor-web-app/js/*
 	mkdir -p vendor
   # babel will ignore everything in node_modules so we need to copy it somewhere
 	cp -u node_modules/isemail/lib/index.js vendor/isemail.js

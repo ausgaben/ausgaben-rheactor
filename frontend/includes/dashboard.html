@@ -4,12 +4,12 @@
       <div class="card">
         <div class="card-header">
           <h1 class="card-title">
-            <i class="material-icons">event_note</i>
-            Your meetings
+            <i class="material-icons">account_balance_wallet</i>
+            Your checking accounts
           </h1>
         </div>
         <div class="card-block">
-          <p>These are your most recent meetings</p>
+          <p>These are your checking accounts</p>
         </div>
         <div class="list-group">
           <div class="list-group-item" role="navigation"
@@ -34,15 +34,9 @@
               <strong>%%vm.paginatedList.total%%</strong>
             </span>
           </div>
-          <a data-ui-sref="meeting({identifier: meeting.identifier})"
-             class="list-group-item" data-ng-repeat="meeting in vm.paginatedList.items">
-            <abbr class="material-icons stacked" data-ng-if="meeting.concluded" title="Meeting concluded">
-              <i>crop_din</i>
-              <i>stop</i>
-            </abbr>
-            <abbr class="material-icons spin" data-ng-if="!meeting.concluded" title="Meeting in progress">donut_large</abbr>
-            <abbr class="material-icons" data-ng-if="meeting.isHost" title="You are hosting this meeting">poll</abbr>
-            <span>%%meeting.name%%</span>
+          <a data-ui-sref="checking-account({identifier: account.identifier})"
+             class="list-group-item" data-ng-repeat="account in vm.paginatedList.items">
+            <span>%%account.name%%</span>
           </a>
         </div>
       </div>
@@ -51,14 +45,14 @@
       <form name="form" class="card">
         <div class="card-header">
           <h1 class="card-title">
-            New meeting
+            New checking account
             <i class="material-icons" data-ng-hide="vm.c.$success">add_circle_outline</i>
             <i class="material-icons success" data-ng-show="vm.c.$success">check_circle</i>
           </h1>
         </div>
         <div class="card-block">
           <p class="card-text">
-            Please enter a name for the new meeting
+            Please enter a name for the new checking account
           </p>
           <fieldset class="form-group">
             <label for="name">name</label>
@@ -89,7 +83,7 @@
                  data-ng-show="!(form.$invalid || vm.c.$active || vm.initializing) && vm.c.$success">check_ok</i>
               <i class="material-icons"
                  data-ng-show="!(form.$invalid || vm.c.$active || vm.initializing) && vm.c.$error">error</i>
-              <span>Continue</span>
+              <span>Create</span>
             </button>
           </div>
           <div data-ng-show="vm.c.$error" class="error-info">

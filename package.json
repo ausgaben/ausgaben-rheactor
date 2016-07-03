@@ -59,9 +59,9 @@
     "node-sass": "^3.8.0",
     "rheactor-build-views": "^1.3.0",
     "rheactor-event-store": "^2.3.0",
-    "rheactor-server": "^2.3.1",
+    "rheactor-server": "^2.3.3",
     "rheactor-value-objects": "^1.1.0",
-    "rheactor-web-app": "^1.8.0",
+    "rheactor-web-app": "^1.8.1",
     "showdown": "^1.4.2",
     "template-mailer-aws-lambda-client": "^1.0.0",
     "tether": "^1.3.2",
@@ -159,6 +159,7 @@
     "aliases": {
       "rheactor-web-app/js/bootstrap": "./vendor/rheactor-web-app/bootstrap",
       "rheactor-web-app/js/controller/account": "./vendor/rheactor-web-app/controller/account",
+      "rheactor-web-app/js/controller/account-avatar": "./vendor/rheactor-web-app/controller/account-avatar",
       "rheactor-web-app/js/controller/activation": "./vendor/rheactor-web-app/controller/activation",
       "rheactor-web-app/js/controller/app-update": "./vendor/rheactor-web-app/controller/app-update",
       "rheactor-web-app/js/controller/bluebird": "./vendor/rheactor-web-app/controller/bluebird",
@@ -181,6 +182,11 @@
       "rheactor-web-app/js/model/index": "./vendor/rheactor-web-app/model/index",
       "rheactor-web-app/js/services/generic": "./vendor/rheactor-web-app/services/generic",
       "rheactor-web-app/js/services/index": "./vendor/rheactor-web-app/services/index",
+      "rheactor-web-app/js/services/token": "./vendor/rheactor-web-app/services/token",
+      "rheactor-web-app/js/services/client-storage": "./vendor/rheactor-web-app/services/client-storage",
+      "rheactor-web-app/js/services/status": "./vendor/rheactor-web-app/services/status",
+      "rheactor-web-app/js/services/id": "./vendor/rheactor-web-app/services/id",
+      "rheactor-web-app/js/services/user": "./vendor/rheactor-web-app/services/user",
       "rheactor-web-app/js/util/event-source-connection": "./vendor/rheactor-web-app/util/event-source-connection",
       "rheactor-web-app/js/util/http": "./vendor/rheactor-web-app/util/http",
       "rheactor-web-app/js/util/jsonld": "./vendor/rheactor-web-app/util/jsonld",
@@ -188,7 +194,8 @@
       "rheactor-web-app/js/util/logger": "./vendor/rheactor-web-app/util/logger",
       "rheactor-web-app/js/util/wait-for": "./vendor/rheactor-web-app/util/wait-for",
       "rheactor-value-objects/errors": "./vendor/rheactor-value-objects/errors",
-      "rheactor-value-objects": "./vendor/rheactor-value-objects"
+      "rheactor-value-objects": "./vendor/rheactor-value-objects",
+      "isemail": "./vendor/isemail"
     }
   }
 }

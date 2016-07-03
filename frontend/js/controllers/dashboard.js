@@ -11,15 +11,15 @@ module.exports = function (app) {
         .state('dashboard', {
           url: '/dashboard',
           templateUrl: '/view/dashboard.html',
-          title: 'Your meetings',
+          title: 'Your checking accounts',
           controllerAs: 'vm',
-          controller: ['$state', 'MeetingService', 'ClientStorageService',
+          controller: ['$state', 'CheckingAccountService', 'ClientStorageService',
             /**
              * @param {object} $state
-             * @param {MeetingService} MeetingService
+             * @param {CheckingAccountService} CheckingAccountService
              * @param {ClientStorageService} ClientStorageService
              */
-            ($state, MeetingService, ClientStorageService) => {
+            ($state, CheckingAccountService, ClientStorageService) => {
               let vm = {
                 paginatedList: false,
                 p: new HttpProgress(),
@@ -35,8 +35,8 @@ module.exports = function (app) {
                   .then((paginatedList) => {
                     vm.paginatedList = paginatedList
                     Promise
-                      .map(paginatedList.items, (meeting) => {
-                        meeting.isHost = meeting.host.$id === token.sub
+                      .map(paginatedList.items, (checkingAccount) => {
+                        checkingAccount.isHost = checkingAccount.host.$id === token.sub
                       })
                     vm.p.success()
                   })
@@ -51,32 +51,32 @@ module.exports = function (app) {
                   ClientStorageService.get('me')
                 )
                 .spread((token, me) => {
-                  fetch(MeetingService.listUserMeetings.bind(MeetingService, me, {}, token), token)
+                  fetch(CheckingAccountService.listUserCheckingAccounts.bind(CheckingAccountService, me, {}, token), token)
                 })
 
               vm.next = () => {
                 return ClientStorageService.getValidToken()
                   .then((token) => {
-                    fetch(MeetingService.navigateList.bind(MeetingService, vm.paginatedList, 'next', token), token)
+                    fetch(CheckingAccountService.navigateList.bind(CheckingAccountService, vm.paginatedList, 'next', token), token)
                   })
               }
               vm.prev = () => {
                 return ClientStorageService.getValidToken()
                   .then((token) => {
-                    fetch(MeetingService.navigateList.bind(MeetingService, vm.paginatedList, 'prev', token), token)
+                    fetch(CheckingAccountService.navigateList.bind(CheckingAccountService, vm.paginatedList, 'prev', token), token)
                   })
               }
 
-              vm.submit = (meeting) => {
+              vm.submit = (checkingAccount) => {
                 if (vm.c.$active) {
                   return
                 }
                 vm.c.activity()
                 return ClientStorageService.getValidToken()
                   .then((token) => {
-                    return MeetingService.create({name: meeting.name}, token)
-                      .then((meeting) => {
-                        $state.go('meeting', {identifier: meeting.identifier})
+                    return CheckingAccountService.create({name: checkingAccount.name}, token)
+                      .then((checkingAccount) => {
+                        $state.go('checking-account', {identifier: checkingAccount.identifier})
                         vm.c.success()
                       })
                       .catch(HttpProblem, (httpProblem) => {

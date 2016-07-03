@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help build development vendorjs
+.PHONY: help build development
 
 development: ## Build for development environment
 	ENVIRONMENT=development make build
@@ -9,7 +9,7 @@ build: build/css/styles.min.css build/js/app.min.js build/index.html build/favic
 build/js:
 	mkdir -p build/js
 
-vendorjs: node_modules/isemail/lib/index.js node_modules/rheactor-value-objects/*.js node_modules/rheactor-web-app/js/*
+vendor: node_modules/isemail/lib/index.js node_modules/rheactor-value-objects/*.js node_modules/rheactor-web-app/js/*
 	mkdir -p vendor
   # babel will ignore everything in node_modules so we need to copy it somewhere
 	cp -u node_modules/isemail/lib/index.js vendor/isemail.js
@@ -18,7 +18,7 @@ vendorjs: node_modules/isemail/lib/index.js node_modules/rheactor-value-objects/
 	mkdir -p vendor/rheactor-web-app/js/
 	cp -u -r node_modules/rheactor-web-app/js/* vendor/rheactor-web-app/
 
-build/js/app.js: package.json build/js frontend/js/*.js frontend/js/**/*.js vendorjs
+build/js/app.js: package.json build/js frontend/js/*.js frontend/js/**/*.js frontend/js/**/**/*.js vendor
 	./node_modules/.bin/browserify frontend/js/app.js -o $@
 
 build/js/app.min.js: build/js/app.js

@@ -2,6 +2,7 @@
 
 module.exports = function (app) {
   require('./dashboard')(app)
+  require('./checking-account')(app)
   require('rheactor-web-app/js/controller/navigation')(app)
   require('rheactor-web-app/js/controller/login')(app)
   require('rheactor-web-app/js/controller/register')(app)

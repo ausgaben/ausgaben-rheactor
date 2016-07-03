@@ -30,6 +30,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   app.post('/api/search/checking-account', tokenAuth, function (req, res) {
     let schema = Joi.object().keys({
       user: Joi.number().min(1),
+      identifier: Joi.alternatives().try(Joi.number().min(1), Joi.string().min(1)),
       offset: Joi.number().min(0)
     })
     Promise
@@ -97,10 +98,10 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
     return Promise
       .join(
         checkingAccountRepo.getById(req.params.id),
-        checkingAccountUserRepo.findByCheckingAccountId(req.params.id)
+        checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
       )
       .spread((checkingAccount, checkingAccountUser) => {
-        if (!checkingAccountUser && checkingAccountUser.user !== req.user) {
+        if (!checkingAccountUser) {
           throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
         }
         return res.send(transformer(checkingAccount))

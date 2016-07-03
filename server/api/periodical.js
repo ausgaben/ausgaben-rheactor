@@ -30,9 +30,9 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
    * Search periodicals in the given checking account
    */
   app.post('/api/checking-account/:id/search/periodical', tokenAuth, function (req, res) {
-    return checkingAccountUserRepo.findByCheckingAccountId(req.params.id)
+    return checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
       .then((checkingAccountUser) => {
-        if (!checkingAccountUser && checkingAccountUser.user !== req.user) {
+        if (!checkingAccountUser) {
           throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
         }
         let schema = Joi.object().keys({
@@ -99,11 +99,11 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
         return Promise
           .join(
             checkingAccountRepo.getById(req.params.id),
-            checkingAccountUserRepo.findByCheckingAccountId(req.params.id),
+            checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user),
             userRepo.getById(req.user)
           )
           .spread((checkingAccount, checkingAccountUser, user) => {
-            if (!checkingAccountUser && checkingAccountUser.user !== req.user) {
+            if (!checkingAccountUser) {
               throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
             }
             let cmd = new CreatePeriodicalCommand(
@@ -148,9 +148,9 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   app.get('/api/periodical/:id', tokenAuth, function (req, res) {
     periodicalRepo.getById(req.params.id)
       .then((periodical) => {
-        return checkingAccountUserRepo.findByCheckingAccountId(periodical.checkingAccount)
+        return checkingAccountUserRepo.findByCheckingAccountId(periodical.checkingAccount).filter(checkingAccountUser => checkingAccountUser.user === req.user)
           .then((checkingAccountUser) => {
-            if (!checkingAccountUser && checkingAccountUser.user !== req.user) {
+            if (!checkingAccountUser) {
               throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
             }
             return res.send(transformer(periodical))

@@ -15,6 +15,7 @@ function CheckingAccount (data) {
   this.$createdAt = undefined
   this.$updatedAt = undefined
   this.$deletedAt = undefined
+  this.identifier = undefined
   this.name = undefined
 
   if (data) {

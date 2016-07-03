@@ -30,9 +30,9 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
    * Search spendings in the given checking account
    */
   app.post('/api/checking-account/:id/search/spending', tokenAuth, function (req, res) {
-    return checkingAccountUserRepo.findByCheckingAccountId(req.params.id)
+    return checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
       .then((checkingAccountUser) => {
-        if (!checkingAccountUser && checkingAccountUser.user !== req.user) {
+        if (!checkingAccountUser) {
           throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
         }
         let schema = Joi.object().keys({
@@ -75,7 +75,8 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       title: Joi.string().min(1).required().trim(),
       amount: Joi.number().integer().required(),
       booked: Joi.boolean().required(),
-      bookedAt: Joi.date()
+      bookedAt: Joi.date(),
+      paidWith: Joi.string().min(1).trim() // FIXME: Implement
     })
     Promise
       .try(() => {
@@ -87,11 +88,11 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
         return Promise
           .join(
             checkingAccountRepo.getById(req.params.id),
-            checkingAccountUserRepo.findByCheckingAccountId(req.params.id),
+            checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user),
             userRepo.getById(req.user)
           )
           .spread((checkingAccount, checkingAccountUser, user) => {
-            if (!checkingAccountUser && checkingAccountUser.user !== req.user) {
+            if (!checkingAccountUser) {
               throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
             }
             let cmd = new CreateSpendingCommand(
@@ -124,9 +125,9 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   app.get('/api/spending/:id', tokenAuth, function (req, res) {
     spendingRepo.getById(req.params.id)
       .then((spending) => {
-        return checkingAccountUserRepo.findByCheckingAccountId(spending.checkingAccount)
+        return checkingAccountUserRepo.findByCheckingAccountId(spending.checkingAccount).filter(checkingAccountUser => checkingAccountUser.user === req.user)
           .then((checkingAccountUser) => {
-            if (!checkingAccountUser && checkingAccountUser.user !== req.user) {
+            if (!checkingAccountUser) {
               throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
             }
             return res.send(transformer(spending))

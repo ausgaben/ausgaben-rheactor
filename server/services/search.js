@@ -42,6 +42,7 @@ Search.prototype.searchCheckingAccounts = function (query, pagination) {
   let total
   return Promise
     .resolve(self.redis.sinterAsync.apply(self.redis, sets))
+    .filter(id => query.identifier ? id === query.identifier : true)
     .then((ids) => {
       total = ids.length
       return pagination.splice(ids)

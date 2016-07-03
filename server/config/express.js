@@ -35,4 +35,5 @@ module.exports = (app, config, repositories, search, emitter) => {
   require('../api/checking-account')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
   require('../api/spending')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
   require('../api/periodical')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.periodical, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
+  require('../api/stream')(app, emitter, e.verifyToken, repositories.checkingAccount, repositories.checkingAccountUser, jsonld, e.sendHttpProblem)
 }

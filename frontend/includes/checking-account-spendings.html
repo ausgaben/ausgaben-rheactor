@@ -1,0 +1,240 @@
+<section class="col-xs-12 col-md-7">
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">
+        %%checkingAccount.name%%
+        <i class="material-icons">account_balance_wallet</i>
+      </h1>
+    </div>
+    <div class="card-block">
+      <table class="table">
+        <tbody>
+        <tr data-ng-repeat="spending in vm.spendings">
+          <td>
+            %%spending.bookedAt|date:'dd.MM.'%%
+          </td>
+          <td>
+            %%spending.title%%
+          </td>
+          <td>
+            %%spending.amount%% €
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+    </div>
+  </div>
+</section>
+<section class="col-xs-12 col-md-5">
+  <form name="form" class="card">
+    <div class="card-header">
+      <h2 class="card-title" data-ng-switch="data.type">
+        Add
+        <span data-ng-switch-when="spending">spending</span>
+        <span data-ng-switch-when="income">income</span>
+        <span data-ng-switch-when="saving">saving</span>
+        …
+        <i class="material-icons" data-ng-hide="vm.p.$success">add_circle_outline</i>
+        <i class="material-icons success" data-ng-show="vm.p.$success">check_circle</i>
+      </h2>
+    </div>
+    <div class="card-block">
+      <fieldset class="form-group">
+        <label>
+          Type
+        </label>
+        <div class="btn-group type" role="group" data-toggle="buttons" aria-label="Type">
+          <label class="btn btn-danger" data-ng-click="data.type = 'spending'">
+            <input
+              type="radio"
+              tabindex="1"
+              data-ng-model="data.type"
+              data-ng-disabled="vm.p.$active"
+              required
+              bootstrap-error-states
+              autocomplete="off"
+              name="type"
+              value="spending"
+            > <i class="material-icons" data-ng-if="data.type === 'spending'">check</i><span>Spending</span>
+          </label>
+          <label class="btn btn-success" data-ng-click="data.type = 'income'">
+            <input
+              type="radio"
+              tabindex="2"
+              data-ng-model="data.type"
+              data-ng-disabled="vm.p.$active"
+              required
+              bootstrap-error-states
+              autocomplete="off"
+              name="type"
+              value="income"
+            >
+            <i class="material-icons" data-ng-if="data.type === 'income'">check</i><span>Income</span>
+          </label>
+          <label class="btn btn-info" data-ng-click="data.type = 'saving'">
+            <input
+              type="radio"
+              tabindex="3"
+              data-ng-model="data.type"
+              data-ng-disabled="vm.p.$active"
+              required
+              bootstrap-error-states
+              autocomplete="off"
+              name="type"
+              value="saving"
+            > <i class="material-icons" data-ng-if="data.type === 'saving'">check</i><span>Saving</span>
+          </label>
+        </div>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="category">Category</label>
+        <input tabindex="4"
+               class="form-control"
+               type="text"
+               id="category"
+               required
+               bootstrap-error-states
+               data-ng-model="data.category"
+               data-ng-disabled="vm.p.$active"
+               name="category"
+        />
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="title">Title</label>
+        <input tabindex="5"
+               class="form-control"
+               type="text"
+               id="title"
+               required
+               bootstrap-error-states
+               data-ng-model="data.title"
+               data-ng-disabled="vm.p.$active"
+               name="title"
+        />
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="amount">Amount</label>
+        <input tabindex="6"
+               class="form-control"
+               type="number"
+               id="amount"
+               required
+               bootstrap-error-states
+               data-ng-model="data.amount"
+               data-ng-disabled="vm.p.$active"
+               name="amount"
+        />
+      </fieldset>
+      <fieldset class="form-group">
+        <label>Paid with</label>
+        <!-- user defined -->
+        <div class="btn-group" role="group" data-toggle="buttons" aria-label="Paid with">
+          <label class="btn btn-secondary" data-ng-click="data.paidWith = 'bar'">
+            <input
+              type="radio"
+              tabindex="7"
+              data-ng-model="data.paidWith"
+              data-ng-disabled="vm.p.$active || data.type !== 'spending'"
+              required
+              bootstrap-error-states
+              autocomplete="off"
+              name="type"
+              value="bar"
+            > <i class="material-icons" data-ng-if="data.paidWith === 'bar'">check</i><span>Bar</span>
+          </label>
+          <label class="btn btn-secondary" data-ng-click="data.paidWith = 'CC-M'">
+            <input
+              type="radio"
+              tabindex="8"
+              data-ng-model="data.paidWith"
+              data-ng-disabled="vm.p.$active || data.type !== 'spending'"
+              required
+              bootstrap-error-states
+              autocomplete="off"
+              name="type"
+              value="CC-M"
+            > <i class="material-icons" data-ng-if="data.paidWith === 'CC-M'">check</i><span>CC-M</span>
+          </label>
+          <label class="btn btn-secondary" data-ng-click="data.paidWith = 'CC-T'">
+            <input
+              type="radio"
+              tabindex="9"
+              data-ng-model="data.paidWith"
+              data-ng-disabled="vm.p.$active || data.type !== 'spending'"
+              required
+              bootstrap-error-states
+              autocomplete="off"
+              name="type"
+              value="CC-T"
+            > <i class="material-icons" data-ng-if="data.paidWith === 'CC-T'">check</i><span>CC-T</span>
+          </label>
+        </div>
+      </fieldset>
+      <fieldset class="form-group">
+        <label>Booked</label>
+        <div class="btn-group" role="group" data-toggle="buttons" aria-label="Booked">
+          <label class="btn btn-success" data-ng-click="data.booked = true">
+            <input
+              type="radio"
+              tabindex="10"
+              data-ng-model="data.booked"
+              data-ng-disabled="vm.p.$active"
+              required
+              bootstrap-error-states
+              autocomplete="off"
+              name="type"
+              value="1"
+            > <i class="material-icons" data-ng-if="data.booked">check</i><span>Yes</span>
+          </label>
+          <label class="btn btn-warning" data-ng-click="data.booked = false">
+            <input
+              type="radio"
+              tabindex="11"
+              data-ng-model="data.booked"
+              data-ng-disabled="vm.p.$active"
+              required
+              bootstrap-error-states
+              autocomplete="off"
+              name="type"
+              value="0"
+            > <i class="material-icons" data-ng-if="!data.booked">check</i><span>No</span>
+          </label>
+        </div>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="bookedAt">Booked at</label>
+        <input tabindex="12"
+               class="form-control"
+               type="date"
+               id="bookedAt"
+               data-ng-required="data.booked"
+               bootstrap-error-states
+               data-ng-model="data.bookedAt"
+               data-ng-disabled="!data.booked || vm.p.$active"
+               name="bookedAt"
+        />
+      </fieldset>
+    </div>
+    <div class="card-footer">
+      <div class="controls">
+        <button tabindex="13" type="submit" class="btn btn-primary" data-ng-disabled="form.$invalid || vm.p.$active" data-ng-click="vm.submit(data);">
+          <i class="material-icons" data-ng-show="(form.$invalid) && !vm.p.$active">block</i>
+          <i class="material-icons" data-ng-show="!(form.$invalid || vm.p.$active) && vm.p.$pristine">send</i>
+          <i class="material-icons spin" data-ng-show="vm.p.$active">hourglass_empty</i>
+          <i class="material-icons" data-ng-show="!(form.$invalid || vm.p.$active) && vm.p.$success">check_ok</i>
+          <i class="material-icons" data-ng-show="!(form.$invalid || vm.p.$active) && vm.p.$error">error</i>
+          <span>Create</span>
+        </button>
+      </div>
+      <div data-ng-show="vm.p.$error" class="error-info">
+        <div class="alert alert-danger" role="alert">
+          <i class="material-icons">error</i>
+          %%vm.p.$problem.title%%<br>
+          <small>%%vm.p.$problem.detail%%</small>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>

@@ -1,1 +1,3 @@
-- Add identifier to checking accounts
+- Spending:
+  - paid with (cash, credit card [managable])
+  

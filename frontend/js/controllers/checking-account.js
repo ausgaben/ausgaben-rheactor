@@ -12,5 +12,11 @@ module.exports = (app) => {
           controllerAs: 'vm',
           controller: 'CheckingAccountController'
         })
+        .state('checking-account.spendings', {
+          url: '/spendings',
+          templateUrl: '/view/checking-account-spendings.html',
+          controllerAs: 'vm',
+          controller: 'CheckingAccountSpendingsController'
+        })
     }])
 }

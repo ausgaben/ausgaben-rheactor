@@ -1,0 +1,106 @@
+<div class="container">
+  <article class="row">
+    <section class="col-xs-12 col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h1 class="card-title">
+            <i class="material-icons">event_note</i>
+            Your meetings
+          </h1>
+        </div>
+        <div class="card-block">
+          <p>These are your most recent meetings</p>
+        </div>
+        <div class="list-group">
+          <div class="list-group-item" role="navigation"
+               data-ng-show="vm.paginatedList.hasNext || vm.paginatedList.hasPrev">
+            <span class="loading" data-ng-show="vm.p.$active">
+              <i class="material-icons spin">hourglass_empty</i>
+            </span>
+            <div class="btn-group" role="group" aria-label="Pager" data-ng-show="vm.paginatedList.to">
+              <button type="button" class="btn btn-secondary btn-sm" title="Previous"
+                      data-ng-disabled="vm.p.$active || !vm.paginatedList.hasPrev"
+                      data-ng-click="vm.prev()">
+                <i class="material-icons">navigate_before</i>
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" title="Next"
+                      data-ng-disabled="vm.p.$active || !vm.paginatedList.hasNext"
+                      data-ng-click="vm.next()">
+                <i class="material-icons">navigate_next</i>
+              </button>
+            </div>
+            <span data-ng-show="vm.paginatedList.to">
+              <strong>%%vm.paginatedList.from%%</strong>&ndash;<strong>%%vm.paginatedList.to%%</strong> of
+              <strong>%%vm.paginatedList.total%%</strong>
+            </span>
+          </div>
+          <a data-ui-sref="meeting({identifier: meeting.identifier})"
+             class="list-group-item" data-ng-repeat="meeting in vm.paginatedList.items">
+            <abbr class="material-icons stacked" data-ng-if="meeting.concluded" title="Meeting concluded">
+              <i>crop_din</i>
+              <i>stop</i>
+            </abbr>
+            <abbr class="material-icons spin" data-ng-if="!meeting.concluded" title="Meeting in progress">donut_large</abbr>
+            <abbr class="material-icons" data-ng-if="meeting.isHost" title="You are hosting this meeting">poll</abbr>
+            <span>%%meeting.name%%</span>
+          </a>
+        </div>
+      </div>
+    </section>
+    <section class="col-xs-12 col-md-6">
+      <form name="form" class="card">
+        <div class="card-header">
+          <h1 class="card-title">
+            New meeting
+            <i class="material-icons" data-ng-hide="vm.c.$success">add_circle_outline</i>
+            <i class="material-icons success" data-ng-show="vm.c.$success">check_circle</i>
+          </h1>
+        </div>
+        <div class="card-block">
+          <p class="card-text">
+            Please enter a name for the new meeting
+          </p>
+          <fieldset class="form-group">
+            <label for="name">name</label>
+            <input tabindex="1"
+                   class="form-control"
+                   type="text"
+                   id="name"
+                   required
+                   bootstrap-error-states
+                   data-ng-model="data.name"
+                   data-ng-disabled="vm.c.$active || vm.initializing"
+                   name="name"
+                   auto-focus
+            />
+          </fieldset>
+        </div>
+        <div class="card-footer">
+          <div class="controls">
+            <button type="submit"
+                    class="btn btn-primary"
+                    data-ng-disabled="form.$invalid || vm.c.$active || vm.initializing"
+                    data-ng-click="vm.submit(data);">
+              <i class="material-icons" data-ng-show="(form.$invalid || vm.initializing) && !vm.c.$active">block</i>
+              <i class="material-icons"
+                 data-ng-show="!(form.$invalid || vm.c.$active || vm.initializing) && vm.c.$pristine">send</i>
+              <i class="material-icons spin" data-ng-show="vm.c.$active">hourglass_empty</i>
+              <i class="material-icons"
+                 data-ng-show="!(form.$invalid || vm.c.$active || vm.initializing) && vm.c.$success">check_ok</i>
+              <i class="material-icons"
+                 data-ng-show="!(form.$invalid || vm.c.$active || vm.initializing) && vm.c.$error">error</i>
+              <span>Continue</span>
+            </button>
+          </div>
+          <div data-ng-show="vm.c.$error" class="error-info">
+            <div class="alert alert-danger" role="alert">
+              <i class="material-icons">error</i>
+              %%vm.c.$problem.title%%<br>
+              <small>%%vm.c.$problem.detail%%</small>
+            </div>
+          </div>
+        </div>
+      </form>
+    </section>
+  </article>
+</div>

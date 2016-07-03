@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="<%= data.description %>">
+  <meta name="version" content="<%= data.version %>-<%= data.deployVersion %>">
+  <title><%= data.appName %></title>
+  <base href="/">
+  <link rel="stylesheet" href="/css/styles.min.css?v=<%= data.version %>-<%= data.deployVersion %>">
+  <%= includes.favicon %>
+  <%= includes.fonts %>
+</head>
+<body data-ng-app="AusgabenApp" class="%%bodyClass%%">
+<%= includes.loading %>
+<%= includes['app-update'] %>
+<%= includes.navigation %>
+<main data-ui-view class="ng-cloak"></main>
+<script type="text/ng-template" id="/view/login.html"><%= includes.login %></script>
+<script type="text/ng-template" id="/view/registration.html"><%= includes.registration %></script>
+<script type="text/ng-template" id="/view/activation.html"><%= includes.activation %></script>
+<script type="text/ng-template" id="/view/password-change.html"><%= includes['password-change'] %></script>
+<script type="text/ng-template" id="/view/password-change-confirm.html"><%= includes['password-change-confirm'] %></script>
+<script type="text/ng-template" id="/view/dashboard.html"><%= includes.dashboard %></script>
+<script type="text/ng-template" id="/view/account-avatar.html"><%= includes['account-avatar'] %></script>
+<script type="text/javascript" src="/js/app.min.js?v=<%= data.version %>-<%= data.deployVersion %>"></script>
+<script type="text/javascript">
+  (function () {
+    'use strict';
+
+    var config = {
+      appName: '<%= data.appName %>',
+      description: '<%= data.description %>',
+      version: '<%= data.version %>',
+      deployVersion: '<%= data.deployVersion %>',
+      environment: '<%= data.environment %>',
+      apiIndex: '<%= data.apiIndex %>',
+      mimeType: '<%= data.mimeType %>'
+    };
+
+    angular
+      .module('FrontendConfigModule', [])
+      .factory('FrontendConfig', function () {
+        // Make system config available as service
+        return config;
+      })
+      .run(['$rootScope', function ($rootScope) {
+        // Make system config available on rootscope for use in templates
+        $rootScope.config = config;
+      }])
+    ;
+  }());
+</script>
+<%= includes.trackjs %>
+</body>
+</html>

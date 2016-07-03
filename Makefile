@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help build development
+.PHONY: help build development vendorjs
 
 development: ## Build for development environment
 	ENVIRONMENT=development make build
@@ -9,10 +9,8 @@ build: build/css/styles.min.css build/js/app.min.js build/index.html build/favic
 build/js:
 	mkdir -p build/js
 
-vendor:
+vendorjs: vendor/*.js vendor/**/*.js vendor/**/**/*.js
 	mkdir -p vendor
-
-vendor/*.js: vendor
   # babel will ignore everything in node_modules so we need to copy it somewhere
 	cp -u node_modules/isemail/lib/index.js vendor/isemail.js
 	mkdir -p vendor/rheactor-value-objects
@@ -20,7 +18,7 @@ vendor/*.js: vendor
 	mkdir -p vendor/rheactor-web-app/js/
 	cp -u -r node_modules/rheactor-web-app/js/* vendor/rheactor-web-app/
 
-build/js/app.js: package.json build/js frontend/js/*.js frontend/js/**/*.js frontend/js/**/**/*.js vendor/*.js vendor/**/*.js vendor/**/**/*.js
+build/js/app.js: package.json build/js frontend/js/*.js frontend/js/**/*.js vendorjs
 	./node_modules/.bin/browserify frontend/js/app.js -o $@
 
 build/js/app.min.js: build/js/app.js
@@ -61,9 +59,6 @@ build/img: frontend/img/*.*
 
 build/favicon.ico: frontend/favicon/*.*
 	cp -u frontend/favicon/* build/
-
-demo: docs/agent-carter/*.*
-	cp -u -r docs/agent-carter build/img
 
 deploy: ## Deploy to production
 	rm -rf build

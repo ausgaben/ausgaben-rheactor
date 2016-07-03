@@ -1,0 +1,93 @@
+<nav class="collapse navbar-expandable-top hidden-md-up" id="navbar-mobile" aria-expanded="false" style="height: 0px;"
+     data-ng-controller="NavigationController as vm">
+  <div class="container-fluid bg-inverse p-a-1">
+    <hr data-ng-show="vm.authenticated">
+    <p class="nav-section" data-ng-show="vm.authenticated">
+      <i class="material-icons">account_circle</i>
+      <span>%%vm.me.firstname%%</span>
+    </p>
+    <a class="nav-link" data-ui-sref="account.avatar" data-ng-show="vm.authenticated"
+       data-toggle="collapse"
+       data-target="#navbar-mobile"
+       aria-expanded="true">
+      <i class="material-icons">photo</i>
+      <span>Change avatar</span>
+    </a>
+    <hr data-ng-show="vm.authenticated">
+    <a class="nav-link" data-ng-click="vm.refreshToken()" data-ng-show="vm.authenticated"
+       data-toggle="collapse"
+       data-target="#navbar-mobile"
+       aria-expanded="true">
+      <i class="material-icons" data-ng-show="(vm.tokenLifetime)>0">schedule</i>
+      <i class="material-icons" data-ng-show="(vm.tokenLifetime)<=0">warning</i>
+      <span>Auto-logout in: %%vm.tokenLifetimeHuman%%. Click here to prolong.</span>
+    </a>
+    <a class="nav-link" data-ui-sref="logout" data-ng-show="vm.authenticated"
+       data-toggle="collapse"
+       data-target="#navbar-mobile"
+       aria-expanded="true">
+      <i class="material-icons">power_settings_new</i>
+      <span>Logout</span>
+    </a>
+    <a class="nav-link" data-ui-sref="register" data-ng-hide="vm.authenticated"
+       data-toggle="collapse"
+       data-target="#navbar-mobile"
+       aria-expanded="true">
+      <i class="material-icons">person_add</i>
+      <span>Register</span>
+    </a>
+    <a class="nav-link" data-ui-sref="login" data-ng-hide="vm.authenticated"
+       data-toggle="collapse"
+       data-target="#navbar-mobile"
+       aria-expanded="true">
+      <i class="material-icons">person</i>
+      <span>Login</span>
+    </a>
+  </div>
+</nav>
+<nav class="navbar navbar-static-top ng-cloak" data-ng-controller="NavigationController as vm">
+  <span class="navbar-brand">
+    <img src="/img/logo.svg?v=<%= data.version %>-<%= data.deployVersion %>" alt="<%= data.name %>" width="30" height="30">
+    Ausgaben <small><%= data.version %></small>
+  </span>
+  <ul class="nav navbar-nav hidden-sm-down" id="metanav">
+    <li class="nav-item btn-group" data-ng-show="vm.authenticated"
+        data-ng-class="{active: vm.onState('me') || vm.onState('account')}">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" id="accountMenu" aria-haspopup="true"
+         aria-expanded="false" title="%%vm.me.firstname || 'Anonymous'%%">
+        <i class="material-icons">account_circle</i>
+        <span class="hidden-md-down">%%vm.me.firstname%%</span>
+      </a>
+      <div data-ng-class="{active: vm.onState('account')}" class="dropdown-menu dropdown-menu-right"
+           aria-labelledby="accountMenu">
+        <a class="dropdown-item" data-ui-sref="account.avatar">Change avatar</a>
+        <a class="dropdown-item" data-ng-click="vm.refreshToken()"
+           title="Remaining time until auto-logout. Click to prolong.">
+          <span>Auto-logout in: %%vm.tokenLifetimeHuman%%</span>
+        </a>
+      </div>
+    </li>
+    <li class="nav-item" data-ng-show="vm.authenticated" title="Logout">
+      <a class="nav-link" data-ui-sref="logout">
+        <i class="material-icons">power_settings_new</i>
+        <span class="hidden-md-down">Logout</span>
+      </a>
+    </li>
+    <li class="nav-item" data-ng-hide="vm.authenticated" title="Register">
+      <a class="nav-link" data-ui-sref="register">
+        <i class="material-icons">person_add</i>
+        <span>Register</span>
+      </a>
+    </li>
+    <li class="nav-item" data-ng-hide="vm.authenticated" title="Login">
+      <a class="nav-link" data-ui-sref="login">
+        <i class="material-icons">person</i>
+        <span>Login</span>
+      </a>
+    </li>
+  </ul>
+  <button class="navbar-toggler collapsed hidden-md-up" type="button" data-toggle="collapse"
+          data-target="#navbar-mobile" aria-expanded="false">
+    ☰
+  </button>
+</nav>

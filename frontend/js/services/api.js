@@ -5,7 +5,7 @@ const _memoize = require('lodash/memoize')
 const httpUtil = require('rheactor-web-app/js/util/http')
 const HttpProblem = require('rheactor-web-app/js/model/http-problem')
 const logger = require('rheactor-web-app/js/util/logger')
-const Errors = require('rheactor-value-objects/errors')
+const ApplicationError = require('rheactor-value-objects/errors/application')
 const Promise = require('bluebird')
 
 const Token = require('rheactor-web-app/js/model/jsonwebtoken')
@@ -37,7 +37,7 @@ module.exports = (apiIndex, mimeType, $http) => {
         .then(function (response) {
           if (response.data.$context !== 'https://github.com/RHeactor/nucleus/wiki/JsonLD#Index') {
             logger.apiWarning('Unexpected $context', response.data.$context, 'expected https://github.com/RHeactor/nucleus/wiki/JsonLD#Index')
-            reject(new Errors.ApplicationError('APIService.index(): Unexpected $context'))
+            reject(new ApplicationError('APIService.index(): Unexpected $context'))
           }
           resolve(response.data)
         })

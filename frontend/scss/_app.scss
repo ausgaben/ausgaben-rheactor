@@ -3,3 +3,9 @@ body.dashboard, body.checking-account {
     margin-top: 50px;
   }
 }
+
+td, th {
+  .money {
+    text-align: right;
+  }
+}

@@ -3,10 +3,10 @@
 const util = require('util')
 const Joi = require('joi')
 const SpendingTypeValue = require('../valueobject/spending-type')
-const ValidationFailedException = require('rheactor-value-objects/errors').ValidationFailedException
 const AggregateRoot = require('rheactor-event-store/aggregate-root')
 const _reduce = require('lodash/reduce')
-const Errors = require('rheactor-value-objects/errors')
+const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
+const UnhandledDomainEventError = require('rheactor-value-objects/errors/unhandled-domain-event')
 
 /**
  * @param {String} checkingAccount
@@ -18,7 +18,7 @@ const Errors = require('rheactor-value-objects/errors')
  * @param {Boolean} estimate
  * @param {Number} startsAt
  * @constructor
- * @throws ValidationFailedException if the creation fails due to invalid data
+ * @throws ValidationFailedError if the creation fails due to invalid data
  */
 function PeriodicalModel (checkingAccount, author, type, category, title, amount, estimate, startsAt) {
   AggregateRoot.call(this)
@@ -34,7 +34,7 @@ function PeriodicalModel (checkingAccount, author, type, category, title, amount
   })
   Joi.validate({checkingAccount, author, type, category, title, amount, estimate, startsAt}, schema, (err, data) => {
     if (err) {
-      throw new ValidationFailedException('PeriodicalModel validation failed: ' + err, data, err)
+      throw new ValidationFailedError('PeriodicalModel validation failed: ' + err, data, err)
     }
     this.checkingAccount = data.checkingAccount
     this.author = data.author
@@ -74,7 +74,7 @@ PeriodicalModel.prototype.applyEvent = function (event) {
       break
     default:
       console.error('Unhandled SpendingModel event', event.name)
-      throw new Errors.UnhandledDomainEvent(event.name)
+      throw new UnhandledDomainEventError(event.name)
   }
 }
 

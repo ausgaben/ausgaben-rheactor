@@ -1,7 +1,8 @@
 'use strict'
 
-const Errors = require('rheactor-value-objects/errors')
+const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
 const Promise = require('bluebird')
+const ModelEvent = require('rheactor-event-store/model-event')
 
 /**
  * @param {express.app} app
@@ -9,10 +10,12 @@ const Promise = require('bluebird')
  * @param {function} verifyToken
  * @param {CheckingAccountRepository} checkingAccountRepo
  * @param {CheckingAccountUserRepository} checkingAccountUserRepo
+ * @param {SpendingRepository} spendingRepo
  * @param {JSONLD} jsonld
  * @param {function} sendHttpProblem
+ * @param {function} transformer
  */
-module.exports = (app, emitter, verifyToken, checkingAccountRepo, checkingAccountUserRepo, jsonld, sendHttpProblem) => {
+module.exports = (app, emitter, verifyToken, checkingAccountRepo, checkingAccountUserRepo, spendingRepo, jsonld, sendHttpProblem, transformer) => {
   app.get('/api/checking-account/:id/stream', (req, res) => {
     let checkingAccountId = req.params.id
     let userId
@@ -26,7 +29,7 @@ module.exports = (app, emitter, verifyToken, checkingAccountRepo, checkingAccoun
         return checkingAccountUserRepo.findByCheckingAccountId(checkingAccountId).filter(checkingAccountUser => checkingAccountUser.user === userId)
           .spread((checkingAccountUser) => {
             if (!checkingAccountUser) {
-              throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
+              throw new AccessDeniedError(req.url, 'Not your checking account!')
             }
           })
       })
@@ -35,20 +38,14 @@ module.exports = (app, emitter, verifyToken, checkingAccountRepo, checkingAccoun
 
         let messageCount = 0
 
-        let sendMessage = (eventName, eventCreatedAt, payload) => {
-          messageCount++
-          payload = payload || {}
-          res.write('event: checkingAccountStream\n')
-          res.write('id: ' + messageCount + '\n')
-          res.write('data: ' + JSON.stringify({event: eventName, eventCreatedAt: eventCreatedAt, payload}) + '\n\n')
-        }
-
         /**
          * @param {ModelEvent} event
-         * @param {Object} payload
          */
         let sendEvent = (event) => {
-          sendMessage(event.constructor.name, event.createdAt || Date.now(), event.data)
+          messageCount++
+          res.write('event: ModelEvent\n')
+          res.write('id: ' + messageCount + '\n')
+          res.write('data: ' + JSON.stringify(event) + '\n\n')
         }
 
         let handler =
@@ -60,7 +57,19 @@ module.exports = (app, emitter, verifyToken, checkingAccountRepo, checkingAccoun
               // Only sent events
               return
             }
-            sendEvent(event)
+            switch (event.name) {
+              case 'SpendingCreatedEvent':
+                spendingRepo.getById(event.aggregateId)
+                  .then(spending => {
+                    if (spending.checkingAccount === checkingAccountId) {
+                      event.entity = transformer(spending)
+                      sendEvent(event)
+                    }
+                  })
+                break
+              default:
+                sendEvent(event)
+            }
           }
 
         emitter.on('*', handler)
@@ -71,10 +80,10 @@ module.exports = (app, emitter, verifyToken, checkingAccountRepo, checkingAccoun
           'Connection': 'keep-alive'
         })
         res.write('\n')
-        sendMessage('Hello', Date.now(), {'nice to meet': userId})
+        sendEvent(new ModelEvent(userId, 'PingEvent', {init: true}))
 
         let ping = () => {
-          sendMessage('Ping', Date.now())
+          sendEvent(new ModelEvent(userId, 'PingEvent', {}))
         }
         setInterval(ping, 1000 * 15)
 

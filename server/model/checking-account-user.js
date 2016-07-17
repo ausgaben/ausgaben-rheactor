@@ -3,14 +3,15 @@
 const util = require('util')
 const Joi = require('joi')
 const AggregateRoot = require('rheactor-event-store/aggregate-root')
-const ValidationFailedException = require('rheactor-value-objects/errors').ValidationFailedException
-const Errors = require('rheactor-value-objects/errors')
 const CheckingAccountUserCreatedEvent = require('../event/checking-account-user/created')
+const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
+const UnhandledDomainEventError = require('rheactor-value-objects/errors/unhandled-domain-event')
+
 /**
  * @param {String} checkingAccount
  * @param {String} user
  * @constructor
- * @throws ValidationFailedException if the creation fails due to invalid data
+ * @throws ValidationFailedError if the creation fails due to invalid data
  */
 function CheckingAccountUserModel (checkingAccount, user) {
   AggregateRoot.call(this)
@@ -23,7 +24,7 @@ function CheckingAccountUserModel (checkingAccount, user) {
     user
   }, schema, (err, data) => {
     if (err) {
-      throw new ValidationFailedException('CheckingAccountUserModel validation failed', data, err)
+      throw new ValidationFailedError('CheckingAccountUserModel validation failed', data, err)
     }
     this.checkingAccount = data.checkingAccount
     this.user = data.user
@@ -46,7 +47,7 @@ CheckingAccountUserModel.prototype.applyEvent = function (event) {
       break
     default:
       console.error('Unhandled CheckingAccountUserModel event', event.name)
-      throw new Errors.UnhandledDomainEvent(event.name)
+      throw new UnhandledDomainEventError(event.name)
   }
 }
 

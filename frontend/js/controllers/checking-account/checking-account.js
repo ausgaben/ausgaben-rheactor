@@ -1,7 +1,7 @@
 'use strict'
 
 const Promise = require('bluebird')
-const EventSourceConnection = require('rheactor-web-app/js/util/event-source-connection')
+const ModelEventConnection = require('rheactor-web-app/js/util/model-event-connection')
 const jsonld = require('rheactor-web-app/js/util/jsonld')
 
 module.exports = (app) => {
@@ -35,13 +35,13 @@ module.exports = (app) => {
 
                 $rootScope.windowTitle = checkingAccount.name
 
-                let esc = new EventSourceConnection(jsonld.getRelLink('stream', checkingAccount), 'checkingAccountStream')
-                esc.connect(token)
+                let mec = new ModelEventConnection(jsonld.getRelLink('stream', checkingAccount))
+                mec.connect(token)
                 $scope.$on('$destroy', () => {
-                  esc.disconnect()
+                  mec.disconnect()
                 })
-                $scope.esc = esc
-                $scope.$emit('esc', esc)
+                $scope.mec = mec
+                $scope.$emit('mec', mec)
 
                 $state.go('checking-account.spendings', {identifier: checkingAccount.identifier}, {location: 'replace'})
               })

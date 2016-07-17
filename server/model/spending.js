@@ -3,10 +3,10 @@
 const util = require('util')
 const Joi = require('joi')
 const SpendingTypeValue = require('../valueobject/spending-type')
-const ValidationFailedException = require('rheactor-value-objects/errors').ValidationFailedException
 const AggregateRoot = require('rheactor-event-store/aggregate-root')
 const PeriodicalModel = require('./periodical')
-const Errors = require('rheactor-value-objects/errors')
+const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
+const UnhandledDomainEventError = require('rheactor-value-objects/errors/unhandled-domain-event')
 
 /**
  * @param {String} checkingAccount
@@ -18,7 +18,7 @@ const Errors = require('rheactor-value-objects/errors')
  * @param {Boolean} booked
  * @param {Number} bookedAt
  * @constructor
- * @throws ValidationFailedException if the creation fails due to invalid data
+ * @throws ValidationFailedError if the creation fails due to invalid data
  */
 function SpendingModel (checkingAccount, author, type, category, title, amount, booked, bookedAt) {
   AggregateRoot.call(this)
@@ -35,7 +35,7 @@ function SpendingModel (checkingAccount, author, type, category, title, amount, 
   })
   Joi.validate({checkingAccount, author, type, category, title, amount, booked, bookedAt}, schema, (err, data) => {
     if (err) {
-      throw new ValidationFailedException('SpendingModel validation failed: ' + err, data, err)
+      throw new ValidationFailedError('SpendingModel validation failed: ' + err, data, err)
     }
     this.checkingAccount = data.checkingAccount
     this.author = data.author
@@ -61,7 +61,7 @@ SpendingModel.fromPeriodical = function (periodical, bookedAt) {
   })
   return Joi.validate({periodical, bookedAt}, schema, (err, data) => {
     if (err) {
-      throw new ValidationFailedException('SpendingModel.fromPeriodical validation failed: ' + err, {
+      throw new ValidationFailedError('SpendingModel.fromPeriodical validation failed: ' + err, {
         periodical,
         bookedAt
       }, err)
@@ -103,7 +103,7 @@ SpendingModel.prototype.applyEvent = function (event) {
       break
     default:
       console.error('Unhandled SpendingModel event', event.name)
-      throw new Errors.UnhandledDomainEvent(event.name)
+      throw new UnhandledDomainEventError(event.name)
   }
 }
 

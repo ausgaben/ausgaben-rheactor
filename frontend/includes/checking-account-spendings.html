@@ -7,16 +7,27 @@
       </h1>
     </div>
     <div class="card-block">
-      <table class="table">
+      <table class="table" data-ng-repeat="group in vm.spendingGroups">
+        <colgroup>
+          <col width="10%">
+          <col>
+          <col width="10%">
+        </colgroup>
+        <thead>
+        <tr>
+          <th colspan="2">%%group.title%%</th>
+          <th class="money">%%group.total()%% €</th>
+        </tr>
+        </thead>
         <tbody>
-        <tr data-ng-repeat="spending in vm.spendings">
+        <tr data-ng-repeat="spending in group.spendings">
           <td>
             %%spending.bookedAt|date:'dd.MM.'%%
           </td>
           <td>
             %%spending.title%%
           </td>
-          <td>
+          <td class="money">
             %%spending.amount%% €
           </td>
         </tr>
@@ -46,7 +57,7 @@
           Type
         </label>
         <div class="btn-group type" role="group" data-toggle="buttons" aria-label="Type">
-          <label class="btn btn-danger" data-ng-click="data.type = 'spending'">
+          <label class="btn" data-ng-click="data.type = 'spending'" data-ng-class="{'btn-danger': data.type === 'spending', 'btn-secondary': data.type !== 'spending'}">
             <input
               type="radio"
               tabindex="1"
@@ -59,7 +70,7 @@
               value="spending"
             > <i class="material-icons" data-ng-if="data.type === 'spending'">check</i><span>Spending</span>
           </label>
-          <label class="btn btn-success" data-ng-click="data.type = 'income'">
+          <label class="btn" data-ng-click="data.type = 'income'" data-ng-class="{'btn-success': data.type === 'income', 'btn-secondary': data.type !== 'income'}">
             <input
               type="radio"
               tabindex="2"
@@ -73,7 +84,7 @@
             >
             <i class="material-icons" data-ng-if="data.type === 'income'">check</i><span>Income</span>
           </label>
-          <label class="btn btn-info" data-ng-click="data.type = 'saving'">
+          <label class="btn" data-ng-click="data.type = 'saving'" data-ng-class="{'btn-info': data.type === 'saving', 'btn-secondary': data.type !== 'saving'}">
             <input
               type="radio"
               tabindex="3"
@@ -175,7 +186,7 @@
       <fieldset class="form-group">
         <label>Booked</label>
         <div class="btn-group" role="group" data-toggle="buttons" aria-label="Booked">
-          <label class="btn btn-success" data-ng-click="data.booked = true">
+          <label class="btn" data-ng-click="data.booked = true" data-ng-class="{'btn-success': data.booked, 'btn-secondary': !data.booked}">
             <input
               type="radio"
               tabindex="10"
@@ -188,7 +199,7 @@
               value="1"
             > <i class="material-icons" data-ng-if="data.booked">check</i><span>Yes</span>
           </label>
-          <label class="btn btn-warning" data-ng-click="data.booked = false">
+          <label class="btn" data-ng-click="data.booked = false" data-ng-class="{'btn-warning': !data.booked, 'btn-secondary': data.booked}">
             <input
               type="radio"
               tabindex="11"
@@ -212,7 +223,7 @@
                data-ng-required="data.booked"
                bootstrap-error-states
                data-ng-model="data.bookedAt"
-               data-ng-disabled="!data.booked || vm.p.$active"
+               data-ng-disabled="vm.p.$active"
                name="bookedAt"
         />
       </fieldset>

@@ -1,12 +1,12 @@
 'use strict'
 
-let Joi = require('joi')
-let ValidationFailedException = require('rheactor-value-objects/errors').ValidationFailedException
+const Joi = require('joi')
+const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
 
 /**
  * @param {String} type
  * @constructor
- * @throws ValidationFailedException if the creation fails due to invalid data
+ * @throws ValidationFailedError if the creation fails due to invalid data
  */
 function SpendingTypeValue (type) {
   let schema = Joi.object().keys({
@@ -14,7 +14,7 @@ function SpendingTypeValue (type) {
   })
   Joi.validate({type}, schema, (err, data) => {
     if (err) {
-      throw new ValidationFailedException('Not a type: ' + type, data, err)
+      throw new ValidationFailedError('Not a type: ' + type, data, err)
     }
     this.type = data.type
   })

@@ -40,6 +40,19 @@ Feature: Spendings
     spending | Pets     | Cat food       | -12345 | true   | 2015-01-02T00:00:00.000Z
     spending | Pets     | Dog food       | -5678  | true   | 2015-01-03T00:00:00.000Z
 
+  Scenario: Spendings must be negative
+
+    Given this is the request body
+    --------------
+    "type": "spending",
+    "category": "Pets",
+    "title": "Cat food",
+    "amount": 12345,
+    "booked": false
+    --------------
+    When I POST to {CreateSpendingEndpoint}
+    Then the status code should be 400
+
   Scenario: Fetch all spendings for the account
 
     When I POST to {ListSpendingsEndpoint}

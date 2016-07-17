@@ -1,6 +1,7 @@
 'use strict'
 
-const Errors = require('rheactor-value-objects/errors')
+const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
+const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
 const Periodical = require('../../frontend/js/model/periodical')
 const CreatePeriodicalCommand = require('../command/periodical/create')
 const URIValue = require('rheactor-value-objects/uri')
@@ -33,7 +34,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
     return checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
       .then((checkingAccountUser) => {
         if (!checkingAccountUser) {
-          throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
+          throw new AccessDeniedError(req.url, 'Not your checking account!')
         }
         let schema = Joi.object().keys({
           checkingAccount: Joi.number().min(1),
@@ -52,7 +53,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
 
             let v = Joi.validate(query, schema)
             if (v.error) {
-              throw new Errors.ValidationFailedException('Validation failed', query, v.error)
+              throw new ValidationFailedError('Validation failed', query, v.error)
             }
 
             let pagination = new Pagination(query.offset)
@@ -94,7 +95,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
         let v = Joi.validate(req.body, schema)
         if (v.error) {
           console.error(v.error)
-          throw new Errors.ValidationFailedException('Validation failed', req.body, v.error)
+          throw new ValidationFailedError('Validation failed', req.body, v.error)
         }
         return Promise
           .join(
@@ -104,7 +105,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
           )
           .spread((checkingAccount, checkingAccountUser, user) => {
             if (!checkingAccountUser) {
-              throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
+              throw new AccessDeniedError(req.url, 'Not your checking account!')
             }
             let cmd = new CreatePeriodicalCommand(
               checkingAccount,
@@ -151,7 +152,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
         return checkingAccountUserRepo.findByCheckingAccountId(periodical.checkingAccount).filter(checkingAccountUser => checkingAccountUser.user === req.user)
           .then((checkingAccountUser) => {
             if (!checkingAccountUser) {
-              throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
+              throw new AccessDeniedError(req.url, 'Not your checking account!')
             }
             return res.send(transformer(periodical))
           })

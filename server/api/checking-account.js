@@ -1,6 +1,7 @@
 'use strict'
 
-const Errors = require('rheactor-value-objects/errors')
+const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
+const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
 const CheckingAccount = require('../../frontend/js/model/checking-account')
 const CreateCheckingAccountCommand = require('../command/checking-account/create')
 const URIValue = require('rheactor-value-objects/uri')
@@ -46,7 +47,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
 
         let v = Joi.validate(query, schema)
         if (v.error) {
-          throw new Errors.ValidationFailedException('Validation failed', query, v.error)
+          throw new ValidationFailedError('Validation failed', query, v.error)
         }
 
         let pagination = new Pagination(query.offset)
@@ -69,7 +70,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       .try(() => {
         let v = Joi.validate(req.body, schema)
         if (v.error) {
-          throw new Errors.ValidationFailedException('Validation failed', req.body, v.error)
+          throw new ValidationFailedError('Validation failed', req.body, v.error)
         }
         return userRepo.getById(req.user)
           .then((user) => {
@@ -102,7 +103,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       )
       .spread((checkingAccount, checkingAccountUser) => {
         if (!checkingAccountUser) {
-          throw new Errors.AccessDeniedError(req.url, 'Not your checking account!')
+          throw new AccessDeniedError(req.url, 'Not your checking account!')
         }
         return res.send(transformer(checkingAccount))
       })

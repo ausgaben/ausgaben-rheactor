@@ -10,7 +10,6 @@ const Joi = require('joi')
 const Pagination = require('rheactor-server/util/pagination')
 const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
 const _merge = require('lodash/merge')
-const SpendingTypeValue = require('../valueobject/spending-type')
 
 /**
  * @param {express.app} app
@@ -71,19 +70,18 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
    */
   app.post('/api/checking-account/:id/spending', tokenAuth, function (req, res) {
     let schema = Joi.object().keys({
-      type: Joi.string().min(1).required().trim(),
       category: Joi.string().min(1).required().trim(),
       title: Joi.string().min(1).required().trim(),
       amount: Joi.number().integer().required(),
       booked: Joi.boolean().required(),
       bookedAt: Joi.date(),
+      saving: Joi.boolean().default(false),
       paidWith: Joi.string().min(1).trim() // FIXME: Implement
     })
     Promise
       .try(() => {
         let v = Joi.validate(req.body, schema)
         if (v.error) {
-          console.error(v.error)
           throw new ValidationFailedError('Validation failed', req.body, v.error)
         }
         return Promise
@@ -98,12 +96,12 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
             }
             let cmd = new CreateSpendingCommand(
               checkingAccount,
-              new SpendingTypeValue(v.value.type),
               v.value.category,
               v.value.title,
               v.value.amount,
               v.value.booked,
               v.value.bookedAt ? new Date(v.value.bookedAt).getTime() : undefined,
+              v.value.spending,
               user
             )
             return emitter.emit(cmd)

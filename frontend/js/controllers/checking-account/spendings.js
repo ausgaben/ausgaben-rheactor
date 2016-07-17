@@ -7,6 +7,7 @@ const HttpProgress = require('rheactor-web-app/js/util/http').HttpProgress
 const HttpProblem = require('rheactor-web-app/js/model/http-problem')
 const LiveCollection = require('rheactor-web-app/js/util/live-collection')
 const _reduce = require('lodash/reduce')
+const _merge = require('lodash/merge')
 
 module.exports = (app) => {
   app
@@ -25,7 +26,13 @@ module.exports = (app) => {
         let vm = {
           checkingAccount: null,
           spendingGroups: [],
-          p: new HttpProgress()
+          p: new HttpProgress(),
+          spendingData: {
+            type: 'spending',
+            booked: true,
+            bookedAt: new Date(),
+            saving: false
+          }
         }
         let spendingsCollection
 
@@ -47,7 +54,7 @@ module.exports = (app) => {
             .then(updateGroupedSpendings)
         }
 
-        const group2entry = {}
+        let group2entry = {}
 
         function SpendingGroup (title) {
           this.title = title
@@ -64,6 +71,7 @@ module.exports = (app) => {
 
         const updateGroupedSpendings = () => {
           vm.spendingGroups = []
+          group2entry = {}
           Promise
             .map(spendingsCollection.items, spending => {
               let group
@@ -93,6 +101,7 @@ module.exports = (app) => {
               switch (event.name) {
                 case 'SpendingCreatedEvent':
                   spendingsCollection.items.push(new Spending(event.entity))
+                  updateGroupedSpendings()
                   break
               }
             })
@@ -102,13 +111,15 @@ module.exports = (app) => {
               })
           })
 
-        vm.submit = (spending) => {
+        vm.submit = (data) => {
           if (vm.p.$active) {
             return
           }
           vm.p.activity()
           ClientStorageService.getValidToken()
             .then((token) => {
+              const spending = _merge({}, data, {amount: data.type === 'spending' ? -data.amount : data.amount})
+              delete spending.type
               return SpendingService.create(vm.checkingAccount, spending, token)
             })
             .then(() => {

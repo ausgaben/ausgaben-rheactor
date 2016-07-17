@@ -5,7 +5,8 @@ body.dashboard, body.checking-account {
 }
 
 td, th {
-  .money {
+  &.money {
     text-align: right;
+    white-space: nowrap;
   }
 }

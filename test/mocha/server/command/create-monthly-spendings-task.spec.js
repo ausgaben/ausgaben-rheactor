@@ -6,7 +6,6 @@ const CreateMonthlySpendingsCommand = require('../../../../server/command/create
 const PeriodicalsRepository = require('../../../../server/repository/periodical')
 const SpendingsRepository = require('../../../../server/repository/spending')
 const PeriodicalModel = require('../../../../server/model/periodical')
-const SpendingTypeValue = require('../../../../server/valueobject/spending-type')
 const Promise = require('bluebird')
 const simple = require('simple-mock')
 simple.Promise = Promise
@@ -19,7 +18,6 @@ describe('CreateMonthlySpendingsCommand', function () {
   let periodical1 = new PeriodicalModel(
     '42',
     '17',
-    new SpendingTypeValue(SpendingTypeValue.INCOME),
     'Salary',
     'Tanja\'s Salary',
     165432,
@@ -30,7 +28,6 @@ describe('CreateMonthlySpendingsCommand', function () {
   let periodical2 = new PeriodicalModel(
     '42',
     '17',
-    new SpendingTypeValue(SpendingTypeValue.INCOME),
     'Salary',
     'Markus\'s Salary',
     123456,

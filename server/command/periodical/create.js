@@ -2,7 +2,6 @@
 
 /**
  * @param {CheckingAccountModel} checkingAccount
- * @param {PeriodicalTypeValue} type
  * @param {String} category
  * @param {String} title
  * @param {Number} amount
@@ -20,11 +19,11 @@
  * @param {Boolean} enabledIn10
  * @param {Boolean} enabledIn11
  * @param {Boolean} enabledIn12
+ * @param {Boolean} saving
  * @param {UserModel} author
  */
-function CreatePeriodicalCommand (checkingAccount, type, category, title, amount, estimate, startsAt, enabledIn01, enabledIn02, enabledIn03, enabledIn04, enabledIn05, enabledIn06, enabledIn07, enabledIn08, enabledIn09, enabledIn10, enabledIn11, enabledIn12, author) {
+function CreatePeriodicalCommand (checkingAccount, category, title, amount, estimate, startsAt, enabledIn01, enabledIn02, enabledIn03, enabledIn04, enabledIn05, enabledIn06, enabledIn07, enabledIn08, enabledIn09, enabledIn10, enabledIn11, enabledIn12, saving, author) {
   this.checkingAccount = checkingAccount
-  this.type = type
   this.category = category
   this.title = title
   this.amount = amount
@@ -42,6 +41,7 @@ function CreatePeriodicalCommand (checkingAccount, type, category, title, amount
   this.enabledIn10 = enabledIn10
   this.enabledIn11 = enabledIn11
   this.enabledIn12 = enabledIn12
+  this.saving = saving
   this.author = author
 }
 

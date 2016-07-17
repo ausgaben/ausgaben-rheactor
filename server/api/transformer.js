@@ -44,12 +44,12 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         $createdAt: model.createdAt(),
         $updatedAt: model.updatedAt(),
         $deletedAt: model.deletedAt(),
-        type: model.type.toString(),
         category: model.category,
         title: model.title,
         amount: model.amount,
         booked: model.booked,
-        bookedAt: model.bookedAt ? new Date(model.bookedAt) : undefined
+        bookedAt: model.bookedAt ? new Date(model.bookedAt) : undefined,
+        saving: model.saving
       })
     case 'PeriodicalModel':
       return new Periodical({
@@ -59,7 +59,6 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         $createdAt: model.createdAt(),
         $updatedAt: model.updatedAt(),
         $deletedAt: model.deletedAt(),
-        type: model.type.toString(),
         category: model.category,
         title: model.title,
         amount: model.amount,
@@ -76,7 +75,8 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         enabledIn09: !!(model.enabledIn & PeriodicalModel.monthFlags[8]),
         enabledIn10: !!(model.enabledIn & PeriodicalModel.monthFlags[9]),
         enabledIn11: !!(model.enabledIn & PeriodicalModel.monthFlags[10]),
-        enabledIn12: !!(model.enabledIn & PeriodicalModel.monthFlags[11])
+        enabledIn12: !!(model.enabledIn & PeriodicalModel.monthFlags[11]),
+        saving: model.saving
       })
   }
 }

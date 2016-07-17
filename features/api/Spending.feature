@@ -13,7 +13,6 @@ Feature: Spendings
 
     Given this is the request body
     --------------
-    "type": "[type]",
     "category": "[category]",
     "title": "[title]",
     "amount": [amount],
@@ -28,7 +27,6 @@ Feature: Spendings
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
     And "$context" should equal "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending"
     And "$version" should equal 1
-    And "type" should equal "[type]"
     And "category" should equal "[category]"
     And "title" should equal "[title]"
     And "amount" should equal [amount]
@@ -36,22 +34,9 @@ Feature: Spendings
     And "bookedAt" should equal "[bookedAt]"
 
   Where:
-    type     | category | title          | amount | booked | bookedAt
-    spending | Pets     | Cat food       | -12345 | true   | 2015-01-02T00:00:00.000Z
-    spending | Pets     | Dog food       | -5678  | true   | 2015-01-03T00:00:00.000Z
-
-  Scenario: Spendings must be negative
-
-    Given this is the request body
-    --------------
-    "type": "spending",
-    "category": "Pets",
-    "title": "Cat food",
-    "amount": 12345,
-    "booked": false
-    --------------
-    When I POST to {CreateSpendingEndpoint}
-    Then the status code should be 400
+    category | title          | amount | booked | bookedAt
+    Pets     | Cat food       | -12345 | true   | 2015-01-02T00:00:00.000Z
+    Pets     | Dog food       | -5678  | true   | 2015-01-03T00:00:00.000Z
 
   Scenario: Fetch all spendings for the account
 

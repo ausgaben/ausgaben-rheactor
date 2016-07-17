@@ -52,13 +52,13 @@ module.exports = {
     let periodical = new PeriodicalModel(
       cmd.checkingAccount.aggregateId(),
       cmd.author.aggregateId(),
-      cmd.type,
       cmd.category,
       cmd.title,
       cmd.amount,
       cmd.estimate,
       cmd.startsAt,
-      enabledIn
+      enabledIn,
+      cmd.saving
     )
     return repository.add(periodical)
   }

@@ -6,7 +6,6 @@ const expect = require('chai').expect
 const helper = require('../helper')
 const SpendingRepository = require('../../../../server/repository/spending')
 const SpendingModel = require('../../../../server/model/spending')
-const SpendingTypeValue = require('../../../../server/valueobject/spending-type')
 const Promise = require('bluebird')
 const ModelEvent = require('rheactor-event-store/model-event')
 
@@ -20,8 +19,8 @@ describe('SpendingRepository', () => {
   })
 
   it('should persist', (done) => {
-    let spending1 = new SpendingModel('42', '17', new SpendingTypeValue(SpendingTypeValue.INCOME), 'Salary', 'Tanja\'s Salary', 165432, true, new Date('2015-01-01').getTime())
-    let spending2 = new SpendingModel('42', '17', new SpendingTypeValue(SpendingTypeValue.INCOME), 'Salary', 'Markus\'s Salary', 123456, true, new Date('2015-01-02').getTime())
+    let spending1 = new SpendingModel('42', '17', 'Salary', 'Tanja\'s Salary', 165432, true, new Date('2015-01-01').getTime())
+    let spending2 = new SpendingModel('42', '17', 'Salary', 'Markus\'s Salary', 123456, true, new Date('2015-01-02').getTime())
     Promise
       .join(
         spendingRepo.add(spending1),
@@ -39,7 +38,6 @@ describe('SpendingRepository', () => {
             expect(s1.aggregateId()).to.be.above(0)
             expect(s1.checkingAccount).to.equal('42')
             expect(s1.author).to.equal('17')
-            expect(s1.type.toString()).to.equal(SpendingTypeValue.INCOME)
             expect(s1.category).to.equal('Salary')
             expect(s1.title).to.equal('Tanja\'s Salary')
             expect(s1.amount).to.equal(165432)
@@ -48,7 +46,6 @@ describe('SpendingRepository', () => {
             expect(s2.aggregateId()).to.be.above(0)
             expect(s2.checkingAccount).to.equal('42')
             expect(s2.author).to.equal('17')
-            expect(s2.type.toString()).to.equal(SpendingTypeValue.INCOME)
             expect(s2.category).to.equal('Salary')
             expect(s2.title).to.equal('Markus\'s Salary')
             expect(s2.amount).to.equal(123456)

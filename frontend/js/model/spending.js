@@ -15,7 +15,6 @@ function Spending (data) {
   this.$createdAt = undefined
   this.$updatedAt = undefined
   this.$deletedAt = undefined
-  this.type = undefined
   this.category = undefined
   this.title = undefined
   this.amount = undefined

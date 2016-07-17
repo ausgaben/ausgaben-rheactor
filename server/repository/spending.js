@@ -26,11 +26,11 @@ SpendingRepository.prototype.add = function (spending) {
   let data = {
     checkingAccount: spending.checkingAccount,
     author: spending.author,
-    type: spending.type.toString(),
     category: spending.category,
     title: spending.title,
     amount: spending.amount,
-    booked: spending.booked
+    booked: spending.booked,
+    saving: spending.saving
   }
   if (spending.bookedAt) {
     data.bookedAt = spending.bookedAt

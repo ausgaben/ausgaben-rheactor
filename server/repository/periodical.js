@@ -26,13 +26,13 @@ PeriodicalRepository.prototype.add = function (periodical) {
   let data = {
     checkingAccount: periodical.checkingAccount,
     author: periodical.author,
-    type: periodical.type.toString(),
     category: periodical.category,
     title: periodical.title,
     amount: periodical.amount,
     estimate: periodical.estimate,
     startsAt: periodical.startsAt,
-    enabledIn: periodical.enabledIn
+    enabledIn: periodical.enabledIn,
+    saving: periodical.saving
   }
   return self.redis.incrAsync(self.aggregateAlias + ':id')
     .then((aggregateId) => {

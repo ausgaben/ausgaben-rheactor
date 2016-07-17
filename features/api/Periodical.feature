@@ -13,7 +13,6 @@ Feature: Periodicals
 
     Given this is the request body
     --------------
-    "type": "[type]",
     "category": "[category]",
     "title": "[title]",
     "amount": [amount],
@@ -28,7 +27,6 @@ Feature: Periodicals
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
     And "$context" should equal "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Periodical"
     And "$version" should equal 1
-    And "type" should equal "[type]"
     And "category" should equal "[category]"
     And "title" should equal "[title]"
     And "amount" should equal [amount]
@@ -49,11 +47,11 @@ Feature: Periodicals
 
   Where:
 
-    type     | category | title          | amount | startsAt
-    income   | Salary   | Tanja's Salary | 165432 | 2015-01-01T00:00:00.000Z
-    income   | Salary   | Markus' Salary | 123456 | 2015-01-02T00:00:00.000Z
-    spending | Pets     | Cat food       | -12345 | 2015-01-03T00:00:00.000Z
-    spending | Pets     | Dog food       | -23456 | 2015-01-04T00:00:00.000Z
+    category | title          | amount | startsAt
+    Salary   | Tanja's Salary | 165432 | 2015-01-01T00:00:00.000Z
+    Salary   | Markus' Salary | 123456 | 2015-01-02T00:00:00.000Z
+    Pets     | Cat food       | -12345 | 2015-01-03T00:00:00.000Z
+    Pets     | Dog food       | -23456 | 2015-01-04T00:00:00.000Z
 
   Scenario: Fetch all periodicals for the account
 

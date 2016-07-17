@@ -20,6 +20,7 @@ function Spending (data) {
   this.amount = undefined
   this.booked = undefined
   this.bookedAt = undefined
+  this.saving = undefined
 
   if (data) {
     var self = this

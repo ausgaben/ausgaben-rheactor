@@ -53,4 +53,9 @@ SpendingRepository.prototype.add = function (spending) {
     })
 }
 
+SpendingRepository.prototype.findByCheckingAccountId = function (checkingAccountId) {
+  let self = this
+  return self.relation.findByRelatedId('checkingAccount', checkingAccountId)
+}
+
 module.exports = SpendingRepository

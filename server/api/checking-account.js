@@ -10,6 +10,7 @@ const Joi = require('joi')
 const Pagination = require('rheactor-server/util/pagination')
 const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
 const _merge = require('lodash/merge')
+const _reduce = require('lodash/reduce')
 
 /**
  * @param {express.app} app
@@ -17,6 +18,7 @@ const _merge = require('lodash/merge')
  * @param {BackendEmitter} emitter
  * @param {CheckingAccountRepository} checkingAccountRepo
  * @param {CheckingAccountUserRepository} checkingAccountUserRepo
+ * @param {SpendingRepository} spendingRepo
  * @param {UserRepository} userRepo
  * @param {Search} search
  * @param tokenAuth
@@ -24,7 +26,7 @@ const _merge = require('lodash/merge')
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-module.exports = function (app, config, emitter, checkingAccountRepo, checkingAccountUserRepo, userRepo, search, tokenAuth, jsonld, sendHttpProblem, transformer) {
+module.exports = function (app, config, emitter, checkingAccountRepo, checkingAccountUserRepo, spendingRepo, userRepo, search, tokenAuth, jsonld, sendHttpProblem, transformer) {
   /**
    * Search checkingAccounts
    */
@@ -99,13 +101,25 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
     return Promise
       .join(
         checkingAccountRepo.getById(req.params.id),
-        checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
+        checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user),
+        spendingRepo.findByCheckingAccountId(req.params.id).filter(spending => spending.booked)
       )
-      .spread((checkingAccount, checkingAccountUser) => {
+      .spread((checkingAccount, checkingAccountUser, spendings) => {
         if (!checkingAccountUser) {
           throw new AccessDeniedError(req.url, 'Not your checking account!')
         }
-        return res.send(transformer(checkingAccount))
+        const extra =
+          _reduce(spendings, (extra, spending) => {
+            extra.balance += spending.amount
+            if (spending.amount >= 0) extra.income += spending.amount
+            else extra.spendings += spending.amount
+            return extra
+          }, {
+            balance: 0,
+            income: 0,
+            spendings: 0
+          })
+        return res.send(transformer(checkingAccount, extra))
       })
       .catch(sendHttpProblem.bind(null, res))
   })

@@ -13,6 +13,34 @@ const _merge = require('lodash/merge')
 const _reduce = require('lodash/reduce')
 
 /**
+ * @param {SpendingRepository} spendingRepo
+ * @constructor
+ */
+const CheckingAccountSummary = function (spendingRepo) {
+  this.spendingRepo = spendingRepo
+}
+
+/**
+ * @param {CheckingAccountModel} checkingAccount
+ */
+CheckingAccountSummary.prototype.summarize = function (checkingAccount) {
+  const self = this
+  return self.spendingRepo.findByCheckingAccountId(checkingAccount.aggregateId()).filter(spending => spending.booked)
+    .then(
+      spendings => _reduce(spendings, (extra, spending) => {
+        extra.balance += spending.amount
+        if (spending.amount >= 0) extra.income += spending.amount
+        else extra.spendings += spending.amount
+        return extra
+      }, {
+        balance: 0,
+        income: 0,
+        spendings: 0
+      })
+    )
+}
+
+/**
  * @param {express.app} app
  * @param {nconf} config
  * @param {BackendEmitter} emitter
@@ -52,11 +80,20 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
           throw new ValidationFailedError('Validation failed', query, v.error)
         }
 
+        const summary = new CheckingAccountSummary(spendingRepo)
         let pagination = new Pagination(query.offset)
         return search.searchCheckingAccounts(query, pagination)
-          .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, CheckingAccount.$context, jsonld, (checkingAccount) => {
-            return transformer(checkingAccount)
-          }))
+          .then(
+            checkingAccounts => sendPaginatedListResponse(
+              new URIValue(config.get('api_host')),
+              req,
+              res,
+              CheckingAccount.$context,
+              jsonld,
+              checkingAccount => summary.summarize(checkingAccount).then(summary => transformer(checkingAccount, summary)),
+              checkingAccounts
+            )
+          )
       })
       .catch(sendHttpProblem.bind(null, res))
   })
@@ -101,25 +138,15 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
     return Promise
       .join(
         checkingAccountRepo.getById(req.params.id),
-        checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user),
-        spendingRepo.findByCheckingAccountId(req.params.id).filter(spending => spending.booked)
+        checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
       )
-      .spread((checkingAccount, checkingAccountUser, spendings) => {
+      .spread((checkingAccount, checkingAccountUser) => {
         if (!checkingAccountUser) {
           throw new AccessDeniedError(req.url, 'Not your checking account!')
         }
-        const extra =
-          _reduce(spendings, (extra, spending) => {
-            extra.balance += spending.amount
-            if (spending.amount >= 0) extra.income += spending.amount
-            else extra.spendings += spending.amount
-            return extra
-          }, {
-            balance: 0,
-            income: 0,
-            spendings: 0
-          })
-        return res.send(transformer(checkingAccount, extra))
+        const summary = new CheckingAccountSummary(spendingRepo)
+        return summary.summarize(checkingAccount)
+          .then(summary, res.send(transformer(checkingAccount, summary)))
       })
       .catch(sendHttpProblem.bind(null, res))
   })

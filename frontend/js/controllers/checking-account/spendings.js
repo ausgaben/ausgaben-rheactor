@@ -100,7 +100,14 @@ module.exports = (app) => {
             mec.subscribe(event => {
               switch (event.name) {
                 case 'SpendingCreatedEvent':
-                  spendingsCollection.items.push(new Spending(event.entity))
+                  let spending = new Spending(event.entity)
+                  spendingsCollection.items.push(spending)
+                  vm.checkingAccount.balance += spending.amount
+                  if (spending.amount > 0) {
+                    vm.checkingAccount.income += spending.amount
+                  } else {
+                    vm.checkingAccount.spendings += spending.amount
+                  }
                   updateGroupedSpendings()
                   break
               }
@@ -118,7 +125,7 @@ module.exports = (app) => {
           vm.p.activity()
           ClientStorageService.getValidToken()
             .then((token) => {
-              const spending = _merge({}, data, {amount: data.type === 'spending' ? -data.amount : data.amount})
+              const spending = _merge({}, data, {amount: Math.round((data.type === 'spending' ? -data.amount : data.amount) * 100)})
               delete spending.type
               return SpendingService.create(vm.checkingAccount, spending, token)
             })

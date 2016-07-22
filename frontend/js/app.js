@@ -24,7 +24,8 @@ const app = require('angular')
     'FrontendConfigModule',
     'RHeactorDirectiveModule',
     'RHeactorFilterModule',
-    'ausgabenServiceModule',
+    'AusgabenServiceModule',
+    'AusgabenFilterModule',
     'RHeactorServiceModule',
     'RHeactorDecoratorModule',
     'RHeactorModelModule'
@@ -62,6 +63,7 @@ app
     }])
 
 require('./services/index')
+require('./filters/index')
 require('./controllers/index')(app)
 require('rheactor-web-app/js/directives/index')
 require('rheactor-web-app/js/services/index')

@@ -5,7 +5,7 @@ const CheckingAccountService = require('./checking-account')
 const SpendingService = require('./spending')
 
 require('angular')
-  .module('ausgabenServiceModule', [])
+  .module('AusgabenServiceModule', [])
   .factory('APIService', ['FrontendConfig', '$http', (config, $http) => {
     return new APIService(config.apiIndex, config.mimeType, $http)
   }])

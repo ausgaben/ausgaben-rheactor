@@ -146,7 +146,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
         }
         const summary = new CheckingAccountSummary(spendingRepo)
         return summary.summarize(checkingAccount)
-          .then(summary, res.send(transformer(checkingAccount, summary)))
+          .then(summary => res.send(transformer(checkingAccount, summary)))
       })
       .catch(sendHttpProblem.bind(null, res))
   })

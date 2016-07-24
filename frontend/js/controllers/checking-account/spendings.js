@@ -3,11 +3,8 @@
 const waitFor = require('rheactor-web-app/js/util/wait-for')
 const Promise = require('bluebird')
 const Spending = require('../../model/spending')
-const HttpProgress = require('rheactor-web-app/js/util/http').HttpProgress
-const HttpProblem = require('rheactor-web-app/js/model/http-problem')
 const LiveCollection = require('rheactor-web-app/js/util/live-collection')
 const _reduce = require('lodash/reduce')
-const _merge = require('lodash/merge')
 
 module.exports = (app) => {
   app
@@ -25,14 +22,8 @@ module.exports = (app) => {
       ($scope, $state, $window, $timeout, $stateParams, CheckingAccountService, SpendingService, ClientStorageService) => {
         let vm = {
           checkingAccount: null,
-          spendingGroups: [],
-          p: new HttpProgress(),
-          spendingData: {
-            type: 'spending',
-            booked: true,
-            bookedAt: new Date(),
-            saving: false
-          }
+          bookedSpendings: [],
+          pendingSpendings: []
         }
         let spendingsCollection
 
@@ -54,8 +45,6 @@ module.exports = (app) => {
             .then(updateGroupedSpendings)
         }
 
-        let group2entry = {}
-
         function SpendingGroup (title) {
           this.title = title
           this.spendings = []
@@ -70,17 +59,24 @@ module.exports = (app) => {
         }
 
         const updateGroupedSpendings = () => {
-          vm.spendingGroups = []
-          group2entry = {}
+          vm.bookedSpendings = []
+          vm.pendingSpendings = []
+          groupSpendings(vm.bookedSpendings, spending => spending.booked, spendingsCollection.items)
+          groupSpendings(vm.pendingSpendings, spending => !spending.booked, spendingsCollection.items)
+        }
+
+        const groupSpendings = (groupList, filterFunc, spendings) => {
+          const group2entry = {}
           Promise
-            .map(spendingsCollection.items, spending => {
+            .filter(spendings, filterFunc)
+            .map(spending => {
               let group
               if (group2entry[spending.category]) {
                 group = group2entry[spending.category]
               } else {
                 group = new SpendingGroup(spending.category)
                 group2entry[spending.category] = group
-                vm.spendingGroups.push(group)
+                groupList.push(group)
               }
               group.spendings.push(spending)
             })
@@ -117,25 +113,6 @@ module.exports = (app) => {
                 fetchSpendings(SpendingService.findByCheckingAccount.bind(SpendingService, checkingAccount, token), token)
               })
           })
-
-        vm.submit = (data) => {
-          if (vm.p.$active) {
-            return
-          }
-          vm.p.activity()
-          ClientStorageService.getValidToken()
-            .then((token) => {
-              const spending = _merge({}, data, {amount: Math.round((data.type === 'spending' ? -data.amount : data.amount) * 100)})
-              delete spending.type
-              return SpendingService.create(vm.checkingAccount, spending, token)
-            })
-            .then(() => {
-              vm.p.success()
-            })
-            .catch(HttpProblem, (httpProblem) => {
-              vm.p.error(httpProblem)
-            })
-        }
 
         return vm
       }]

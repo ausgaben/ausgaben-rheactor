@@ -4,12 +4,14 @@ const ValidationFailedError = require('rheactor-value-objects/errors/validation-
 const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
 const Spending = require('../../frontend/js/model/spending')
 const CreateSpendingCommand = require('../command/spending/create')
+const UpdateSpendingCommand = require('../command/spending/update')
 const URIValue = require('rheactor-value-objects/uri')
 const Promise = require('bluebird')
 const Joi = require('joi')
 const Pagination = require('rheactor-server/util/pagination')
 const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
 const _merge = require('lodash/merge')
+const checkVersion = require('rheactor-server/api/check-version')
 
 /**
  * @param {express.app} app
@@ -101,14 +103,14 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
               v.value.amount,
               v.value.booked,
               v.value.bookedAt ? new Date(v.value.bookedAt).getTime() : undefined,
-              v.value.spending,
+              v.value.saving,
               user
             )
             return emitter.emit(cmd)
           })
           .then(
             /**
-             * @param {SpendingCreatedEvent} event
+             * @param {SpendingUpdatedEvent} event
              * @returns {*}
              */
             (event) => {
@@ -129,8 +131,73 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
             if (!checkingAccountUser) {
               throw new AccessDeniedError(req.url, 'Not your checking account!')
             }
-            return res.send(transformer(spending))
           })
+          .then(() => res
+            .header('etag', spending.aggregateVersion())
+            .header('last-modified', new Date(spending.modifiedAt()).toUTCString())
+            .send(transformer(spending)))
+      })
+      .catch(sendHttpProblem.bind(null, res))
+  })
+
+  /**
+   * Update a spending
+   */
+  app.put('/api/spending/:id', tokenAuth, function (req, res) {
+    let schema = Joi.object().keys({
+      category: Joi.string().min(1).trim(),
+      title: Joi.string().min(1).trim(),
+      amount: Joi.number().integer(),
+      booked: Joi.boolean(),
+      bookedAt: Joi.date(),
+      saving: Joi.boolean(),
+      paidWith: Joi.string().min(1).trim() // FIXME: Implement
+    })
+    Promise
+      .try(() => {
+        let v = Joi.validate(req.body, schema)
+        if (v.error) {
+          throw new ValidationFailedError('Validation failed', req.body, v.error)
+        }
+        return spendingRepo.getById(req.params.id)
+          .then(spending => {
+            checkVersion(req.headers['if-match'], spending)
+            return spending
+          })
+          .then(spending => Promise
+            .join(
+              checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user),
+              userRepo.getById(req.user)
+            )
+            .spread((checkingAccountUser, user) => {
+              if (!checkingAccountUser) {
+                throw new AccessDeniedError(req.url, 'Not your checking account!')
+              }
+              let cmd = new UpdateSpendingCommand(
+                spending,
+                v.value.category,
+                v.value.title,
+                v.value.amount,
+                v.value.booked,
+                v.value.bookedAt ? new Date(v.value.bookedAt).getTime() : undefined,
+                v.value.saving,
+                user
+              )
+              return emitter.emit(cmd)
+            })
+            .then(
+              /**
+               * @param {SpendingUpdatedEvent} event
+               * @returns {*}
+               */
+              event => res
+                .header('Location', jsonld.createId(Spending.$context, event.aggregateId))
+                .header('etag', spending.aggregateVersion())
+                .header('last-modified', new Date(spending.modifiedAt()).toUTCString())
+                .status(204)
+                .send()
+            )
+          )
       })
       .catch(sendHttpProblem.bind(null, res))
   })

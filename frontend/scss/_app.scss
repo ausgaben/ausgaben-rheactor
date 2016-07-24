@@ -1,6 +1,6 @@
 body.dashboard, body.checking-account {
   .container {
-    margin-top: 50px;
+    margin-top: 2rem;
   }
 }
 
@@ -9,4 +9,12 @@ td, th {
     text-align: right;
     white-space: nowrap;
   }
+}
+
+tr[data-ui-sref] {
+  cursor: pointer;
+}
+
+.card {
+  margin-bottom: 2rem;
 }

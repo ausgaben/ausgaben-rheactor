@@ -31,6 +31,10 @@ function Spending (data) {
   this.$context = Spending.$context
   this.$acceptedEvents = []
   this.$aggregateAlias = 'spending'
+  if (this.bookedAt) this.bookedAt = new Date(this.bookedAt)
+  this.booked = !!this.booked
+  this.saving = !!this.saving
+  this.amount = +this.amount
 }
 Spending.prototype = _create(Aggregate.prototype, {
   'constructor': Spending

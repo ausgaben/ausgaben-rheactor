@@ -6,6 +6,8 @@ const AggregateRoot = require('rheactor-event-store/aggregate-root')
 const PeriodicalModel = require('./periodical')
 const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
 const UnhandledDomainEventError = require('rheactor-value-objects/errors/unhandled-domain-event')
+const SpendingCreatedEvent = require('../event/spending/created')
+const SpendingUpdatedEvent = require('../event/spending/updated')
 
 /**
  * @param {String} checkingAccount
@@ -89,7 +91,7 @@ SpendingModel.prototype.applyEvent = function (event) {
   let self = this
   let data = event.data
   switch (event.name) {
-    case 'SpendingCreatedEvent':
+    case SpendingCreatedEvent.name:
       self.checkingAccount = data.checkingAccount
       self.author = data.author
       self.category = data.category
@@ -100,10 +102,37 @@ SpendingModel.prototype.applyEvent = function (event) {
       self.saving = data.saving
       this.persisted(event.aggregateId, event.createdAt)
       break
+    case SpendingUpdatedEvent.name:
+      for (let field in self) {
+        if (self.hasOwnProperty(field) && data[field] !== undefined) {
+          self[field] = data[field]
+        }
+      }
+      this.updated(event.createdAt)
+      break
     default:
       console.error('Unhandled SpendingModel event', event.name)
       throw new UnhandledDomainEventError(event.name)
   }
+}
+
+SpendingModel.prototype.update = function (data) {
+  let self = this
+  const updateData = {}
+  // FIXME: Implement: paidWith
+  let changed = false
+  for (let field in self) {
+    if (self.hasOwnProperty(field) && data[field] !== undefined && self[field] !== data[field]) {
+      updateData[field] = data[field]
+      self[field] = data[field]
+      changed = true
+    }
+  }
+  if (!changed) {
+    throw new ValidationFailedError('Spending unchanged', data)
+  }
+  self.updated()
+  return new SpendingUpdatedEvent({aggregateId: self.aggregateId(), data: updateData})
 }
 
 module.exports = SpendingModel

@@ -41,9 +41,46 @@ SpendingService.prototype.create = function (checkingAccount, spending, token) {
       return GenericAPIService.prototype.create.call(
         self,
         jsonld.getRelLink('create-spending', checkingAccount),
-        spending,
+        {
+          category: spending.category,
+          title: spending.title,
+          amount: spending.amount,
+          booked: spending.booked,
+          bookedAt: spending.bookedAt,
+          saving: spending.saving,
+          paidWith: spending.paidWith
+        },
         token
       )
+    })
+}
+
+/**
+ * @param {Spending} spending
+ * @param {JsonWebToken} token
+ * @return {Promise.<List>}
+ */
+SpendingService.prototype.update = function (spending, token) {
+  let self = this
+  return GenericAPIService.prototype.update.call(
+    self,
+    spending.$id,
+    {
+      category: spending.category,
+      title: spending.title,
+      amount: spending.amount,
+      booked: spending.booked,
+      bookedAt: spending.bookedAt,
+      saving: spending.saving,
+      paidWith: spending.paidWith
+    },
+    spending.$version,
+    token
+  )
+    .then((response) => {
+      let lastModified = new Date(response.headers('Last-Modified')).getTime()
+      let version = +response.headers('etag')
+      spending.updated(lastModified, version)
     })
 }
 

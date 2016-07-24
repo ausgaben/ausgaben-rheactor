@@ -1,28 +1,60 @@
 <nav class="collapse navbar-expandable-top hidden-md-up" id="navbar-mobile" aria-expanded="false" style="height: 0px;"
      data-ng-controller="NavigationController as vm">
   <div class="container-fluid bg-inverse p-a-1">
-    <hr data-ng-show="vm.authenticated">
-    <p class="nav-section" data-ng-show="vm.authenticated">
+    <p class="nav-section" data-ng-if="vm.onState('checking-account')">
+      <i class="material-icons">account_balance_wallet</i>
+      <span>%%checkingAccount.name%%</span>
+    </p>
+    <a class="nav-link"
+       data-ui-sref="checking-account.add-spending({identifier: vm.stateParams.identifier})"
+       data-ng-if="vm.onState('checking-account.spendings')"
+       data-toggle="collapse"
+       data-target="#navbar-mobile"
+       aria-expanded="true">
+      <i class="material-icons">add_circle_outline</i>
+      <span>Add spending</span>
+    </a>
+    <a class="nav-link"
+       data-ui-sref="checking-account.spendings({identifier: vm.stateParams.identifier})"
+       data-ng-if="vm.onState('checking-account') && !vm.onState('checking-account.spendings')"
+       data-toggle="collapse"
+       data-target="#navbar-mobile"
+       aria-expanded="true">
+      <i class="material-icons">account_balance_wallet</i>
+      <span>Spendings</span>
+    </a>
+    <hr data-ng-if="vm.onState('checking-account')">
+    <a class="nav-link"
+       data-ui-sref="dashboard"
+       data-ng-if="vm.authenticated"
+       data-toggle="collapse"
+       data-target="#navbar-mobile"
+       aria-expanded="true">
+      <i class="material-icons">account_balance_wallet</i>
+      <span>Accounts</span>
+    </a>
+    <hr data-ng-if="vm.authenticated">
+    <p class="nav-section" data-ng-if="vm.authenticated">
       <i class="material-icons">account_circle</i>
       <span>%%vm.me.firstname%%</span>
     </p>
-    <a class="nav-link" data-ui-sref="account.avatar" data-ng-show="vm.authenticated"
+    <a class="nav-link" data-ui-sref="account.avatar" data-ng-if="vm.authenticated"
        data-toggle="collapse"
        data-target="#navbar-mobile"
        aria-expanded="true">
       <i class="material-icons">photo</i>
       <span>Change avatar</span>
     </a>
-    <hr data-ng-show="vm.authenticated">
-    <a class="nav-link" data-ng-click="vm.refreshToken()" data-ng-show="vm.authenticated"
+    <hr data-ng-if="vm.authenticated">
+    <a class="nav-link" data-ng-click="vm.refreshToken()" data-ng-if="vm.authenticated"
        data-toggle="collapse"
        data-target="#navbar-mobile"
        aria-expanded="true">
-      <i class="material-icons" data-ng-show="(vm.tokenLifetime)>0">schedule</i>
-      <i class="material-icons" data-ng-show="(vm.tokenLifetime)<=0">warning</i>
+      <i class="material-icons" data-ng-if="(vm.tokenLifetime)>0">schedule</i>
+      <i class="material-icons" data-ng-if="(vm.tokenLifetime)<=0">warning</i>
       <span>Auto-logout in: %%vm.tokenLifetimeHuman%%. Click here to prolong.</span>
     </a>
-    <a class="nav-link" data-ui-sref="logout" data-ng-show="vm.authenticated"
+    <a class="nav-link" data-ui-sref="logout" data-ng-if="vm.authenticated"
        data-toggle="collapse"
        data-target="#navbar-mobile"
        aria-expanded="true">
@@ -50,8 +82,34 @@
     <img src="/img/logo.svg?v=<%= data.version %>-<%= data.deployVersion %>" alt="<%= data.name %>" width="30" height="30">
     Ausgaben <small>v<%= data.version %></small>
   </span>
+  <ul class="nav navbar-nav hidden-sm-down">
+    <li class="nav-item"
+        data-ng-if="vm.onState('checking-account.spendings')"
+    >
+      <a class="nav-link" data-ui-sref="checking-account.add-spending({identifier: vm.stateParams.identifier})">
+        <i class="material-icons">add_circle_outline</i>
+        <span>Add spending</span>
+      </a>
+    </li>
+    <li class="nav-item"
+        data-ng-if="vm.onState('checking-account') && !vm.onState('checking-account.spendings')"
+    >
+      <a class="nav-link" data-ui-sref="checking-account.spendings({identifier: vm.stateParams.identifier})">
+        <i class="material-icons">account_balance_wallet</i>
+        <span>%%checkingAccount.name%%</span>
+      </a>
+    </li>
+    <li class="nav-item"
+        data-ng-if="vm.authenticated"
+        data-ng-class="{active: vm.onState('dashboard')}">
+      <a class="nav-link" data-ui-sref="dashboard" title="Accounts">
+        <i class="material-icons">account_balance_wallet</i>
+        <span class="hidden-md-down">Accounts</span>
+      </a>
+    </li>
+  </ul>
   <ul class="nav navbar-nav hidden-sm-down" id="metanav">
-    <li class="nav-item btn-group" data-ng-show="vm.authenticated"
+    <li class="nav-item btn-group" data-ng-if="vm.authenticated"
         data-ng-class="{active: vm.onState('me') || vm.onState('account')}">
       <a class="nav-link dropdown-toggle" data-toggle="dropdown" id="accountMenu" aria-haspopup="true"
          aria-expanded="false" title="%%vm.me.firstname || 'Anonymous'%%">
@@ -67,7 +125,7 @@
         </a>
       </div>
     </li>
-    <li class="nav-item" data-ng-show="vm.authenticated" title="Logout">
+    <li class="nav-item" data-ng-if="vm.authenticated" title="Logout">
       <a class="nav-link" data-ui-sref="logout">
         <i class="material-icons">power_settings_new</i>
         <span class="hidden-md-down">Logout</span>

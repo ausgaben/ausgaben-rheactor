@@ -18,5 +18,17 @@ module.exports = (app) => {
           controllerAs: 'vm',
           controller: 'CheckingAccountSpendingsController'
         })
+        .state('checking-account.add-spending', {
+          url: '/add-spending',
+          templateUrl: '/view/checking-account-spending.html',
+          controllerAs: 'vm',
+          controller: 'CheckingAccountSpendingController'
+        })
+        .state('checking-account.edit-spending', {
+          url: '/spending/:spending_id',
+          templateUrl: '/view/checking-account-spending.html',
+          controllerAs: 'vm',
+          controller: 'CheckingAccountSpendingController'
+        })
     }])
 }

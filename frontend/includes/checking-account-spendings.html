@@ -1,4 +1,4 @@
-<section class="col-xs-12 col-lg-7">
+<section class="col-xs-12 col-lg-6">
   <div class="card">
     <div class="card-header">
       <h1 class="card-title">
@@ -7,44 +7,18 @@
       </h1>
     </div>
     <div class="card-block">
-      <table class="table">
-        <colgroup>
-          <col width="10%">
-          <col>
-          <col width="10%">
-        </colgroup>
-        <thead>
-        <tr>
-          <th colspan="3">Summary</th>
-        </tr>
-        </thead>
-        <tfoot>
-        <tr>
-          <th colspan="2">Total</th>
-          <th class="money">%%checkingAccount.balance|money%%</th>
-        </tr>
-        </tfoot>
-        <tbody>
-        <tr>
-          <td colspan="2">
-            Income
-          </td>
-          <td class="money">
-            %%checkingAccount.income|money%%
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            Spendings
-          </td>
-          <td class="money">
-            %%checkingAccount.spendings|money%%
-          </td>
-        </tr>
-        </tbody>
-      </table>
-
-      <table class="table" data-ng-repeat="group in vm.spendingGroups">
+      <a class="btn btn-primary control" data-ui-sref="checking-account.add-spending({identifier: checkingAccount.identifier})">
+        <i class="material-icons">add_circle_outline</i>
+        <span>Add …</span>
+      </a>
+    </div>
+    <div class="card-block" data-ng-if="!vm.bookedSpendings.length">
+      <p>
+        No spendings recorded, yet!
+      </p>
+    </div>
+    <div class="card-block spendings">
+      <table class="table" data-ng-repeat="group in vm.bookedSpendings">
         <colgroup>
           <col width="10%">
           <col>
@@ -57,12 +31,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt'">
+        <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt'" data-ui-sref="checking-account.edit-spending({identifier: checkingAccount.identifier, spending_id: (spending|idparam)})">
           <td>
             %%spending.bookedAt|date:'dd.MM.'%%
           </td>
           <td>
-            %%spending.title%%
+              %%spending.title%%
+              <i class="material-icons" title="Saving" data-ng-if="spending.saving">trending_up</i>
           </td>
           <td class="money">
             %%spending.amount|money%%
@@ -71,235 +46,81 @@
         </tbody>
       </table>
     </div>
-    <div class="card-footer">
+    <div class="card-footer spendings" data-ng-if="vm.bookedSpendings.length">
+      <table class="table">
+        <colgroup>
+          <col>
+          <col width="10%">
+        </colgroup>
+        <thead>
+        <tr>
+          <th colspan="2">Summary</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+          <th>Total</th>
+          <th class="money">%%checkingAccount.balance|money%%</th>
+        </tr>
+        </tfoot>
+        <tbody>
+        <tr>
+          <td>
+            Income
+          </td>
+          <td class="money">
+            %%checkingAccount.income|money%%
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Spendings
+          </td>
+          <td class="money">
+            %%checkingAccount.spendings|money%%
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
-<section class="col-xs-12 col-lg-5">
-  <form name="form" class="card">
+<section class="col-xs-12 col-lg-6" data-ng-if="vm.pendingSpendings.length">
+  <div class="card">
     <div class="card-header">
-      <h2 class="card-title" data-ng-switch="vm.spendingData.type">
-        Add
-        <span data-ng-switch-when="spending">spending</span>
-        <span data-ng-switch-when="income">income</span>
-        …
-        <i class="material-icons" data-ng-hide="vm.p.$success">add_circle_outline</i>
-        <i class="material-icons success" data-ng-show="vm.p.$success">check_circle</i>
+      <h2 class="card-title">
+        Pending
+        <i class="material-icons">watch_later</i>
       </h2>
     </div>
-    <div class="card-block">
-      <fieldset class="form-group">
-        <label>
-          Type
-        </label>
-        <div class="btn-group type" role="group" data-toggle="buttons" aria-label="Type">
-          <label class="btn" data-ng-click="vm.spendingData.type = 'spending'" data-ng-class="{'btn-danger': vm.spendingData.type === 'spending', 'btn-secondary': vm.spendingData.type !== 'spending'}">
-            <input
-              type="radio"
-              tabindex="1"
-              data-ng-model="vm.spendingData.type"
-              data-ng-disabled="vm.p.$active"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="spending"
-            > <i class="material-icons" data-ng-if="vm.spendingData.type === 'spending'">check</i><span>Spending</span>
-          </label>
-          <label class="btn" data-ng-click="vm.spendingData.type = 'income'" data-ng-class="{'btn-success': vm.spendingData.type === 'income', 'btn-secondary': vm.spendingData.type !== 'income'}">
-            <input
-              type="radio"
-              tabindex="2"
-              data-ng-model="vm.spendingData.type"
-              data-ng-disabled="vm.p.$active"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="income"
-            >
-            <i class="material-icons" data-ng-if="vm.spendingData.type === 'income'">check</i><span>Income</span>
-          </label>
-        </div>
-      </fieldset>
-      <fieldset class="form-group">
-        <label for="category">Category</label>
-        <input tabindex="3"
-               class="form-control"
-               type="text"
-               id="category"
-               required
-               bootstrap-error-states
-               data-ng-model="vm.spendingData.category"
-               data-ng-disabled="vm.p.$active"
-               name="category"
-        />
-      </fieldset>
-      <fieldset class="form-group">
-        <label for="title">Title</label>
-        <input tabindex="4"
-               class="form-control"
-               type="text"
-               id="title"
-               required
-               bootstrap-error-states
-               data-ng-model="vm.spendingData.title"
-               data-ng-disabled="vm.p.$active"
-               name="title"
-        />
-      </fieldset>
-      <fieldset class="form-group">
-        <label for="amount">Amount</label>
-        <input tabindex="5"
-               class="form-control"
-               type="number"
-               id="amount"
-               required
-               bootstrap-error-states
-               data-ng-model="vm.spendingData.amount"
-               data-ng-disabled="vm.p.$active"
-               data-ng-min="0"
-               name="amount"
-        />
-      </fieldset>
-      <fieldset class="form-group">
-        <label>Booked</label>
-        <div class="btn-group" role="group" data-toggle="buttons" aria-label="Booked">
-          <label class="btn" data-ng-click="vm.spendingData.booked = true" data-ng-class="{'btn-success': vm.spendingData.booked, 'btn-secondary': !vm.spendingData.booked}">
-            <input
-              type="radio"
-              tabindex="6"
-              data-ng-model="vm.spendingData.booked"
-              data-ng-disabled="vm.p.$active"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="1"
-            > <i class="material-icons" data-ng-if="vm.spendingData.booked">check</i><span>Yes</span>
-          </label>
-          <label class="btn" data-ng-click="vm.spendingData.booked = false" data-ng-class="{'btn-danger': !vm.spendingData.booked, 'btn-secondary': vm.spendingData.booked}">
-            <input
-              type="radio"
-              tabindex="7"
-              data-ng-model="vm.spendingData.booked"
-              data-ng-disabled="vm.p.$active"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="0"
-            > <i class="material-icons" data-ng-if="!vm.spendingData.booked">check</i><span>No</span>
-          </label>
-        </div>
-      </fieldset>
-      <fieldset class="form-group">
-        <label for="bookedAt">Booked at</label>
-        <input tabindex="8"
-               class="form-control"
-               type="date"
-               id="bookedAt"
-               data-ng-required="vm.spendingData.booked"
-               bootstrap-error-states
-               data-ng-model="vm.spendingData.bookedAt"
-               data-ng-disabled="vm.p.$active"
-               name="bookedAt"
-        />
-      </fieldset>
-      <!-- fieldset class="form-group">
-        <label>Paid with</label>
-        <div class="btn-group" role="group" data-toggle="buttons" aria-label="Paid with">
-          <label class="btn btn-secondary" data-ng-click="vm.spendingData.paidWith = 'bar'">
-            <input
-              type="radio"
-              tabindex="9"
-              data-ng-model="vm.spendingData.paidWith"
-              data-ng-disabled="vm.p.$active || vm.spendingData.type !== 'spending'"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="bar"
-            > <i class="material-icons" data-ng-if="vm.spendingData.paidWith === 'bar'">check</i><span>Bar</span>
-          </label>
-          <label class="btn btn-secondary" data-ng-click="vm.spendingData.paidWith = 'CC-M'">
-            <input
-              type="radio"
-              tabindex="10"
-              data-ng-model="vm.spendingData.paidWith"
-              data-ng-disabled="vm.p.$active || vm.spendingData.type !== 'spending'"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="CC-M"
-            > <i class="material-icons" data-ng-if="vm.spendingData.paidWith === 'CC-M'">check</i><span>CC-M</span>
-          </label>
-          <label class="btn btn-secondary" data-ng-click="vm.spendingData.paidWith = 'CC-T'">
-            <input
-              type="radio"
-              tabindex="11"
-              data-ng-model="vm.spendingData.paidWith"
-              data-ng-disabled="vm.p.$active || vm.spendingData.type !== 'spending'"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="CC-T"
-            > <i class="material-icons" data-ng-if="vm.spendingData.paidWith === 'CC-T'">check</i><span>CC-T</span>
-          </label>
-        </div>
-      </fieldset -->
-      <fieldset class="form-group">
-        <label>Saving</label>
-        <div class="btn-group" role="group" data-toggle="buttons" aria-label="Saving">
-          <label class="btn" data-ng-click="vm.spendingData.saving = true" data-ng-class="{'btn-success': vm.spendingData.saving, 'btn-secondary': !vm.spendingData.saving}">
-            <input
-              type="radio"
-              tabindex="12"
-              data-ng-model="vm.spendingData.saving"
-              data-ng-disabled="vm.p.$active"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="1"
-            > <i class="material-icons" data-ng-if="vm.spendingData.saving">check</i><span>Yes</span>
-          </label>
-          <label class="btn" data-ng-click="vm.spendingData.saving = false" data-ng-class="{'btn-danger': !vm.spendingData.saving, 'btn-secondary': vm.spendingData.saving}">
-            <input
-              type="radio"
-              tabindex="13"
-              data-ng-model="vm.spendingData.saving"
-              data-ng-disabled="vm.p.$active"
-              required
-              bootstrap-error-states
-              autocomplete="off"
-              name="type"
-              value="0"
-            > <i class="material-icons" data-ng-if="!vm.spendingData.saving">check</i><span>No</span>
-          </label>
-        </div>
-      </fieldset>
+    <div class="card-block spendings">
+      <table class="table" data-ng-repeat="group in vm.pendingSpendings">
+        <colgroup>
+          <col width="10%">
+          <col>
+          <col width="10%">
+        </colgroup>
+        <thead>
+        <tr>
+          <th colspan="2">%%group.title%%</th>
+          <th class="money">%%group.total()|money%%</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt'" data-ui-sref="checking-account.edit-spending({identifier: checkingAccount.identifier, spending_id: (spending|idparam)})">
+          <td>
+            %%spending.bookedAt|date:'dd.MM.'%%
+          </td>
+          <td>
+            %%spending.title%%
+            <i class="material-icons" title="Saving" data-ng-if="spending.saving">trending_up</i>
+          </td>
+          <td class="money">
+            %%spending.amount|money%%
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
-    <div class="card-footer">
-      <div class="controls">
-        <button tabindex="14" type="submit" class="btn btn-primary" data-ng-disabled="form.$invalid || vm.p.$active" data-ng-click="vm.submit(vm.spendingData);">
-          <i class="material-icons" data-ng-show="(form.$invalid) && !vm.p.$active">block</i>
-          <i class="material-icons" data-ng-show="!(form.$invalid || vm.p.$active) && vm.p.$pristine">send</i>
-          <i class="material-icons spin" data-ng-show="vm.p.$active">hourglass_empty</i>
-          <i class="material-icons" data-ng-show="!(form.$invalid || vm.p.$active) && vm.p.$success">check_ok</i>
-          <i class="material-icons" data-ng-show="!(form.$invalid || vm.p.$active) && vm.p.$error">error</i>
-          <span>Create</span>
-        </button>
-      </div>
-      <div data-ng-show="vm.p.$error" class="error-info">
-        <div class="alert alert-danger" role="alert">
-          <i class="material-icons">error</i>
-          %%vm.p.$problem.title%%<br>
-          <small>%%vm.p.$problem.detail%%</small>
-        </div>
-      </div>
-    </div>
-  </form>
+  </div>
 </section>

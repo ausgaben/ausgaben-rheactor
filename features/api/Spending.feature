@@ -48,6 +48,7 @@ Feature: Spendings
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
     And a list of "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending" with 4 of 4 items should be returned
     And "title" of the 1st item should equal "Cat food"
+    And I store "$id" of the 4th item as "tanjasSalarySpending"
 
   Scenario: Fetch summary for the account
 
@@ -55,3 +56,19 @@ Feature: Spendings
     Then "spendings" should equal -18023
     Then "income" should equal 1234
     Then "balance" should equal -16789
+
+  Scenario: Update spending
+
+    Given this is the request body
+    --------------
+    "title": "Tanja's Salary for April 2015",
+    "booked": true
+    --------------
+    And "1" is the If-Match header
+    When I PUT to {tanjasSalarySpending}
+    Then the status code should be 204
+    When I GET {tanjasSalarySpending}
+    Then "$version" should equal 2
+    And "title" should equal "Tanja's Salary for April 2015"
+    And "booked" should equal true
+    And "amount" should equal 4321

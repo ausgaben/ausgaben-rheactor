@@ -27,7 +27,7 @@ module.exports = (app, config, repositories, search, emitter) => {
     res.header('X-Ausgaben-version', version)
     res.header('X-Ausgaben-deployVersion', deployVersion)
     res.header('X-Ausgaben-environment', environment)
-    res.header('X-Made-By', 'Markus Tacker | https://cto.hiv/')
+    res.header('X-Made-By', 'Markus Tacker | https://coderbyheart.com/')
     res.header('X-GitHub', 'https://github.com/ausgaben/ausgaben-rheactor')
     next()
   })

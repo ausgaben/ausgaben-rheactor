@@ -66,14 +66,8 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
     })
     Promise
       .try(() => {
-        let query = _merge(
-          {},
-          {
-            user: req.user
-          },
-          req.body,
-          req.query
-        )
+        let query = _merge({}, req.body, req.query)
+        query.user = req.user
 
         let v = Joi.validate(query, schema)
         if (v.error) {

@@ -9,6 +9,7 @@ const URIValue = require('rheactor-value-objects/uri')
 const CheckingAccount = require('../../frontend/js/model/checking-account')
 const Spending = require('../../frontend/js/model/spending')
 const Periodical = require('../../frontend/js/model/periodical')
+const Report = require('../../frontend/js/model/report')
 
 /**
  * @param apiHost
@@ -41,6 +42,7 @@ module.exports = function (apiHost) {
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/spending'), Spending.$context, 'create-spending')
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/search/periodical'), Periodical.$context, 'periodicals', true)
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/periodical'), Periodical.$context, 'create-periodical')
+  relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/report'), Report.$context)
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/stream'), null, 'stream')
 
   return relations

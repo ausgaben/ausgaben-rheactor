@@ -52,7 +52,10 @@ Feature: Spendings
 
   Scenario: Fetch summary for the account
 
-    When I GET {createdCheckingAccount}
+    When I POST to {createdCheckingAccountReport}
+    Then the status code should be 200
+    And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
+    And "$context" should equal "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Report"
     Then "spendings" should equal -18023
     Then "income" should equal 1234
     Then "balance" should equal -16789

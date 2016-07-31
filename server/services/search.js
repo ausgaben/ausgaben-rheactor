@@ -2,6 +2,8 @@
 
 const Promise = require('bluebird')
 const CheckingAccountUserCreatedEvent = require('../event/checking-account-user/created')
+const SpendingBookedAtIndex = require('./index/spending-bookedat')
+const _intersection = require('lodash/intersection')
 
 /**
  * The search service knows about the various repositories and how to use their indices to optimize the search
@@ -14,9 +16,11 @@ const CheckingAccountUserCreatedEvent = require('../event/checking-account-user/
  * @constructor
  */
 function Search (repositories, redis, emitter) {
+  const self = this
   Object.defineProperty(this, 'repositories', {value: repositories})
   Object.defineProperty(this, 'redis', {value: redis})
   Object.defineProperty(this, 'emitter', {value: emitter})
+  self.spendingBookedAtIndex = new SpendingBookedAtIndex(repositories, redis, emitter)
   emitter.on(emitter.toEventName(CheckingAccountUserCreatedEvent),
     /**
      * @param {CheckingAccountUserCreatedEvent} event
@@ -69,6 +73,13 @@ Search.prototype.searchSpendings = function (query, pagination) {
   return Promise
     .resolve(self.redis.sinterAsync.apply(self.redis, sets))
     .then((ids) => {
+      if (!query.dateFrom && !query.dateTo) return ids
+      const from = query.dateFrom ? new Date(query.dateFrom).getTime() : false
+      const to = query.dateTo ? new Date(query.dateTo).getTime() : false
+      return self.spendingBookedAtIndex.range(query.checkingAccount, from, to)
+        .then(dateIds => _intersection(dateIds, ids))
+    })
+    .then(ids => {
       total = ids.length
       return pagination.splice(ids)
     })

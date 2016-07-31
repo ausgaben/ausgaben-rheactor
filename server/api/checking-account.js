@@ -10,35 +10,6 @@ const Joi = require('joi')
 const Pagination = require('rheactor-server/util/pagination')
 const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
 const _merge = require('lodash/merge')
-const _reduce = require('lodash/reduce')
-
-/**
- * @param {SpendingRepository} spendingRepo
- * @constructor
- */
-const CheckingAccountSummary = function (spendingRepo) {
-  this.spendingRepo = spendingRepo
-}
-
-/**
- * @param {CheckingAccountModel} checkingAccount
- */
-CheckingAccountSummary.prototype.summarize = function (checkingAccount) {
-  const self = this
-  return self.spendingRepo.findByCheckingAccountId(checkingAccount.aggregateId()).filter(spending => spending.booked)
-    .then(
-      spendings => _reduce(spendings, (extra, spending) => {
-        extra.balance += spending.amount
-        if (spending.amount >= 0) extra.income += spending.amount
-        else extra.spendings += spending.amount
-        return extra
-      }, {
-        balance: 0,
-        income: 0,
-        spendings: 0
-      })
-    )
-}
 
 /**
  * @param {express.app} app
@@ -74,7 +45,6 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
           throw new ValidationFailedError('Validation failed', query, v.error)
         }
 
-        const summary = new CheckingAccountSummary(spendingRepo)
         let pagination = new Pagination(query.offset)
         return search.searchCheckingAccounts(query, pagination)
           .then(
@@ -84,7 +54,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
               res,
               CheckingAccount.$context,
               jsonld,
-              checkingAccount => summary.summarize(checkingAccount).then(summary => transformer(checkingAccount, summary)),
+              checkingAccount => transformer(checkingAccount),
               checkingAccounts
             )
           )
@@ -138,9 +108,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
         if (!checkingAccountUser) {
           throw new AccessDeniedError(req.url, 'Not your checking account!')
         }
-        const summary = new CheckingAccountSummary(spendingRepo)
-        return summary.summarize(checkingAccount)
-          .then(summary => res.send(transformer(checkingAccount, summary)))
+        return res.send(transformer(checkingAccount))
       })
       .catch(sendHttpProblem.bind(null, res))
   })

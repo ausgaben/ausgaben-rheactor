@@ -17,9 +17,6 @@ function CheckingAccount (data) {
   this.$deletedAt = undefined
   this.identifier = undefined
   this.name = undefined
-  this.balance = undefined
-  this.income = undefined
-  this.spendings = undefined
 
   if (data) {
     var self = this

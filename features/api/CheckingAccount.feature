@@ -32,6 +32,7 @@ Feature: CheckingAccount
     And I store the link to "create-spending" as "CreateSpendingEndpoint"
     And I store the link to "create-periodical" as "CreatePeriodicalEndpoint"
     And I store the link to the list "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Periodical" as "ListPeriodicalsEndpoint"
+    And I store the link of "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Report" as "createdCheckingAccountReport"
 
   Scenario: List all my accounts
 

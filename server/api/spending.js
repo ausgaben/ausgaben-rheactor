@@ -31,35 +31,39 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   /**
    * Search spendings in the given checking account
    */
-  app.post('/api/checking-account/:id/search/spending', tokenAuth, function (req, res) {
-    return checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
-      .then((checkingAccountUser) => {
-        if (!checkingAccountUser) {
-          throw new AccessDeniedError(req.url, 'Not your checking account!')
-        }
-        let schema = Joi.object().keys({
-          checkingAccount: Joi.number().min(1),
-          offset: Joi.number().min(0)
-        })
-        return Promise
-          .try(() => {
-            let query = _merge({}, req.body, req.query)
-            query.checkingAccount = req.params.id
-
-            let v = Joi.validate(query, schema)
-            if (v.error) {
-              throw new ValidationFailedError('Validation failed', query, v.error)
-            }
-
-            let pagination = new Pagination(query.offset)
-            return search.searchSpendings(query, pagination)
-              .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, Spending.$context, jsonld, (spending) => {
-                return transformer(spending)
-              }))
-          })
+  app.post('/api/checking-account/:id/search/spending', tokenAuth, (req, res) => Promise
+    .try(() => {
+      const schema = Joi.object().keys({
+        dateFrom: Joi.date(),
+        dateTo: Joi.date(),
+        checkingAccount: Joi.number().min(1),
+        offset: Joi.number().min(0)
       })
-      .catch(sendHttpProblem.bind(null, res))
-  })
+
+      const query = _merge({}, req.body, req.query)
+      query.checkingAccount = req.params.id
+
+      const v = Joi.validate(query, schema)
+      if (v.error) {
+        throw new ValidationFailedError('Validation failed', query, v.error)
+      }
+
+      return checkingAccountUserRepo.findByCheckingAccountId(req.params.id)
+        .filter(checkingAccountUser => checkingAccountUser.user === req.user)
+        .then(checkingAccountUser => {
+          if (!checkingAccountUser) {
+            throw new AccessDeniedError(req.url, 'Not your checking account!')
+          }
+
+          let pagination = new Pagination(query.offset)
+          return search.searchSpendings(query, pagination)
+            .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, Spending.$context, jsonld, (spending) => {
+              return transformer(spending)
+            }))
+        })
+    })
+    .catch(sendHttpProblem.bind(null, res))
+  )
 
   /**
    * Create a spending in the given checking account

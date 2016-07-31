@@ -5,6 +5,7 @@ const util = require('util')
 const CheckingAccount = require('../../frontend/js/model/checking-account')
 const Spending = require('../../frontend/js/model/spending')
 const Periodical = require('../../frontend/js/model/periodical')
+const Report = require('../../frontend/js/model/report')
 const PeriodicalModel = require('../model/periodical')
 
 /**
@@ -34,10 +35,7 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         $updatedAt: model.updatedAt(),
         $deletedAt: model.deletedAt(),
         identifier: model.aggregateId(),
-        name: model.name,
-        balance: extra.balance,
-        income: extra.income,
-        spendings: extra.spendings
+        name: model.name
       })
     case 'SpendingModel':
       return new Spending({
@@ -54,7 +52,7 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         bookedAt: model.bookedAt ? new Date(model.bookedAt) : undefined,
         saving: model.saving
       })
-    case 'PeriodicalModel':
+    case PeriodicalModel.name:
       return new Periodical({
         $id: jsonld.createId(Spending.$context, model.aggregateId()),
         $version: model.aggregateVersion(),
@@ -81,7 +79,16 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         enabledIn12: !!(model.enabledIn & PeriodicalModel.monthFlags[11]),
         saving: model.saving
       })
+    case 'ReportModel':
+      return new Report({
+        balance: model.balance,
+        income: model.income,
+        spendings: model.spendings,
+        checkingAccount: {
+          $context: CheckingAccount.$context,
+          $id: jsonld.createId(CheckingAccount.$context, model.checkingAccount)
+        }
+      })
   }
 }
-
 module.exports = AusgabenModelTransformer

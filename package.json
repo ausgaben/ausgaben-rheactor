@@ -36,7 +36,7 @@
     "angular-ui-router": "^0.3.1",
     "angular-validation-match": "^1.9.0",
     "bluebird": "^3.4.1",
-    "bootstrap": "4.0.0-alpha.2",
+    "bootstrap": "4.0.0-alpha.3",
     "browserify": "^13.1.0",
     "browserify-shim": "^3.8.12",
     "colors": "^1.1.2",
@@ -60,7 +60,7 @@
     "rheactor-event-store": "^3.1.0",
     "rheactor-server": "^3.5.2",
     "rheactor-value-objects": "^2.0.0",
-    "rheactor-web-app": "^2.4.5",
+    "rheactor-web-app": "^2.5.0",
     "showdown": "^1.4.2",
     "tcomb": "^3.2.9",
     "template-mailer-aws-lambda-client": "^1.0.0",
@@ -154,7 +154,8 @@
         "tether",
         "jquery"
       ]
-    }
+    },
+    "tether": "tether"
   },
   "aliasify": {
     "aliases": {

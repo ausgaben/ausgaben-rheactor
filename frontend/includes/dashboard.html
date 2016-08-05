@@ -35,9 +35,15 @@
             </span>
           </div>
           <a data-ui-sref="checking-account({identifier: account.identifier})"
-             class="list-group-item" data-ng-repeat="account in vm.paginatedList.items">
+             class="list-group-item account" data-ng-repeat="account in vm.paginatedList.items">
             <span>%%account.name%%</span>
+            <span class="money" data-ng-if="account.report">%%account.report.balance|money%%</span>
+            <span class="money" data-ng-if="!account.report">&mdash;</span>
           </a>
+          <div class="list-group-item account">
+            <span>Total</span>
+            <span class="money">%%vm.balance|money%%</span>
+          </div>
         </div>
       </div>
     </section>

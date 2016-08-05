@@ -13,7 +13,7 @@ module.exports = {
    * @return {Promise.<CheckingAccountCreatedEvent>}
    */
   handler: (emitter, repository, cmd) => {
-    let checkingAccount = new CheckingAccountModel(cmd.name)
+    let checkingAccount = new CheckingAccountModel(cmd.name, cmd.monthly)
     return repository.add(checkingAccount)
       .then((event) => {
         emitter.emit(new CreateCheckingAccountUserCommand(checkingAccount, cmd.author))

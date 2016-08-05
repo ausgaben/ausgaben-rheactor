@@ -35,7 +35,8 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         $updatedAt: model.updatedAt(),
         $deletedAt: model.deletedAt(),
         identifier: model.aggregateId(),
-        name: model.name
+        name: model.name,
+        monthly: model.monthly
       })
     case 'SpendingModel':
       return new Spending({

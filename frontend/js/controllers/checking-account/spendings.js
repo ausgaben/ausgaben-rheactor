@@ -8,7 +8,7 @@ const _reduce = require('lodash/reduce')
 
 module.exports = (app) => {
   app
-    .controller('CheckingAccountSpendingsController', ['$scope', '$state', '$window', '$timeout', '$stateParams', 'CheckingAccountService', 'SpendingService', 'ClientStorageService',
+    .controller('CheckingAccountSpendingsController', ['$scope', '$state', '$window', '$timeout', '$stateParams', 'CheckingAccountService', 'SpendingService', 'ReportService', 'ClientStorageService',
       /**
        * @param {object} $scope
        * @param {object} $state
@@ -17,9 +17,10 @@ module.exports = (app) => {
        * @param {object} $stateParams
        * @param {CheckingAccountService} CheckingAccountService
        * @param {SpendingService} SpendingService
+       * @param {ReportService} ReportService
        * @param {ClientStorageService} ClientStorageService
        */
-      ($scope, $state, $window, $timeout, $stateParams, CheckingAccountService, SpendingService, ClientStorageService) => {
+      ($scope, $state, $window, $timeout, $stateParams, CheckingAccountService, SpendingService, ReportService, ClientStorageService) => {
         let vm = {
           checkingAccount: null,
           bookedSpendings: [],
@@ -111,6 +112,10 @@ module.exports = (app) => {
             ClientStorageService.getValidToken()
               .then((token) => {
                 fetchSpendings(SpendingService.findByCheckingAccount.bind(SpendingService, checkingAccount, token), token)
+                ReportService.report(checkingAccount, {}, token)
+                  .then(report => {
+                    vm.report = report
+                  })
               })
           })
 

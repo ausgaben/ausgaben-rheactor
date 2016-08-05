@@ -8,19 +8,23 @@ const AggregateRoot = require('rheactor-event-store/aggregate-root')
 
 /**
  * @param {String} name
+ * @param {Boolean} monthly
  * @constructor
  * @throws ValidationFailedError if the creation fails due to invalid data
  */
-function CheckingAccountModel (name) {
+function CheckingAccountModel (name, monthly) {
+  monthly = !!monthly
   AggregateRoot.call(this)
   let schema = Joi.object().keys({
-    name: Joi.string().min(1).required().trim()
+    name: Joi.string().min(1).required().trim(),
+    monthly: Joi.boolean().required()
   })
-  Joi.validate({name}, schema, (err, data) => {
+  Joi.validate({name, monthly}, schema, (err, data) => {
     if (err) {
       throw new ValidationFailedError('CheckingAccountModel validation failed: ' + err, data, err)
     }
     this.name = data.name
+    this.monthly = data.monthly
   })
 }
 util.inherits(CheckingAccountModel, AggregateRoot)
@@ -35,6 +39,7 @@ CheckingAccountModel.prototype.applyEvent = function (event) {
   switch (event.name) {
     case 'CheckingAccountCreatedEvent':
       this.name = data.name
+      this.monthly = data.monthly
       this.persisted(event.aggregateId, event.createdAt)
       break
     default:

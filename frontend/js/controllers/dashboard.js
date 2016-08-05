@@ -13,17 +13,19 @@ module.exports = function (app) {
           templateUrl: '/view/dashboard.html',
           title: 'Your checking accounts',
           controllerAs: 'vm',
-          controller: ['$state', 'CheckingAccountService', 'ClientStorageService',
+          controller: ['$state', 'CheckingAccountService', 'ReportService', 'ClientStorageService',
             /**
              * @param {object} $state
              * @param {CheckingAccountService} CheckingAccountService
+             * @param {ReportService} ReportService
              * @param {ClientStorageService} ClientStorageService
              */
-            ($state, CheckingAccountService, ClientStorageService) => {
+            ($state, CheckingAccountService, ReportService, ClientStorageService) => {
               let vm = {
                 paginatedList: false,
                 p: new HttpProgress(),
-                c: new HttpProgress()
+                c: new HttpProgress(),
+                balance: 0
               }
 
               let fetch = (list, token) => {
@@ -35,9 +37,13 @@ module.exports = function (app) {
                   .then((paginatedList) => {
                     vm.paginatedList = paginatedList
                     Promise
-                      .map(paginatedList.items, (checkingAccount) => {
-                        checkingAccount.isHost = checkingAccount.host.$id === token.sub
-                      })
+                      .filter(paginatedList.items, checkingAccount => !checkingAccount.monthly)
+                      .map(checkingAccount => ReportService.report(checkingAccount, {}, token))
+                      .map(report => Promise.filter(vm.paginatedList.items, checkingAccount => checkingAccount.$id === report.checkingAccount.$id)
+                        .spread(checkingAccount => {
+                          checkingAccount.report = report
+                          vm.balance += report.balance
+                        }))
                     vm.p.success()
                   })
                   .catch(HttpProblem, (err) => {

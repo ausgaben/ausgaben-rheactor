@@ -3,6 +3,7 @@
 const APIService = require('./api')
 const CheckingAccountService = require('./checking-account')
 const SpendingService = require('./spending')
+const ReportService = require('./report')
 
 require('angular')
   .module('AusgabenServiceModule', [])
@@ -14,4 +15,7 @@ require('angular')
   }])
   .factory('SpendingService', ['$http', 'APIService', ($http, APIService) => {
     return new SpendingService($http, APIService)
+  }])
+  .factory('ReportService', ['$http', 'APIService', ($http, APIService) => {
+    return new ReportService($http, APIService)
   }])

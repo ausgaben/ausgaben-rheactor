@@ -14,10 +14,6 @@ nconf
       'template_mailer__endpoint',
       'template_mailer__api_key',
       'template_mailer__credentials',
-      'aws__access_key_id',
-      'aws__secret_access_key',
-      'aws__avatar_bucket',
-      'aws__website_bucket',
       'redis__host',
       'redis__port',
       'redis__database',
@@ -27,7 +23,8 @@ nconf
       'web_host',
       'force_mails',
       'disable_mails',
-      'slack__webhook'
+      'slack__webhook',
+      'rsync'
     ],
     lowerCase: true,
     separator: '__'
@@ -72,13 +69,7 @@ nconf.defaults({
   },
   'force_mails': false,
   'disable_mails': false,
-  'aws': {
-    'region': 'eu-central-1',
-    'access_key_id': 'secret',
-    'secret_access_key': 'secret',
-    'avatar_bucket': 'ausgaben-avatars',
-    'website_bucket': 'ausgaben.me'
-  },
+  'rsync': 'user@server:path',
   'slack': {
     'webhook': false
   },

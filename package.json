@@ -6,12 +6,12 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "dev-server": "environment=development ./node_modules/.bin/nodemon -e 'js,html,css' -w ./server -w ./util -d 1 ./server/server.js",
-    "test": "environment=testing ./node_modules/.bin/mocha --reporter=dot --timeout=1350 test/\\*\\*/\\*.js",
-    "test:api": "environment=testing ./node_modules/.bin/mocha --reporter=dot --timeout=1350 test/yadda/\\*\\*/\\*.js",
-    "test:backend": "environment=testing ./node_modules/.bin/mocha --reporter=dot --timeout=1350 test/mocha/\\*\\*/\\*.js",
-    "test:coverage": "environment=testing ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R dot --timeout=1350 test/\\*\\*/\\*.js && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage && rm -rf ./coverage",
-    "lint": "./node_modules/.bin/standard"
+    "dev-server": "environment=development nodemon -e 'js,html,css' -w ./server -w ./util -d 1 ./server/server.js",
+    "test": "environment=testing mocha --reporter=dot --timeout=1350 test/\\*\\*/\\*.js",
+    "test:api": "environment=testing mocha --reporter=dot --timeout=1350 test/yadda/\\*\\*/\\*.js",
+    "test:backend": "environment=testing mocha --reporter=dot --timeout=1350 test/mocha/\\*\\*/\\*.js",
+    "test:coverage": "environment=testing istanbul cover _mocha --report lcovonly -- -R dot --timeout=1350 test/\\*\\*/\\*.js && cat ./coverage/lcov.info | codacy-coverage && rm -rf ./coverage",
+    "lint": "standard"
   },
   "repository": {
     "type": "git",

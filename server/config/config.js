@@ -17,6 +17,7 @@ nconf
       'redis__host',
       'redis__port',
       'redis__database',
+      'redis__password',
       'host',
       'port',
       'api_host',
@@ -51,7 +52,8 @@ nconf.defaults({
   'redis': {
     'host': '127.0.0.1',
     'port': 6379,
-    'database': 1
+    'database': 1,
+    'password': null
   },
   'private_key': null,
   'public_key': null,

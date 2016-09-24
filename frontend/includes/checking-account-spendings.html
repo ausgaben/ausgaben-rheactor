@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-header">
       <h1 class="card-title">
-        %%checkingAccount.name%%
+        %%::checkingAccount.name%%
         <i class="material-icons">account_balance_wallet</i>
       </h1>
     </div>
@@ -44,22 +44,22 @@
         </colgroup>
         <thead>
         <tr>
-          <th colspan="2">%%group.title%%</th>
+          <th colspan="2">%%::group.title%%</th>
           <th class="money">%%group.total()|money%%</th>
         </tr>
         </thead>
         <tbody>
         <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt'" data-ui-sref="checking-account.edit-spending({identifier: checkingAccount.identifier, spending_id: (spending|idparam)})">
           <td>
-            <span data-ng-if="checkingAccount.monthly">%%spending.bookedAt|date:'dd.MM.'%%</span>
-            <span data-ng-if="!checkingAccount.monthly">%%spending.bookedAt|date:'dd.MM.yyyy'%%</span>
+            <span data-ng-if="checkingAccount.monthly">%%::spending.bookedAt|date:'dd.MM.'%%</span>
+            <span data-ng-if="!checkingAccount.monthly">%%::spending.bookedAt|date:'dd.MM.yyyy'%%</span>
           </td>
           <td>
-              %%spending.title%%
+              %%::spending.title%%
               <i class="material-icons" title="Saving" data-ng-if="spending.saving">trending_up</i>
           </td>
           <td class="money">
-            %%spending.amount|money%%
+            %%::spending.amount|money%%
           </td>
         </tr>
         </tbody>
@@ -79,7 +79,7 @@
         <tfoot>
         <tr>
           <th>Total</th>
-          <th class="money">%%vm.report.balance|money%%</th>
+          <th class="money">%%::vm.report.balance|money%%</th>
         </tr>
         </tfoot>
         <tbody>
@@ -88,7 +88,7 @@
             Income
           </td>
           <td class="money">
-            %%vm.report.income|money%%
+            %%::vm.report.income|money%%
           </td>
         </tr>
         <tr>
@@ -96,7 +96,7 @@
             Spendings
           </td>
           <td class="money">
-            %%vm.report.spendings|money%%
+            %%::vm.report.spendings|money%%
           </td>
         </tr>
         </tbody>
@@ -121,22 +121,22 @@
         </colgroup>
         <thead>
         <tr>
-          <th colspan="2">%%group.title%%</th>
+          <th colspan="2">%%::group.title%%</th>
           <th class="money">%%group.total()|money%%</th>
         </tr>
         </thead>
         <tbody>
         <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt'" data-ui-sref="checking-account.edit-spending({identifier: checkingAccount.identifier, spending_id: (spending|idparam)})">
           <td>
-            <span data-ng-if="checkingAccount.monthly">%%spending.bookedAt|date:'dd.MM.'%%</span>
-            <span data-ng-if="!checkingAccount.monthly">%%spending.bookedAt|date:'dd.MM.yyyy'%%</span>
+            <span data-ng-if="checkingAccount.monthly">%%::spending.bookedAt|date:'dd.MM.'%%</span>
+            <span data-ng-if="!checkingAccount.monthly">%%::spending.bookedAt|date:'dd.MM.yyyy'%%</span>
           </td>
           <td>
-            %%spending.title%%
+            %%::spending.title%%
             <i class="material-icons" title="Saving" data-ng-if="spending.saving">trending_up</i>
           </td>
           <td class="money">
-            %%spending.amount|money%%
+            %%::spending.amount|money%%
           </td>
         </tr>
         </tbody>

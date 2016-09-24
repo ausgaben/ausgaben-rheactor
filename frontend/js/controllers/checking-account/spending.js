@@ -39,6 +39,10 @@ module.exports = (app) => {
                     .then(spending => {
                       vm.spending = new Spending(_merge({}, spending, {amount: Math.abs(spending.amount) / 100}))
                       vm.type = spending.amount > 0 ? 'income' : 'spending'
+                      if (!vm.spending.booked) {
+                        // Always set the date for pending spendings to today when opening them
+                        vm.spending.bookedAt = new Date()
+                      }
                     })
                 })
             }

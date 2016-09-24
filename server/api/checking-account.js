@@ -4,12 +4,14 @@ const ValidationFailedError = require('rheactor-value-objects/errors/validation-
 const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
 const CheckingAccount = require('../../frontend/js/model/checking-account')
 const CreateCheckingAccountCommand = require('../command/checking-account/create')
+const UpdateCheckingAccountPropertyCommand = require('../command/checking-account/update-property')
 const URIValue = require('rheactor-value-objects/uri')
 const Promise = require('bluebird')
 const Joi = require('joi')
 const Pagination = require('rheactor-server/util/pagination')
 const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
 const _merge = require('lodash/merge')
+const checkVersion = require('rheactor-server/api/check-version')
 
 /**
  * @param {express.app} app
@@ -114,4 +116,41 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       })
       .catch(sendHttpProblem.bind(null, res))
   })
+
+  /**
+   * Update a checking account
+   */
+  app.put('/api/checking-account/:id/:property', tokenAuth, (req, res) => Promise
+    .try(() => {
+      const schema = Joi.object().keys({
+        id: Joi.string().min(1).trim(),
+        property: Joi.string().only(['monthly']).required().trim(),
+        value: Joi.any().required()
+      })
+      const query = req.body
+      query.id = req.params.id
+      query.property = req.params.property
+      const v = Joi.validate(query, schema)
+      if (v.error) {
+        throw new ValidationFailedError('Validation failed', query, v.error)
+      }
+      return Promise
+        .join(
+          checkingAccountRepo.getById(req.params.id),
+          checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user),
+          userRepo.getById(req.user)
+        )
+        .spread((checkingAccount, checkingAccountUser, user) => {
+          if (!checkingAccountUser) {
+            throw new AccessDeniedError(req.url, 'Not your checking account!')
+          }
+          checkVersion(req.headers['if-match'], checkingAccount)
+          if (checkingAccount[v.value.property] === v.value.value) throw new ValidationFailedError(v.value.property + ' unchanged', v.value.value)
+          return emitter.emit(new UpdateCheckingAccountPropertyCommand(checkingAccount, v.value.property, v.value.value, user))
+            .then(() => checkingAccount)
+        })
+    })
+    .then(checkingAccount => res.header('etag', checkingAccount.aggregateVersion()).header('last-modified', new Date(checkingAccount.modifiedAt()).toUTCString()).status(204).send())
+    .catch(err => sendHttpProblem(res, err))
+  )
 }

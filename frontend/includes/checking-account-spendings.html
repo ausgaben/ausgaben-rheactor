@@ -7,10 +7,28 @@
       </h1>
     </div>
     <div class="card-block">
-      <a class="btn btn-primary control" data-ui-sref="checking-account.add-spending({identifier: checkingAccount.identifier})">
+      <button type="button" class="btn btn-primary control" data-ui-sref="checking-account.add-spending({identifier: checkingAccount.identifier})">
         <i class="material-icons">add_circle_outline</i>
         <span>Add …</span>
-      </a>
+      </button>
+      <div class="btn-group">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="material-icons" data-ng-if="!checkingAccount.monthly">format_list_numbered</i>
+          <span data-ng-if="!checkingAccount.monthly">Showing all transactions</span>
+          <i class="material-icons" data-ng-if="checkingAccount.monthly">date_range</i>
+          <span data-ng-if="checkingAccount.monthly">Showing transactions by month</span>
+        </button>
+        <div class="dropdown-menu">
+          <button type="button" class="dropdown-item" data-ng-if="checkingAccount.monthly" data-ng-click="vm.toggleMonthly()">
+            <i class="material-icons">format_list_numbered</i>
+            <span>show all</span>
+          </button>
+          <button type="button" class="dropdown-item" data-ng-if="!checkingAccount.monthly" data-ng-click="vm.toggleMonthly()">
+            <i class="material-icons">date_range</i>
+            <span>show one month</span>
+          </button>
+        </div>
+      </div>
     </div>
     <div class="card-block" data-ng-if="!vm.bookedSpendings.length">
       <p>
@@ -33,7 +51,8 @@
         <tbody>
         <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt'" data-ui-sref="checking-account.edit-spending({identifier: checkingAccount.identifier, spending_id: (spending|idparam)})">
           <td>
-            %%spending.bookedAt|date:'dd.MM.'%%
+            <span data-ng-if="checkingAccount.monthly">%%spending.bookedAt|date:'dd.MM.'%%</span>
+            <span data-ng-if="!checkingAccount.monthly">%%spending.bookedAt|date:'dd.MM.yyyy'%%</span>
           </td>
           <td>
               %%spending.title%%
@@ -109,7 +128,8 @@
         <tbody>
         <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt'" data-ui-sref="checking-account.edit-spending({identifier: checkingAccount.identifier, spending_id: (spending|idparam)})">
           <td>
-            %%spending.bookedAt|date:'dd.MM.'%%
+            <span data-ng-if="checkingAccount.monthly">%%spending.bookedAt|date:'dd.MM.'%%</span>
+            <span data-ng-if="!checkingAccount.monthly">%%spending.bookedAt|date:'dd.MM.yyyy'%%</span>
           </td>
           <td>
             %%spending.title%%

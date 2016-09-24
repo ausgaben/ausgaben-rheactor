@@ -5,6 +5,7 @@ const Promise = require('bluebird')
 const Spending = require('../../model/spending')
 const LiveCollection = require('rheactor-web-app/js/util/live-collection')
 const _reduce = require('lodash/reduce')
+const moment = require('moment')
 
 module.exports = (app) => {
   app
@@ -24,7 +25,8 @@ module.exports = (app) => {
         let vm = {
           checkingAccount: null,
           bookedSpendings: [],
-          pendingSpendings: []
+          pendingSpendings: [],
+          date: new Date()
         }
         let spendingsCollection
 
@@ -111,12 +113,24 @@ module.exports = (app) => {
             })
             ClientStorageService.getValidToken()
               .then((token) => {
-                fetchSpendings(SpendingService.findByCheckingAccount.bind(SpendingService, checkingAccount, token), token)
-                ReportService.report(checkingAccount, {}, token)
+                const query = {}
+                if (vm.checkingAccount.monthly) {
+                  const startDate = moment(vm.date).startOf('month')
+                  const endDate = moment(vm.date).endOf('month')
+                  query.dateFrom = startDate.toDate()
+                  query.dateTo = endDate.toDate()
+                }
+                fetchSpendings(SpendingService.findByCheckingAccount.bind(SpendingService, checkingAccount, query, token), token)
+                ReportService.report(checkingAccount, query, token)
                   .then(report => {
                     vm.report = report
                   })
               })
+          })
+
+        vm.toggleMonthly = () => ClientStorageService.getValidToken()
+          .then((token) => {
+            CheckingAccountService.updateProperty(vm.checkingAccount, 'monthly', !vm.checkingAccount.monthly, token)
           })
 
         return vm

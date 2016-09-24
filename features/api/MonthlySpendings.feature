@@ -46,3 +46,24 @@ Feature: Spendings
     Then "spendings" should equal -24197
     Then "income" should equal 5555
     Then "balance" should equal -18642
+
+  Scenario: Change the monthly flag on an account
+
+    When I GET {createdCheckingAccount}
+    Then the status code should be 200
+    And "monthly" should equal false
+    And "$version" should equal 1
+    And I store the link to "update-monthly" as "UpdateMonthlyEndpoint"
+    Given this is the request body
+    --------------
+    "value": true
+    --------------
+    And "1" is the If-Match header
+    When I PUT to {UpdateMonthlyEndpoint}
+    Then the status code should be 204
+    And the etag header should equal "2"
+    And the last-modified header should be now
+    When I GET {createdCheckingAccount}
+    Then the status code should be 200
+    And "monthly" should equal true
+    And "$version" should equal 2

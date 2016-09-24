@@ -42,6 +42,7 @@ module.exports = function (apiHost) {
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/spending'), Spending.$context, 'create-spending')
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/search/periodical'), Periodical.$context, 'periodicals', true)
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/periodical'), Periodical.$context, 'create-periodical')
+  relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/monthly'), CheckingAccount.$context, 'update-monthly')
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/report'), Report.$context, 'report')
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/stream'), null, 'stream')
 

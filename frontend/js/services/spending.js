@@ -20,11 +20,12 @@ SpendingService.prototype = _create(GenericAPIService.prototype, {
 
 /**
  * @param {CheckingAccount} checkingAccount
+ * @param {object} query
  * @param {JsonWebToken} token
  * @return {Promise.<List>}
  */
-SpendingService.prototype.findByCheckingAccount = function (checkingAccount, token) {
-  return GenericAPIService.prototype.list.call(this, jsonld.getListLink(Spending.$context, checkingAccount), {}, token)
+SpendingService.prototype.findByCheckingAccount = function (checkingAccount, query, token) {
+  return GenericAPIService.prototype.list.call(this, jsonld.getListLink(Spending.$context, checkingAccount), query, token)
 }
 
 /**

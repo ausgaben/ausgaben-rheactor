@@ -5,6 +5,8 @@ const Joi = require('joi')
 const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
 const UnhandledDomainEventError = require('rheactor-value-objects/errors/unhandled-domain-event')
 const AggregateRoot = require('rheactor-event-store/aggregate-root')
+const CheckingAccountPropertyChangedEvent = require('../event/checking-account/property-changed')
+const CheckingAccountCreatedEvent = require('../event/checking-account/created')
 
 /**
  * @param {String} name
@@ -37,15 +39,39 @@ util.inherits(CheckingAccountModel, AggregateRoot)
 CheckingAccountModel.prototype.applyEvent = function (event) {
   let data = event.data
   switch (event.name) {
-    case 'CheckingAccountCreatedEvent':
+    case CheckingAccountCreatedEvent.name:
       this.name = data.name
       this.monthly = data.monthly
       this.persisted(event.aggregateId, event.createdAt)
+      break
+    case CheckingAccountPropertyChangedEvent.name:
+      this[data.property] = data.value
+      this.updated(event.createdAt)
       break
     default:
       console.error('Unhandled CheckingAccountModel event', event.name)
       throw new UnhandledDomainEventError(event.name)
   }
+}
+
+/**
+ * @param  {boolean} monthly
+ * @returns {SpendingUpdatedEvent}
+ */
+CheckingAccountModel.prototype.setMonthly = function (monthly) {
+  let self = this
+  if (self.monthly === !!monthly) {
+    throw new ValidationFailedError('Monthly unchanged', monthly)
+  }
+  self.monthly = !!monthly
+  self.updated()
+  return new CheckingAccountPropertyChangedEvent({
+    aggregateId: self.aggregateId(),
+    data: {
+      property: 'monthly',
+      value: monthly
+    }
+  })
 }
 
 module.exports = CheckingAccountModel

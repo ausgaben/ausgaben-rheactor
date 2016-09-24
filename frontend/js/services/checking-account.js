@@ -47,4 +47,29 @@ CheckingAccountService.prototype.create = function (checkingAccount, token) {
     })
 }
 
+/**
+ * @param {Spending} checkingAccount
+ * @param {String} property
+ * @param {object} value
+ * @param {JsonWebToken} token
+ * @return {Promise.<List>}
+ */
+CheckingAccountService.prototype.updateProperty = function (checkingAccount, property, value, token) {
+  let self = this
+  return GenericAPIService.prototype.update
+    .call(
+      self,
+      jsonld.getRelLink('update-' + property, checkingAccount),
+      {value},
+      checkingAccount.$version,
+      token
+    )
+    .then((response) => {
+      let lastModified = new Date(response.headers('Last-Modified')).getTime()
+      let version = +response.headers('etag')
+      checkingAccount[property] = value
+      checkingAccount.updated(lastModified, version)
+    })
+}
+
 module.exports = CheckingAccountService

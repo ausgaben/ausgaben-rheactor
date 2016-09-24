@@ -25,7 +25,7 @@ ReportService.prototype = _create(GenericAPIService.prototype, {
  * @return {Promise.<List>}
  */
 ReportService.prototype.report = function (checkingAccount, filter, token) {
-  return GenericAPIService.prototype.get.call(this, jsonld.getRelLink('report', checkingAccount), token, true)
+  return GenericAPIService.prototype.query.call(this, jsonld.getRelLink('report', checkingAccount), filter, token)
 }
 
 module.exports = ReportService

@@ -32,7 +32,7 @@ if (environment === 'production') {
 // Persistence
 const RedisConnection = require('rheactor-server/services/redis-connection')
 const redisConfig = config.get('redis')
-const redis = new RedisConnection(redisConfig.host, redisConfig.port, redisConfig.database)
+const redis = new RedisConnection(redisConfig.host, redisConfig.port, redisConfig.database, redisConfig.password)
 redis.connect().then((client) => {
   client.on('error', function (err) {
     console.error(err)

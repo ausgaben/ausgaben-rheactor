@@ -37,6 +37,12 @@ module.exports = function (apiHost) {
 
   relations.addLink('index', new URIValue(apiBase + '/checking-account'), CheckingAccount.$context, 'create-checking-account')
   relations.addLink(User.$context, new URIValue(apiBase + '/search/checking-account'), CheckingAccount.$context, 'my-checking-accounts', true)
+  relations.addLink(User.$context, new URIValue(apiBase + '/user/:id/email-change'), User.$context, 'change-email')
+  relations.addLink(User.$context, new URIValue(apiBase + '/user/:id/email-change/confirm'), User.$context, 'change-email-confirm')
+  relations.addLink(User.$context, new URIValue(apiBase + '/user/:id/email'), User.$context, 'update-email')
+  relations.addLink(User.$context, new URIValue(apiBase + '/user/:id/active'), User.$context, 'update-active')
+  relations.addLink(User.$context, new URIValue(apiBase + '/user/:id/firstname'), User.$context, 'update-firstname')
+  relations.addLink(User.$context, new URIValue(apiBase + '/user/:id/lastname'), User.$context, 'update-lastname')
 
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/search/spending'), Spending.$context, 'spendings', true)
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/spending'), Spending.$context, 'create-spending')

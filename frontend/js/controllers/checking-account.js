@@ -6,7 +6,7 @@ module.exports = (app) => {
     .config(['$stateProvider', ($stateProvider) => {
       $stateProvider
         .state('checking-account', {
-          url: '/account/:identifier',
+          url: '/checking-account/:identifier',
           title: 'Checking account',
           templateUrl: '/view/checking-account.html',
           controllerAs: 'vm',

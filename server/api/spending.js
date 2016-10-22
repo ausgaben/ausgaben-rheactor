@@ -5,6 +5,7 @@ const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
 const Spending = require('../../frontend/js/model/spending')
 const CreateSpendingCommand = require('../command/spending/create')
 const UpdateSpendingCommand = require('../command/spending/update')
+const DeleteSpendingCommand = require('../command/spending/delete')
 const URIValue = require('rheactor-value-objects/uri')
 const Promise = require('bluebird')
 const Joi = require('joi')
@@ -199,4 +200,33 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       })
       .catch(sendHttpProblem.bind(null, res))
   })
+
+  /**
+   * Delete a spending
+   */
+  app.delete('/api/spending/:id', tokenAuth, (req, res) => spendingRepo.getById(req.params.id)
+    .then(spending => {
+      checkVersion(req.headers['if-match'], spending)
+      return spending
+    })
+    .then(spending => Promise
+      .join(
+        checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user),
+        userRepo.getById(req.user)
+      )
+      .spread((checkingAccountUser, user) => {
+        if (!checkingAccountUser) {
+          throw new AccessDeniedError(req.url, 'Not your checking account!')
+        }
+        let cmd = new DeleteSpendingCommand(spending, user)
+        return emitter.emit(cmd)
+      })
+      .then(event => res
+        .header('etag', spending.aggregateVersion())
+        .header('last-modified', new Date(spending.modifiedAt()).toUTCString())
+        .status(204)
+        .send())
+    )
+    .catch(sendHttpProblem.bind(null, res))
+  )
 }

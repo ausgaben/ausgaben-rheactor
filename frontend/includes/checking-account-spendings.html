@@ -67,7 +67,7 @@
     </div>
   </div>
 </section>
-<section class="col-xs-12 col-lg-6" data-ng-if="vm.pendingSpendings.length">
+<section class="col-xs-12 col-lg-6">
   <div class="card" data-ng-if="vm.report">
     <div class="card-header">
       <h2 class="card-title">
@@ -104,7 +104,7 @@
             %%::vm.report.spendings|money%%
           </td>
         </tr>
-        <tr data-ng.if="vm.report.savings < 0">
+        <tr data-ng-if="vm.report.savings < 0">
           <td>
             Savings:
           </td>
@@ -117,7 +117,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" data-ng-if="vm.pendingSpendings.length">
     <div class="card-header">
       <h2 class="card-title">
         Pending

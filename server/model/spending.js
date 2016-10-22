@@ -8,6 +8,7 @@ const ValidationFailedError = require('rheactor-value-objects/errors/validation-
 const UnhandledDomainEventError = require('rheactor-value-objects/errors/unhandled-domain-event')
 const SpendingCreatedEvent = require('../event/spending/created')
 const SpendingUpdatedEvent = require('../event/spending/updated')
+const SpendingDeletedEvent = require('../event/spending/deleted')
 
 /**
  * @param {String} checkingAccount
@@ -101,6 +102,9 @@ SpendingModel.prototype.applyEvent = function (event) {
       self.bookedAt = data.bookedAt
       self.saving = data.saving
       this.persisted(event.aggregateId, event.createdAt)
+      break
+    case SpendingDeletedEvent.name:
+      self.deleted(event.createdAt)
       break
     case SpendingUpdatedEvent.name:
       for (let field in self) {

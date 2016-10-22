@@ -8,8 +8,9 @@ const Spending = require('../../model/spending')
 
 module.exports = (app) => {
   app
-    .controller('CheckingAccountSpendingController', ['$scope', '$state', '$stateParams', 'SpendingService', 'ClientStorageService', 'IDService',
+    .controller('CheckingAccountSpendingController', ['$window', '$scope', '$state', '$stateParams', 'SpendingService', 'ClientStorageService', 'IDService',
       /**
+       * @param {object} $window
        * @param {object} $scope
        * @param {object} $state
        * @param {object} $stateParams
@@ -17,7 +18,7 @@ module.exports = (app) => {
        * @param {ClientStorageService} ClientStorageService
        * @param {IDService} IDService
        */
-      ($scope, $state, $stateParams, SpendingService, ClientStorageService, IDService) => {
+      ($window, $scope, $state, $stateParams, SpendingService, ClientStorageService, IDService) => {
         let vm = {
           p: new HttpProgress(),
           spending: new Spending({
@@ -62,6 +63,23 @@ module.exports = (app) => {
                 return SpendingService.create(vm.checkingAccount, spending, token)
               }
             })
+            .then(() => {
+              vm.p.success()
+              $state.go('checking-account.spendings', {identifier: vm.checkingAccount.identifier})
+            })
+            .catch(HttpProblem, (httpProblem) => {
+              vm.p.error(httpProblem)
+            })
+        }
+
+        vm.delete = () => {
+          if (vm.p.$active) {
+            return
+          }
+          if (!$window.confirm('Really delete this spending?')) return
+          vm.p.activity()
+          ClientStorageService.getValidToken()
+            .then((token) => SpendingService.delete(vm.spending, token))
             .then(() => {
               vm.p.success()
               $state.go('checking-account.spendings', {identifier: vm.checkingAccount.identifier})

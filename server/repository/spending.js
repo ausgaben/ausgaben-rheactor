@@ -5,6 +5,7 @@ const AggregateRelation = require('rheactor-event-store/aggregate-relation')
 const util = require('util')
 const SpendingModel = require('../model/spending')
 const SpendingCreatedEvent = require('../event/spending/created')
+const SpendingDeletedEvent = require('../event/spending/deleted')
 
 /**
  * Creates a new spending repository
@@ -50,6 +51,24 @@ SpendingRepository.prototype.add = function (spending) {
           spending.applyEvent(event)
           return event
         })
+    })
+}
+
+/**
+ * Deletes a Spending
+ *
+ * @param {SpendingModel} spending
+ * @param {UserModel} author
+ * @return {Promise.<SpendingDeletedEvent>}
+ */
+SpendingRepository.prototype.remove = function (spending, author) {
+  let self = this
+  let event = new SpendingDeletedEvent({aggregateId: spending.aggregateId(), createdBy: author.aggregateId()})
+  return self.persistEvent(event, author)
+    .then(() => self.relation.removeRelatedId('checkingAccount', spending.checkingAccount, spending.aggregateId()))
+    .then(() => {
+      spending.applyEvent(event)
+      return event
     })
 }
 

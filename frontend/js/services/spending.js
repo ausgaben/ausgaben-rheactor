@@ -85,4 +85,24 @@ SpendingService.prototype.update = function (spending, token) {
     })
 }
 
+/**
+ * @param {Spending} spending
+ * @param {JsonWebToken} token
+ * @return {Promise.<List>}
+ */
+SpendingService.prototype.delete = function (spending, token) {
+  let self = this
+  return GenericAPIService.prototype.delete.call(
+    self,
+    spending.$id,
+    spending.$version,
+    token
+  )
+    .then((response) => {
+      let lastModified = new Date(response.headers('Last-Modified')).getTime()
+      let version = +response.headers('etag')
+      spending.deleted(lastModified, version)
+    })
+}
+
 module.exports = SpendingService

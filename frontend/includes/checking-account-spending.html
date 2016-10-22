@@ -226,6 +226,14 @@
           <span data-ng-if="!vm.spending.$id">Create</span>
           <span data-ng-if="vm.spending.$id">Save</span>
         </button>
+        <button tabindex="15"
+                data-ng-if="vm.spending.$id"
+                type="submit"
+                class="btn btn-danger"
+                data-ng-click="vm.delete();">
+          <i class="material-icons">delete_forever</i>
+          <span>Delete</span>
+        </button>
       </div>
       <div data-ng-show="vm.p.$error" class="error-info">
         <div class="alert alert-danger" role="alert">

@@ -50,6 +50,7 @@ Feature: Spendings
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
     And a list of "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending" with 5 of 5 items should be returned
     And "title" of the 1st item should equal "Cat food"
+    And I store "$id" of the 2nd item as "dogFoodSpending"
     And I store "$id" of the 4th item as "tanjasSalarySpending"
 
   Scenario: Fetch summary for the account
@@ -60,10 +61,10 @@ Feature: Spendings
     And "$context" should equal "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Report"
     Then "spendings" should equal -18023
     Then "income" should equal 23456
-    Then "balance" should equal 5107
     Then "savings" should equal -326
     Then "savingsRate" should be least 0.06
     Then "savingsRate" should be most 0.061
+    Then "balance" should equal 5107
 
   Scenario: Update spending
 
@@ -80,3 +81,35 @@ Feature: Spendings
     And "title" should equal "Tanja's Salary for April 2015"
     And "booked" should equal true
     And "amount" should equal 4321
+    # Report should be updated
+    Given the request body is empty
+    When I POST to {createdCheckingAccountReport}
+    Then the status code should be 200
+    Then "spendings" should equal -18023
+    Then "income" should equal 27777
+    Then "savings" should equal -326
+    Then "savingsRate" should be least 0.033
+    Then "savingsRate" should be most 0.034
+    Then "balance" should equal 9428
+
+  Scenario: Delete spending
+
+    Given the request body is empty
+    And "1" is the If-Match header
+    When I DELETE {dogFoodSpending}
+    Then the status code should be 204
+    And the etag header should equal "2"
+    And the last-modified header should be now
+    # Spending should be deleted
+    When I GET {dogFoodSpending}
+    Then the status code should be 404
+    # Report should be updated
+    Given the request body is empty
+    When I POST to {createdCheckingAccountReport}
+    Then the status code should be 200
+    Then "spendings" should equal -12345
+    Then "income" should equal 27777
+    Then "savings" should equal -326
+    Then "savingsRate" should be least 0.021
+    Then "savingsRate" should be most 0.022
+    Then "balance" should equal 15106

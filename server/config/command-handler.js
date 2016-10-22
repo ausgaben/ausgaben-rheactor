@@ -11,9 +11,10 @@ const _camelCase = require('lodash/camelCase')
  * @param {Array.<AggregateRepository>} repos
  * @param {BackendEmitter} emitter
  * @param {nconf} config
+ * @param {object} webConfig
  * @param {TemplateMailerClient} templateMailerClient
  */
-module.exports = (repos, emitter, config, templateMailerClient) => {
+module.exports = (repos, emitter, config, webConfig, templateMailerClient) => {
   let c = new EmittedEventsHandlerRegistry(emitter)
 
   // Register repository command handler

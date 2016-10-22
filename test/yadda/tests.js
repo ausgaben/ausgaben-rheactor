@@ -6,7 +6,7 @@ let app = require('../../server/server')
 let runner = require('rheactor-yadda-feature-runner')(app)
 
 // Configure parsing for superagent
-require('superagent').serialize[app.config.get('mime_type')] = JSON.stringify
+require('superagent').serialize[app.webConfig.mimeType] = JSON.stringify
 
 app.redis.flushdb()
 

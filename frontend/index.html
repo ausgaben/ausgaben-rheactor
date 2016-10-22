@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="<%= data.description %>">
-  <meta name="version" content="<%= data.version %>-<%= data.deployVersion %>">
+  <meta name="version" content="<%= data.version %>-<%= data.buildTime %>">
   <title><%= data.appName %></title>
   <base href="/">
-  <link rel="stylesheet" href="/css/styles.min.css?v=<%= data.version %>-<%= data.deployVersion %>">
+  <link rel="stylesheet" href="/css/styles.min.css?v=<%= data.version %>-<%= data.buildTime %>">
   <%= includes.favicon %>
   <%= includes.fonts %>
 </head>
@@ -29,7 +29,7 @@
 <script type="text/ng-template" id="/view/checking-account-spendings.html"><%= includes['checking-account-spendings'] %></script>
 <script type="text/ng-template" id="/view/checking-account-spending.html"><%= includes['checking-account-spending'] %></script>
 <script type="text/ng-template" id="/directive/app-button.html"><%= includes['app-button-directive'] %></script>
-<script type="text/javascript" src="/js/app.min.js?v=<%= data.version %>-<%= data.deployVersion %>"></script>
+<script type="text/javascript" src="/js/app.min.js?v=<%= data.version %>-<%= data.buildTime %>"></script>
 <script type="text/javascript">
   (function () {
     'use strict';
@@ -38,7 +38,7 @@
       appName: '<%= data.appName %>',
       description: '<%= data.description %>',
       version: '<%= data.version %>',
-      deployVersion: '<%= data.deployVersion %>',
+      buildTime: '<%= data.buildTime %>',
       environment: '<%= data.environment %>',
       apiIndex: '<%= data.apiIndex %>',
       mimeType: '<%= data.mimeType %>'

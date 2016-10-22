@@ -16,11 +16,11 @@ services:
 node_js:
   - 'stable'
 before_install:
-  - npm i -g npm@^2.0.0
-before_script:
-  - npm prune
+- npm install -g yarn
+install:
+- yarn
 script:
-#  - npm run lint
+  - npm run lint
   - make build
   - npm run test:coverage
 after_success:

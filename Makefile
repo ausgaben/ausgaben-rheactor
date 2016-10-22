@@ -46,7 +46,7 @@ endif
 
 build/index.html: frontend/*.html frontend/includes/*.html build/img
 	mkdir -p build/view/directive
-	./node_modules/.bin/rheactor-build-views build ./server/config/config ./frontend ./build -i ./node_modules/rheactor-web-app/includes/
+	./node_modules/.bin/rheactor-build-views build ./server/config/config.web ./frontend ./build -i ./node_modules/rheactor-web-app/includes/
 
 build/robots.txt: frontend/robots.txt
 	cp frontend/robots.txt build/

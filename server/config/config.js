@@ -1,7 +1,6 @@
 'use strict'
 
 const nconf = require('nconf')
-const path = require('path')
 const pjson = require('../../package.json')
 
 nconf.use('memory')
@@ -36,18 +35,13 @@ const port = nconf.get('port') || 8080
 
 // Set defaults
 nconf.defaults({
+  'app': pjson.name,
+  'version': pjson.version,
   'environment': 'development',
-  'mime_type': 'application/vnd.ausgaben.v1+json',
   port,
   host,
   'api_host': 'http://' + host + ':' + port,
   'web_host': 'http://' + host + ':' + port,
-  'deployVersion': +new Date(),
-  'version': pjson.version,
-  'app': pjson.name,
-  'appName': pjson.appName,
-  'description': pjson.description,
-  'root': path.normalize(path.join(__dirname, '/../..')),
   'token_lifetime': 60 * 60 * 24 * 30, // 30 days
   'redis': {
     'host': '127.0.0.1',

@@ -5,6 +5,7 @@ Promise.longStackTraces()
 const colors = require('colors')
 
 const config = require('./config/config')
+const webConfig = require('./config/config.web')
 const environment = config.get('environment')
 const appName = config.get('app') + '@' + environment + ' v' + config.get('version')
 
@@ -94,9 +95,9 @@ if ((environment === 'production' || config.get('force_mails')) && !config.get('
 }
 
 // Event handling
-require('rheactor-server/config/command-handler')(repositories, emitter, config, templateMailer)
+require('rheactor-server/config/command-handler')(repositories, emitter, config, webConfig, templateMailer)
 require('rheactor-server/config/event-handler')(repositories, emitter, config)
-require('./config/command-handler')(repositories, emitter, config, templateMailer)
+require('./config/command-handler')(repositories, emitter, config, webConfig, templateMailer)
 require('./config/event-handler')(repositories, emitter, config, templateMailer)
 
 // Password strength
@@ -108,6 +109,7 @@ module.exports = {
   repositories,
   search,
   config,
+  webConfig,
   emitter,
   redis,
   appName

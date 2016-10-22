@@ -19,10 +19,11 @@ before_install:
 - npm install -g yarn
 install:
 - yarn
+- npm rebuild node-sass
 script:
-  - npm run lint
-  - make build
-  - npm run test:coverage
+- npm run lint
+- make build
+- npm run test:coverage
 after_success:
 #  - npm run semantic-release
 branches:

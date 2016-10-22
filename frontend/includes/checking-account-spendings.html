@@ -65,7 +65,17 @@
         </tbody>
       </table>
     </div>
-    <div class="card-footer spendings" data-ng-if="vm.bookedSpendings.length">
+  </div>
+</section>
+<section class="col-xs-12 col-lg-6" data-ng-if="vm.pendingSpendings.length">
+  <div class="card" data-ng-if="vm.report">
+    <div class="card-header">
+      <h2 class="card-title">
+        Summary
+        <i class="material-icons">poll</i>
+      </h2>
+    </div>
+    <div class="card-block spendings">
       <table class="table">
         <colgroup>
           <col>
@@ -73,15 +83,10 @@
         </colgroup>
         <thead>
         <tr>
-          <th colspan="2">Summary</th>
-        </tr>
-        </thead>
-        <tfoot>
-        <tr>
-          <th>Total</th>
+          <th>Balance</th>
           <th class="money">%%::vm.report.balance|money%%</th>
         </tr>
-        </tfoot>
+        </thead>
         <tbody>
         <tr>
           <td>
@@ -99,12 +104,19 @@
             %%::vm.report.spendings|money%%
           </td>
         </tr>
+        <tr data-ng.if="vm.report.savings < 0">
+          <td>
+            Savings:
+          </td>
+          <td class="money">
+            (%%::vm.report.savingsRate|percent%%) %%::vm.report.savings|money%%
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
   </div>
-</section>
-<section class="col-xs-12 col-lg-6" data-ng-if="vm.pendingSpendings.length">
+
   <div class="card">
     <div class="card-header">
       <h2 class="card-title">

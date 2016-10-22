@@ -11,6 +11,7 @@
  *
  * @param {number} value The number to format
  * @param {object} opts
+ * @return {string}
  */
 const moneyFormat = (value, opts) => {
   const symbol = opts.symbol || ' €'

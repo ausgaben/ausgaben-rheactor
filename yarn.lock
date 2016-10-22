@@ -4542,9 +4542,9 @@ rheactor-event-store@^3.1.0:
     rheactor-value-objects "^2.0.0"
     tcomb "^3.2.7"
 
-rheactor-server@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/rheactor-server/-/rheactor-server-6.0.0.tgz#7823d276e2a1986ca64cc76f8fca0aebe7d14f1e"
+rheactor-server:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/rheactor-server/-/rheactor-server-6.1.0.tgz#5b8ef031dba144dd90b4fcd145d20b2f1cafbfd0"
   dependencies:
     aws-sdk "^2.6.4"
     bcrypt "^0.8.7"

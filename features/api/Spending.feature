@@ -17,7 +17,8 @@ Feature: Spendings
     "title": "[title]",
     "amount": [amount],
     "booked": [booked],
-    "bookedAt": "[bookedAt]"
+    "bookedAt": "[bookedAt]",
+    "saving": [saving]
     --------------
     When I POST to {CreateSpendingEndpoint}
     Then the status code should be 201
@@ -32,21 +33,22 @@ Feature: Spendings
     And "amount" should equal [amount]
     And "booked" should equal [booked]
     And "bookedAt" should equal "[bookedAt]"
-    And "saving" should equal false
+    And "saving" should equal [saving]
 
   Where:
-    category | title          | amount | booked | bookedAt
-    Pets     | Cat food       | -12345 | true   | 2015-01-02T00:00:00.000Z
-    Pets     | Dog food       | -5678  | true   | 2015-01-03T00:00:00.000Z
-    Salary   | Markus' Salary | 1234   | true   | 2015-01-04T00:00:00.000Z
-    Salary   | Tanja's Salary | 4321   | false  | 2015-01-04T00:00:00.000Z
+    category | title          | amount | booked | bookedAt                 | saving
+    Pets     | Cat food       | -12345 | true   | 2015-01-02T00:00:00.000Z | false
+    Pets     | Dog food       | -5678  | true   | 2015-01-03T00:00:00.000Z | false
+    Salary   | Markus' Salary | 23456  | true   | 2015-01-04T00:00:00.000Z | false
+    Salary   | Tanja's Salary | 4321   | false  | 2015-01-04T00:00:00.000Z | false
+    Savings  | Pension Fund   | -326   | true   | 2015-01-04T00:00:00.000Z | true
 
   Scenario: Fetch all spendings for the account
 
     When I POST to {ListSpendingsEndpoint}
     Then the status code should be 200
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
-    And a list of "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending" with 4 of 4 items should be returned
+    And a list of "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending" with 5 of 5 items should be returned
     And "title" of the 1st item should equal "Cat food"
     And I store "$id" of the 4th item as "tanjasSalarySpending"
 
@@ -57,8 +59,11 @@ Feature: Spendings
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
     And "$context" should equal "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Report"
     Then "spendings" should equal -18023
-    Then "income" should equal 1234
-    Then "balance" should equal -16789
+    Then "income" should equal 23456
+    Then "balance" should equal 5107
+    Then "savings" should equal -326
+    Then "savingsRate" should be least 0.06
+    Then "savingsRate" should be most 0.061
 
   Scenario: Update spending
 

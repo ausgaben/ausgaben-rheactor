@@ -12,6 +12,8 @@ function ReportModel (checkingAccount) {
   this.balance = 0
   this.income = 0
   this.spendings = 0
+  this.savings = 0
+  this.savingsRate = 0.0
 }
 
 /**
@@ -60,8 +62,16 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
             .then(spendings => _reduce(
               spendings, (report, spending) => {
                 report.balance += spending.amount
-                if (spending.amount >= 0) report.income += spending.amount
-                else report.spendings += spending.amount
+                if (spending.amount >= 0) {
+                  report.income += spending.amount
+                } else {
+                  if (spending.saving) {
+                    report.savings += spending.amount
+                  } else {
+                    report.spendings += spending.amount
+                  }
+                }
+                report.savingsRate = report.savings / (report.income + report.spendings) * -1
                 return report
               }, new ReportModel(checkingAccount.aggregateId()))
             )

@@ -85,6 +85,8 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         balance: model.balance,
         income: model.income,
         spendings: model.spendings,
+        savings: model.savings,
+        savingsRate: model.savingsRate,
         checkingAccount: {
           $context: CheckingAccount.$context,
           $id: jsonld.createId(CheckingAccount.$context, model.checkingAccount)

@@ -10,7 +10,8 @@ addons:
       - g++-4.8
 cache:
   directories:
-    - node_modules
+  - "~/.yarn"
+  - "~/.nvm"
 services:
   - redis-server
 node_js:
@@ -19,7 +20,6 @@ before_install:
 - npm install -g yarn
 install:
 - yarn
-- npm rebuild node-sass
 script:
 - npm run lint
 - make build

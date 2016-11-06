@@ -1,6 +1,6 @@
 {
   "name": "ausgaben-rheactor",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "appName": "Ausgaben",
   "description": "Ausgaben – Your personal spendings tracker",
   "main": "server/server.js",

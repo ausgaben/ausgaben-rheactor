@@ -53,12 +53,11 @@ nconf.defaults({
   'public_key': null,
   'bcrypt_rounds': 14,
   'template_mailer': {
-    'credentials': null,
     'endpoint': null,
     'api_key': null,
     'from': 'team@ausgaben.me',
     'name': 'Ausgaben',
-    'smtp_config': 'ausgaben',
+    'transport': 'ausgaben',
     'password_change_template': 'password-change',
     'email_verification_template': 'email-verification',
     'template_prefix': 'ausgaben-'

@@ -2,7 +2,8 @@
   <div class="card">
     <div class="card-header">
       <h1 class="card-title">
-        %%::checkingAccount.name%%
+        %%::checkingAccount.name%%<br>
+        <small>%%vm.date|date:'MMMM yyyy'%%</small>
         <i class="material-icons">account_balance_wallet</i>
       </h1>
     </div>
@@ -14,9 +15,9 @@
       <div class="btn-group">
         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="material-icons" data-ng-if="!checkingAccount.monthly">format_list_numbered</i>
-          <span data-ng-if="!checkingAccount.monthly">Showing all transactions</span>
+          <span data-ng-if="!checkingAccount.monthly">All</span>
           <i class="material-icons" data-ng-if="checkingAccount.monthly">date_range</i>
-          <span data-ng-if="checkingAccount.monthly">Showing transactions by month</span>
+          <span data-ng-if="checkingAccount.monthly">by month</span>
         </button>
         <div class="dropdown-menu">
           <button type="button" class="dropdown-item" data-ng-if="checkingAccount.monthly" data-ng-click="vm.toggleMonthly()">
@@ -29,6 +30,12 @@
           </button>
         </div>
       </div>
+      <button type="button" class="btn btn-secondary control" data-ng-click="vm.previousMonth()">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <button type="button" class="btn btn-secondary control" data-ng-click="vm.nextMonth()" data-ng-disabled="!vm.hasNextMonth()">
+        <i class="material-icons">chevron_right</i>
+      </button>
     </div>
     <div class="card-block" data-ng-if="!vm.bookedSpendings.length">
       <p>
@@ -84,7 +91,7 @@
         <thead>
         <tr>
           <th>Balance</th>
-          <th class="money">%%::vm.report.balance|money%%</th>
+          <th class="money">%%vm.report.balance|money%%</th>
         </tr>
         </thead>
         <tbody>
@@ -93,7 +100,7 @@
             Income
           </td>
           <td class="money">
-            %%::vm.report.income|money%%
+            %%vm.report.income|money%%
           </td>
         </tr>
         <tr>
@@ -101,7 +108,7 @@
             Spendings
           </td>
           <td class="money">
-            %%::vm.report.spendings|money%%
+            %%vm.report.spendings|money%%
           </td>
         </tr>
         <tr data-ng-if="vm.report.savings < 0">
@@ -109,7 +116,7 @@
             Savings:
           </td>
           <td class="money">
-            (%%::vm.report.savingsRate|percent%%) %%::vm.report.savings|money%%
+            (%%vm.report.savingsRate|percent%%) %%vm.report.savings|money%%
           </td>
         </tr>
         </tbody>

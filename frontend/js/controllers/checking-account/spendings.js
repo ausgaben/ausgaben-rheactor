@@ -85,6 +85,45 @@ module.exports = (app) => {
             })
         }
 
+        const fetchSpendingsForDate = date => ClientStorageService
+          .getValidToken()
+          .then((token) => {
+            const query = {}
+            if (vm.checkingAccount.monthly) {
+              const startDate = moment(date).startOf('month')
+              const endDate = moment(date).endOf('month')
+              query.dateFrom = startDate.toDate()
+              query.dateTo = endDate.toDate()
+            }
+            fetchSpendings(SpendingService.findByCheckingAccount.bind(SpendingService, vm.checkingAccount, query, token), token)
+            ReportService.report(vm.checkingAccount, query, token)
+              .then(report => {
+                vm.report = report
+              })
+          })
+
+        vm.toggleMonthly = () => ClientStorageService.getValidToken()
+          .then((token) => {
+            CheckingAccountService.updateProperty(vm.checkingAccount, 'monthly', !vm.checkingAccount.monthly, token)
+          })
+
+        vm.hasNextMonth = () => {
+          return !moment(vm.date).isSame(new Date(), 'month')
+        }
+
+        vm.nextMonth = () => {
+          spendingsCollection.items = []
+          vm.date = moment(vm.date).add(1, 'month').toDate()
+          fetchSpendingsForDate(vm.date)
+        }
+
+        vm.previousMonth = () => {
+          spendingsCollection.items = []
+          vm.date = moment(vm.date).subtract(1, 'month').toDate()
+          fetchSpendingsForDate(vm.date)
+        }
+
+        // Init
         Promise
           .join(
             waitFor($scope, 'checkingAccount'),
@@ -111,27 +150,8 @@ module.exports = (app) => {
                   break
               }
             })
-            ClientStorageService.getValidToken()
-              .then((token) => {
-                const query = {}
-                if (vm.checkingAccount.monthly) {
-                  const startDate = moment(vm.date).startOf('month')
-                  const endDate = moment(vm.date).endOf('month')
-                  query.dateFrom = startDate.toDate()
-                  query.dateTo = endDate.toDate()
-                }
-                fetchSpendings(SpendingService.findByCheckingAccount.bind(SpendingService, checkingAccount, query, token), token)
-                ReportService.report(checkingAccount, query, token)
-                  .then(report => {
-                    vm.report = report
-                  })
-              })
           })
-
-        vm.toggleMonthly = () => ClientStorageService.getValidToken()
-          .then((token) => {
-            CheckingAccountService.updateProperty(vm.checkingAccount, 'monthly', !vm.checkingAccount.monthly, token)
-          })
+          .then(() => fetchSpendingsForDate(vm.date))
 
         return vm
       }]

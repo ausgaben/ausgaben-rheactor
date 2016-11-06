@@ -18,3 +18,10 @@ tr[data-ui-sref] {
 .card {
   margin-bottom: 2rem;
 }
+
+.list-group.typeahead {
+  position: absolute;
+  width: auto;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}

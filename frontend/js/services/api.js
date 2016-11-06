@@ -14,6 +14,8 @@ const List = require('rheactor-web-app/js/model/list')
 const User = require('rheactor-web-app/js/model/user')
 const CheckingAccount = require('../model/checking-account')
 const Spending = require('../model/spending')
+const Category = require('../model/category')
+const Title = require('../model/title')
 const Periodical = require('../model/periodical')
 const Report = require('../model/report')
 
@@ -69,6 +71,10 @@ module.exports = (apiIndex, mimeType, $http) => {
         return new Periodical(data)
       case Report.$context:
         return new Report(data)
+      case Title.$context:
+        return new Title(data.title, data.category)
+      case Category.$context:
+        return new Category(data.title)
       case List.$context:
         return new List(data.context, _map(data.items, self.createModelInstance.bind(self)), data.total, data.offset, data.itemsPerPage, data.$links)
       default:

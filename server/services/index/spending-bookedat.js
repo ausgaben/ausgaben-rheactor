@@ -2,6 +2,8 @@
 
 const SpendingCreatedEvent = require('../../event/spending/created')
 const SpendingUpdatedEvent = require('../../event/spending/updated')
+const SpendingDeletedEvent = require('../../event/spending/deleted')
+const EntityDeletedError = require('rheactor-value-objects/errors/entry-deleted')
 const t = require('tcomb')
 const PositiveIntegerType = t.refinement(t.Number, (n) => n % 1 === 0 && n > 0, 'PositiveInteger')
 const scalarType = t.union([t.String, t.Number])
@@ -25,6 +27,11 @@ const SpendingBookedAtIndex = function (repositories, redis, emitter) {
   emitter.on(
     emitter.toEventName(SpendingCreatedEvent),
     event => repositories.spending.getById(event.aggregateId).then(spending => self.indexSpending(spending))
+  )
+  emitter.on(
+    emitter.toEventName(SpendingDeletedEvent),
+    event => repositories.spending.getById(event.aggregateId)
+      .catch(err => EntityDeletedError.is(err), err => self.removeSpending(err.entry))
   )
   emitter.on(
     emitter.toEventName(SpendingUpdatedEvent),
@@ -52,6 +59,16 @@ SpendingBookedAtIndex.prototype.indexSpending = function (spending) {
   if (!spending.bookedAt) return
   const score = spending.bookedAt
   return self.redis.zaddAsync('checkingAccount:spending-bookedAt:' + spending.checkingAccount, score, spending.aggregateId())
+}
+
+/**
+ * @param {SpendingModel} spending
+ * @return {Promise}
+ */
+SpendingBookedAtIndex.prototype.removeSpending = function (spending) {
+  t.Object(spending)
+  const self = this
+  return self.redis.zremAsync('checkingAccount:spending-bookedAt:' + spending.checkingAccount, spending.aggregateId())
 }
 
 /**

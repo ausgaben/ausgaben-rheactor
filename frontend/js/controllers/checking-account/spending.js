@@ -5,20 +5,24 @@ const HttpProgress = require('rheactor-web-app/js/util/http').HttpProgress
 const HttpProblem = require('rheactor-web-app/js/model/http-problem')
 const _merge = require('lodash/merge')
 const Spending = require('../../model/spending')
+const jsonld = require('rheactor-web-app/js/util/jsonld')
+const debounce = require('lodash/debounce')
 
 module.exports = (app) => {
   app
-    .controller('CheckingAccountSpendingController', ['$window', '$scope', '$state', '$stateParams', 'SpendingService', 'ClientStorageService', 'IDService',
+    .controller('CheckingAccountSpendingController', ['$window', '$scope', '$state', '$stateParams', 'SpendingService', 'ClientStorageService', 'CategoryService', 'TitleService', 'IDService',
       /**
        * @param {object} $window
        * @param {object} $scope
        * @param {object} $state
        * @param {object} $stateParams
        * @param {SpendingService} SpendingService
+       * @param {CategoryService} CategoryService
+       * @param {TitleService} TitleService
        * @param {ClientStorageService} ClientStorageService
        * @param {IDService} IDService
        */
-      ($window, $scope, $state, $stateParams, SpendingService, ClientStorageService, IDService) => {
+      ($window, $scope, $state, $stateParams, SpendingService, ClientStorageService, CategoryService, TitleService, IDService) => {
         let vm = {
           p: new HttpProgress(),
           spending: new Spending({
@@ -27,7 +31,9 @@ module.exports = (app) => {
             saving: false
           }),
           type: 'spending',
-          checkingAccount: null
+          checkingAccount: null,
+          categoriesMatch: [],
+          titlesMatch: []
         }
 
         waitFor($scope, 'checkingAccount')
@@ -88,6 +94,30 @@ module.exports = (app) => {
               vm.p.error(httpProblem)
             })
         }
+
+        vm.lookupCategory = debounce(() => {
+          if (!vm.spending.category || !vm.spending.category.length) {
+            vm.categoriesMatch = []
+            return
+          }
+          ClientStorageService.getValidToken()
+            .then((token) => CategoryService.list(jsonld.getRelLink('categories', vm.checkingAccount), {q: vm.spending.category}, token))
+            .then(listResponse => {
+              vm.categoriesMatch = listResponse.items
+            })
+        }, 250)
+
+        vm.lookupTitle = debounce(() => {
+          if (!vm.spending.category || !vm.spending.category.length || !vm.spending.title || !vm.spending.title.length) {
+            vm.titlesMatch = []
+            return
+          }
+          ClientStorageService.getValidToken()
+            .then((token) => TitleService.list(jsonld.getRelLink('titles', vm.checkingAccount), {category: vm.spending.category, q: vm.spending.title}, token))
+            .then(listResponse => {
+              vm.titlesMatch = listResponse.items
+            })
+        }, 250)
 
         return vm
       }]

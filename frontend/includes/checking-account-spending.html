@@ -1,5 +1,5 @@
 <section class="col-xs-12 col-lg-8 offset-lg-2">
-  <form name="form" class="card">
+  <form name="form" class="card" autocomplete="off">
     <div class="card-header">
       <h2 class="card-title" data-ng-switch="vm.type">
         Add
@@ -21,8 +21,17 @@
                bootstrap-error-states
                data-ng-model="vm.spending.category"
                data-ng-disabled="vm.p.$active"
+               data-ng-change="vm.lookupCategory()"
                name="category"
         />
+        <div class="list-group typeahead" data-ng-if="vm.categoriesMatch.length">
+          <button type="button"
+                  class="list-group-item list-group-item-action"
+                  data-ng-repeat="category in vm.categoriesMatch"
+                  data-ng-click="vm.spending.category = category.title; vm.categoriesMatch = [];">
+            %%::category.title%%
+          </button>
+        </div>
       </fieldset>
       <fieldset class="form-group">
         <label for="title">Title</label>
@@ -34,8 +43,16 @@
                bootstrap-error-states
                data-ng-model="vm.spending.title"
                data-ng-disabled="vm.p.$active"
+               data-ng-change="vm.lookupTitle()"
                name="title"
         />
+        <div class="list-group typeahead" data-ng-if="vm.titlesMatch.length">
+          <button type="button"
+                  class="list-group-item list-group-item-action"
+                  data-ng-repeat="title in vm.titlesMatch"
+                  data-ng-click="vm.spending.title = title.title; vm.titlesMatch = []">
+            %%::title.title%%</button>
+        </div>
       </fieldset>
       <fieldset class="form-group">
         <label for="amount">Amount</label>

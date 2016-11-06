@@ -8,6 +8,8 @@ const Status = require('rheactor-web-app/js/model/status')
 const URIValue = require('rheactor-value-objects/uri')
 const CheckingAccount = require('../../frontend/js/model/checking-account')
 const Spending = require('../../frontend/js/model/spending')
+const Category = require('../../frontend/js/model/category')
+const Title = require('../../frontend/js/model/title')
 const Periodical = require('../../frontend/js/model/periodical')
 const Report = require('../../frontend/js/model/report')
 
@@ -45,6 +47,8 @@ module.exports = function (apiHost) {
   relations.addLink(User.$context, new URIValue(apiBase + '/user/:id/lastname'), User.$context, 'update-lastname')
 
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/search/spending'), Spending.$context, 'spendings', true)
+  relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/search/category'), Category.$context, 'categories', true)
+  relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/search/title'), Title.$context, 'titles', true)
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/spending'), Spending.$context, 'create-spending')
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/search/periodical'), Periodical.$context, 'periodicals', true)
   relations.addLink(CheckingAccount.$context, new URIValue(apiBase + '/checking-account/:id/periodical'), Periodical.$context, 'create-periodical')

@@ -3,6 +3,8 @@
 const Promise = require('bluebird')
 const CheckingAccountUserCreatedEvent = require('../event/checking-account-user/created')
 const SpendingBookedAtIndex = require('./index/spending-bookedat')
+const CategoriesIndex = require('./index/categories')
+const TitlesIndex = require('./index/titles')
 const _intersection = require('lodash/intersection')
 
 /**
@@ -21,6 +23,8 @@ function Search (repositories, redis, emitter) {
   Object.defineProperty(this, 'redis', {value: redis})
   Object.defineProperty(this, 'emitter', {value: emitter})
   self.spendingBookedAtIndex = new SpendingBookedAtIndex(repositories, redis, emitter)
+  self.categoriesIndex = new CategoriesIndex(repositories, redis, emitter)
+  self.titlesIndex = new TitlesIndex(repositories, redis, emitter)
   emitter.on(emitter.toEventName(CheckingAccountUserCreatedEvent),
     /**
      * @param {CheckingAccountUserCreatedEvent} event
@@ -109,6 +113,54 @@ Search.prototype.searchPeriodicals = function (query, pagination) {
       return pagination.splice(ids)
     })
     .map(self.repositories.periodical.getById.bind(self.repositories.periodical))
+    .then((items) => {
+      return pagination.result(items, total, query)
+    })
+}
+
+/**
+ * Search categories
+ *
+ * @param {Object} query
+ * @param {Pagination} pagination
+ * @return PaginatedResult
+ */
+Search.prototype.searchCategories = function (query, pagination) {
+  let self = this
+  let total
+  return self.categoriesIndex.all(query.checkingAccount)
+    .filter(category => {
+      if (!query.q) return true
+      return category.toLowerCase().indexOf(query.q.toLowerCase()) >= 0
+    })
+    .then((categories) => {
+      total = categories.length
+      return pagination.splice(categories)
+    })
+    .then((items) => {
+      return pagination.result(items, total, query)
+    })
+}
+
+/**
+ * Search titles
+ *
+ * @param {Object} query
+ * @param {Pagination} pagination
+ * @return PaginatedResult
+ */
+Search.prototype.searchTitles = function (query, pagination) {
+  let self = this
+  let total
+  return self.titlesIndex.all(query.checkingAccount, query.category)
+    .filter(category => {
+      if (!query.q) return true
+      return category.toLowerCase().indexOf(query.q.toLowerCase()) >= 0
+    })
+    .then((titles) => {
+      total = titles.length
+      return pagination.splice(titles)
+    })
     .then((items) => {
       return pagination.result(items, total, query)
     })

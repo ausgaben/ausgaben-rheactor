@@ -13,7 +13,6 @@ function Report (data) {
   this.income = undefined
   this.spendings = undefined
   this.savings = undefined
-  this.savingsRate = undefined
   this.checkingAccount = undefined
 
   if (data) {

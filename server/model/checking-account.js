@@ -11,22 +11,26 @@ const CheckingAccountCreatedEvent = require('../event/checking-account/created')
 /**
  * @param {String} name
  * @param {Boolean} monthly
+ * @param {Boolean} savings
  * @constructor
  * @throws ValidationFailedError if the creation fails due to invalid data
  */
-function CheckingAccountModel (name, monthly) {
+function CheckingAccountModel (name, monthly, savings) {
   monthly = !!monthly
+  savings = !!savings
   AggregateRoot.call(this)
   let schema = Joi.object().keys({
     name: Joi.string().min(1).required().trim(),
-    monthly: Joi.boolean().required()
+    monthly: Joi.boolean().required(),
+    savings: Joi.boolean().required()
   })
-  Joi.validate({name, monthly}, schema, (err, data) => {
+  Joi.validate({name, monthly, savings}, schema, (err, data) => {
     if (err) {
       throw new ValidationFailedError('CheckingAccountModel validation failed: ' + err, data, err)
     }
     this.name = data.name
     this.monthly = data.monthly
+    this.savings = data.savings
   })
 }
 util.inherits(CheckingAccountModel, AggregateRoot)
@@ -42,6 +46,7 @@ CheckingAccountModel.prototype.applyEvent = function (event) {
     case CheckingAccountCreatedEvent.name:
       this.name = data.name
       this.monthly = data.monthly
+      this.savings = data.savings
       this.persisted(event.aggregateId, event.createdAt)
       break
     case CheckingAccountPropertyChangedEvent.name:
@@ -70,6 +75,26 @@ CheckingAccountModel.prototype.setMonthly = function (monthly) {
     data: {
       property: 'monthly',
       value: monthly
+    }
+  })
+}
+
+/**
+ * @param  {boolean} savings
+ * @returns {SpendingUpdatedEvent}
+ */
+CheckingAccountModel.prototype.setSavings = function (savings) {
+  let self = this
+  if (self.savings === !!savings) {
+    throw new ValidationFailedError('Savings unchanged', savings)
+  }
+  self.savings = !!savings
+  self.updated()
+  return new CheckingAccountPropertyChangedEvent({
+    aggregateId: self.aggregateId(),
+    data: {
+      property: 'savings',
+      value: savings
     }
   })
 }

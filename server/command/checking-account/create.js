@@ -5,9 +5,10 @@
  * @param {Boolean} monthly
  * @param {UserModel} author
  */
-function CreateCheckingAccountCommand (name, monthly, author) {
+function CreateCheckingAccountCommand (name, monthly, savings, author) {
   this.name = name
   this.monthly = monthly
+  this.savings = savings
   this.author = author
 }
 

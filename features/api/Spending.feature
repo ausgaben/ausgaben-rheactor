@@ -62,8 +62,6 @@ Feature: Spendings
     Then "spendings" should equal -18023
     Then "income" should equal 23456
     Then "savings" should equal -326
-    Then "savingsRate" should be least 0.06
-    Then "savingsRate" should be most 0.061
     Then "balance" should equal 5107
 
   Scenario: Update spending
@@ -88,8 +86,6 @@ Feature: Spendings
     Then "spendings" should equal -18023
     Then "income" should equal 27777
     Then "savings" should equal -326
-    Then "savingsRate" should be least 0.033
-    Then "savingsRate" should be most 0.034
     Then "balance" should equal 9428
 
   Scenario: Delete spending
@@ -110,6 +106,4 @@ Feature: Spendings
     Then "spendings" should equal -12345
     Then "income" should equal 27777
     Then "savings" should equal -326
-    Then "savingsRate" should be least 0.021
-    Then "savingsRate" should be most 0.022
     Then "balance" should equal 15106

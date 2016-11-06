@@ -39,6 +39,9 @@ module.exports = (app) => {
         waitFor($scope, 'checkingAccount')
           .then(checkingAccount => {
             vm.checkingAccount = checkingAccount
+            if (checkingAccount.savings) {
+              vm.type = 'income'
+            }
             if ($stateParams['spending_id']) {
               ClientStorageService.getValidToken()
                 .then(token => {

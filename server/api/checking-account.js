@@ -70,7 +70,8 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   app.post('/api/checking-account', tokenAuth, function (req, res) {
     let schema = Joi.object().keys({
       name: Joi.string().min(1).required().trim(),
-      monthly: Joi.boolean().default(false)
+      monthly: Joi.boolean().default(false),
+      savings: Joi.boolean().default(false)
     })
     Promise
       .try(() => {
@@ -83,6 +84,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
             let cmd = new CreateCheckingAccountCommand(
               v.value.name,
               v.value.monthly,
+              v.value.savings,
               user
             )
             return emitter.emit(cmd)
@@ -124,7 +126,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
     .try(() => {
       const schema = Joi.object().keys({
         id: Joi.string().min(1).trim(),
-        property: Joi.string().only(['monthly']).required().trim(),
+        property: Joi.string().only(['monthly', 'savings']).required().trim(),
         value: Joi.any().required()
       })
       const query = req.body

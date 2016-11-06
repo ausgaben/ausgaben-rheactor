@@ -13,7 +13,6 @@ function ReportModel (checkingAccount) {
   this.income = 0
   this.spendings = 0
   this.savings = 0
-  this.savingsRate = 0.0
 }
 
 /**
@@ -71,7 +70,6 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
                     report.spendings += spending.amount
                   }
                 }
-                report.savingsRate = report.savings / (report.income + report.spendings) * -1
                 return report
               }, new ReportModel(checkingAccount.aggregateId()))
             )

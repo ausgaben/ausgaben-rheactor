@@ -18,6 +18,7 @@ function CheckingAccount (data) {
   this.identifier = undefined
   this.name = undefined
   this.monthly = undefined
+  this.savings = undefined
 
   if (data) {
     var self = this

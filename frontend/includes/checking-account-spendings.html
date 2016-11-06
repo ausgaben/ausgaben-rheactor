@@ -30,10 +30,10 @@
           </button>
         </div>
       </div>
-      <button type="button" class="btn btn-secondary control" data-ng-click="vm.previousMonth()">
+      <button type="button" class="btn btn-secondary control" data-ng-click="vm.previousMonth()" data-ng-if="checkingAccount.monthly">
         <i class="material-icons">chevron_left</i>
       </button>
-      <button type="button" class="btn btn-secondary control" data-ng-click="vm.nextMonth()" data-ng-disabled="!vm.hasNextMonth()">
+      <button type="button" class="btn btn-secondary control" data-ng-click="vm.nextMonth()" data-ng-if="checkingAccount.monthly" data-ng-disabled="!vm.hasNextMonth()">
         <i class="material-icons">chevron_right</i>
       </button>
     </div>
@@ -56,14 +56,14 @@
         </tr>
         </thead>
         <tbody>
-        <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt'" data-ui-sref="checking-account.edit-spending({identifier: checkingAccount.identifier, spending_id: (spending|idparam)})">
+        <tr data-ng-repeat="spending in group.spendings|orderBy:'bookedAt':true" data-ui-sref="checking-account.edit-spending({identifier: checkingAccount.identifier, spending_id: (spending|idparam)})">
           <td>
             <span data-ng-if="checkingAccount.monthly">%%::spending.bookedAt|date:'dd.MM.'%%</span>
             <span data-ng-if="!checkingAccount.monthly">%%::spending.bookedAt|date:'dd.MM.yyyy'%%</span>
           </td>
           <td>
-              %%::spending.title%%
-              <i class="material-icons" title="Saving" data-ng-if="spending.saving">trending_up</i>
+            %%::spending.title%%
+            <i class="material-icons" title="Saving" data-ng-if="spending.saving">trending_up</i>
           </td>
           <td class="money">
             %%::spending.amount|money%%
@@ -90,8 +90,13 @@
         </colgroup>
         <thead>
         <tr>
-          <th>Balance</th>
-          <th class="money">%%vm.report.balance|money%%</th>
+          <th>
+            Balance
+            <span data-ng-if="!vm.checkingAccount.savings">(%%(vm.report.balance/vm.report.income)|percent%%)</span>
+          </th>
+          <th class="money">
+            %%vm.report.balance|money%%
+          </th>
         </tr>
         </thead>
         <tbody>
@@ -103,9 +108,9 @@
             %%vm.report.income|money%%
           </td>
         </tr>
-        <tr>
+        <tr data-ng-if="vm.report.spendings < 0">
           <td>
-            Spendings
+            Spendings (%%(vm.report.spendings/vm.report.income)*-1|percent%%)
           </td>
           <td class="money">
             %%vm.report.spendings|money%%
@@ -113,10 +118,18 @@
         </tr>
         <tr data-ng-if="vm.report.savings < 0">
           <td>
-            Savings:
+            Savings (%%(vm.report.savings/vm.report.income)*-1|percent%%)
           </td>
           <td class="money">
-            (%%vm.report.savingsRate|percent%%) %%vm.report.savings|money%%
+            %%vm.report.savings|money%%
+          </td>
+        </tr>
+        <tr data-ng-if="vm.pending < 0">
+          <td>
+            Pending
+          </td>
+          <td class="money">
+            %%vm.pending|money%%
           </td>
         </tr>
         </tbody>
@@ -162,4 +175,23 @@
       </table>
     </div>
   </div>
+
+  <form class="card" data-ng-if="vm.report">
+    <div class="card-header">
+      <h2 class="card-title">
+        Settings
+        <i class="material-icons">settings</i>
+      </h2>
+    </div>
+    <div class="card-block">
+        <div class="form-group">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="checkbox" value="true" data-ng-model="checkingAccount.savings">
+              This is a savings account
+            </label>
+          </div>
+        </div>
+    </div>
+  </form>
 </section>

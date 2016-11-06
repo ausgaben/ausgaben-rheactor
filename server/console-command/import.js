@@ -41,7 +41,7 @@ module.exports = {
             importData.accounts, accountData => {
               const user2accounts = _filter(importData.user2account, user2account => user2account.account_id === accountData.account_id)
               const ownerRelation = user2accounts.shift()
-              return backend.emitter.emit(new CreateCheckingAccountCommand(accountData.name, accountData.summarize_months === '1', userId2newEntity[ownerRelation.user_id]))
+              return backend.emitter.emit(new CreateCheckingAccountCommand(accountData.name, accountData.summarize_months === '1', false, userId2newEntity[ownerRelation.user_id]))
                 .then(event => backend.repositories.checkingAccount.getById(event.aggregateId)
                   .then(checkingAccount => {
                     accountId2newId[accountData.account_id] = checkingAccount.aggregateId()

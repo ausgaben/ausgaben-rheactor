@@ -36,7 +36,8 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         $deletedAt: model.deletedAt(),
         identifier: model.aggregateId(),
         name: model.name,
-        monthly: model.monthly
+        monthly: model.monthly,
+        savings: model.savings
       })
     case 'SpendingModel':
       return new Spending({
@@ -86,7 +87,6 @@ AusgabenModelTransformer.prototype.transform = function (jsonld, model, extra) {
         income: model.income,
         spendings: model.spendings,
         savings: model.savings,
-        savingsRate: model.savingsRate,
         checkingAccount: {
           $context: CheckingAccount.$context,
           $id: jsonld.createId(CheckingAccount.$context, model.checkingAccount)

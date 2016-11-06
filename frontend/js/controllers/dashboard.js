@@ -3,6 +3,7 @@
 const HttpProgress = require('rheactor-web-app/js/util/http').HttpProgress
 const HttpProblem = require('rheactor-web-app/js/model/http-problem')
 const Promise = require('bluebird')
+const moment = require('moment')
 
 module.exports = function (app) {
   app
@@ -22,32 +23,50 @@ module.exports = function (app) {
              */
             ($state, CheckingAccountService, ReportService, ClientStorageService) => {
               let vm = {
-                paginatedList: false,
-                p: new HttpProgress(),
+                checkingAccounts: [],
+                savingsAccounts: [],
                 c: new HttpProgress(),
-                balance: 0
+                balanceSavings: 0,
+                balanceCheckings: 0
               }
+              const accounts = []
 
               let fetch = (list, token) => {
-                if (vm.p.$active) {
-                  return
-                }
-                vm.p.activity()
                 list()
                   .then((paginatedList) => {
-                    vm.paginatedList = paginatedList
                     Promise
-                      .filter(paginatedList.items, checkingAccount => !checkingAccount.monthly)
-                      .map(checkingAccount => ReportService.report(checkingAccount, {}, token))
-                      .map(report => Promise.filter(vm.paginatedList.items, checkingAccount => checkingAccount.$id === report.checkingAccount.$id)
+                      .map(paginatedList.items, account => {
+                        if (account.savings) {
+                          vm.savingsAccounts.push(account)
+                        } else {
+                          vm.checkingAccounts.push(account)
+                        }
+                        accounts.push(account)
+                      })
+                    Promise
+                      .map(paginatedList.items, checkingAccount => {
+                        if (checkingAccount.monthly) {
+                          const query = {}
+                          const startDate = moment().startOf('month')
+                          const endDate = moment().endOf('month')
+                          query.dateFrom = startDate.toDate()
+                          query.dateTo = endDate.toDate()
+                          return ReportService.report(checkingAccount, query, token)
+                        }
+                        return ReportService.report(checkingAccount, {}, token)
+                      })
+                      .map(report => Promise.filter(accounts, checkingAccount => checkingAccount.$id === report.checkingAccount.$id)
                         .spread(checkingAccount => {
                           checkingAccount.report = report
-                          vm.balance += report.balance
+                          if (checkingAccount.savings) {
+                            vm.balanceSavings += report.balance
+                          } else {
+                            vm.balanceCheckings += report.balance
+                          }
                         }))
-                    vm.p.success()
-                  })
-                  .catch(HttpProblem, (err) => {
-                    vm.p.error(err)
+                    if (paginatedList.hasNext) {
+                      return fetch(CheckingAccountService.navigateList.bind(CheckingAccountService, paginatedList, 'next', token), token)
+                    }
                   })
               }
 
@@ -59,19 +78,6 @@ module.exports = function (app) {
                 .spread((token, me) => {
                   fetch(CheckingAccountService.listUserCheckingAccounts.bind(CheckingAccountService, me, {}, token), token)
                 })
-
-              vm.next = () => {
-                return ClientStorageService.getValidToken()
-                  .then((token) => {
-                    fetch(CheckingAccountService.navigateList.bind(CheckingAccountService, vm.paginatedList, 'next', token), token)
-                  })
-              }
-              vm.prev = () => {
-                return ClientStorageService.getValidToken()
-                  .then((token) => {
-                    fetch(CheckingAccountService.navigateList.bind(CheckingAccountService, vm.paginatedList, 'prev', token), token)
-                  })
-              }
 
               vm.submit = (checkingAccount) => {
                 if (vm.c.$active) {

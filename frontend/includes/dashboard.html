@@ -12,37 +12,38 @@
           <p>These are your checking accounts</p>
         </div>
         <div class="list-group">
-          <div class="list-group-item" role="navigation"
-               data-ng-show="vm.paginatedList.hasNext || vm.paginatedList.hasPrev">
-            <span class="loading" data-ng-show="vm.p.$active">
-              <i class="material-icons spin">hourglass_empty</i>
-            </span>
-            <div class="btn-group" role="group" aria-label="Pager" data-ng-show="vm.paginatedList.to">
-              <button type="button" class="btn btn-secondary btn-sm" title="Previous"
-                      data-ng-disabled="vm.p.$active || !vm.paginatedList.hasPrev"
-                      data-ng-click="vm.prev()">
-                <i class="material-icons">navigate_before</i>
-              </button>
-              <button type="button" class="btn btn-secondary btn-sm" title="Next"
-                      data-ng-disabled="vm.p.$active || !vm.paginatedList.hasNext"
-                      data-ng-click="vm.next()">
-                <i class="material-icons">navigate_next</i>
-              </button>
-            </div>
-            <span data-ng-show="vm.paginatedList.to">
-              <strong>%%vm.paginatedList.from%%</strong>&ndash;<strong>%%vm.paginatedList.to%%</strong> of
-              <strong>%%vm.paginatedList.total%%</strong>
-            </span>
-          </div>
           <a data-ui-sref="checking-account({identifier: account.identifier})"
-             class="list-group-item account" data-ng-repeat="account in vm.paginatedList.items">
+             class="list-group-item account" data-ng-repeat="account in vm.checkingAccounts">
             <span>%%account.name%%</span>
             <span class="money" data-ng-if="account.report">%%account.report.balance|money%%</span>
             <span class="money" data-ng-if="!account.report">&mdash;</span>
           </a>
           <div class="list-group-item account">
             <span>Total</span>
-            <span class="money">%%vm.balance|money%%</span>
+            <span class="money">%%vm.balanceCheckings|money%%</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="material-icons">trending_up</i>
+            Your savings accounts
+          </h2>
+        </div>
+        <div class="card-block">
+          <p>These are your savings accounts</p>
+        </div>
+        <div class="list-group">
+          <a data-ui-sref="checking-account({identifier: account.identifier})"
+             class="list-group-item account" data-ng-repeat="account in vm.savingsAccounts">
+            <span>%%account.name%%</span>
+            <span class="money" data-ng-if="account.report">%%account.report.balance|money%%</span>
+            <span class="money" data-ng-if="!account.report">&mdash;</span>
+          </a>
+          <div class="list-group-item account">
+            <span>Total</span>
+            <span class="money">%%vm.balanceSavings|money%%</span>
           </div>
         </div>
       </div>

@@ -11,7 +11,15 @@ module.exports = {
    * @return {Promise.<SpendingUpdatedEvent>}
    */
   handler: (emitter, repository, cmd) => {
-    const event = cmd.checkingAccount.setMonthly(cmd.value)
+    let event
+    switch (cmd.property) {
+      case 'monthly':
+        event = cmd.checkingAccount.setMonthly(cmd.value)
+        break
+      case 'savings':
+        event = cmd.checkingAccount.setSavings(cmd.value)
+        break
+    }
     return repository.persistEvent(event, cmd.author)
   }
 }

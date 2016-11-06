@@ -26,6 +26,7 @@ module.exports = (app) => {
           checkingAccount: null,
           bookedSpendings: [],
           pendingSpendings: [],
+          pending: 0,
           date: new Date()
         }
         let spendingsCollection
@@ -65,12 +66,16 @@ module.exports = (app) => {
           vm.bookedSpendings = []
           vm.pendingSpendings = []
           groupSpendings(vm.bookedSpendings, spending => spending.booked, spendingsCollection.items)
+          vm.pending = 0
           groupSpendings(vm.pendingSpendings, spending => !spending.booked, spendingsCollection.items)
+            .map(spending => {
+              vm.pending += spending.amount
+            })
         }
 
         const groupSpendings = (groupList, filterFunc, spendings) => {
           const group2entry = {}
-          Promise
+          return Promise
             .filter(spendings, filterFunc)
             .map(spending => {
               let group
@@ -82,6 +87,7 @@ module.exports = (app) => {
                 groupList.push(group)
               }
               group.spendings.push(spending)
+              return spending
             })
         }
 
@@ -106,6 +112,15 @@ module.exports = (app) => {
           .then((token) => {
             CheckingAccountService.updateProperty(vm.checkingAccount, 'monthly', !vm.checkingAccount.monthly, token)
           })
+
+        $scope.$watch('vm.checkingAccount.savings', (newValue, oldValue) => {
+          if (newValue === undefined || oldValue === undefined) return
+          if (newValue === oldValue) return
+          ClientStorageService.getValidToken()
+            .then((token) => {
+              CheckingAccountService.updateProperty(vm.checkingAccount, 'savings', newValue, token)
+            })
+        })
 
         vm.hasNextMonth = () => {
           return !moment(vm.date).isSame(new Date(), 'month')

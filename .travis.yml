@@ -10,16 +10,11 @@ addons:
       - g++-4.8
 cache:
   directories:
-  - "~/.yarn"
-  - "~/.nvm"
+  - node_modules
 services:
   - redis-server
 node_js:
   - 'stable'
-before_install:
-- npm install -g yarn
-install:
-- yarn
 script:
 - npm run lint
 - make build

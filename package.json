@@ -59,7 +59,7 @@
     "moment": "^2.15.1",
     "nconf": "^0.8.4",
     "ng-file-upload": "^12.2.11",
-    "node-sass": "^3.12.0",
+    "node-sass": "^3.12.5",
     "rheactor-build-views": "^3.0.0",
     "rheactor-event-store": "^3.1.0",
     "rheactor-server": "^6.1.0",

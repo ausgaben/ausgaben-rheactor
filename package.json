@@ -85,7 +85,7 @@
     "rheactor-yadda-feature-runner": "^1.0.0",
     "simple-mock": "^0.7.0",
     "standard": "^8.1.0",
-    "superagent": "^2.3.0",
+    "superagent": "^3.1.0",
     "supertest": "^2.0.0",
     "toposort": "^1.0.0",
     "validate-commit-msg": "^2.8.0",

@@ -87,7 +87,6 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       .try(() => {
         let v = Joi.validate(req.body, schema)
         if (v.error) {
-          console.error(v.error)
           throw new ValidationFailedError('Validation failed', req.body, v.error)
         }
         return Promise

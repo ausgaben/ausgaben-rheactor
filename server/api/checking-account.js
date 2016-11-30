@@ -70,8 +70,8 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   app.post('/api/checking-account', tokenAuth, function (req, res) {
     let schema = Joi.object().keys({
       name: Joi.string().min(1).required().trim(),
-      monthly: Joi.boolean().default(false),
-      savings: Joi.boolean().default(false)
+      monthly: Joi.boolean().default(false).falsy(0).truthy(1),
+      savings: Joi.boolean().default(false).falsy(0).truthy(1)
     })
     Promise
       .try(() => {

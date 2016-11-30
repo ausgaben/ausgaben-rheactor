@@ -21,8 +21,8 @@ function CheckingAccountModel (name, monthly, savings) {
   AggregateRoot.call(this)
   let schema = Joi.object().keys({
     name: Joi.string().min(1).required().trim(),
-    monthly: Joi.boolean().required(),
-    savings: Joi.boolean().required()
+    monthly: Joi.boolean().required().falsy(0).truthy(1),
+    savings: Joi.boolean().required().falsy(0).truthy(1)
   })
   Joi.validate({name, monthly, savings}, schema, (err, data) => {
     if (err) {

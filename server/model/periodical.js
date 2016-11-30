@@ -27,9 +27,9 @@ function PeriodicalModel (checkingAccount, author, category, title, amount, esti
     category: Joi.string().min(1).required().trim(),
     title: Joi.string().min(1).required().trim(),
     amount: Joi.number().integer().required(),
-    estimate: Joi.boolean().required(),
+    estimate: Joi.boolean().required().falsy(0).truthy(1),
     startsAt: Joi.number().integer().min(1).required(),
-    saving: Joi.boolean().default(false)
+    saving: Joi.boolean().default(false).falsy(0).truthy(1)
   })
   Joi.validate({checkingAccount, author, category, title, amount, estimate, startsAt, saving}, schema, (err, data) => {
     if (err) {

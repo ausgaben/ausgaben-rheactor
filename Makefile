@@ -46,7 +46,7 @@ endif
 
 build/%.html: frontend/%.html frontend/includes/*.html build/img
 	mkdir -p $(dir $@)
-	./node_modules/.bin/rheactor-build-views build ./server/config/config.web $< $@ -i ./node_modules/rheactor-web-app/includes/
+	./node_modules/.bin/rheactor-build-views build ./server/config/config.web -i ./node_modules/rheactor-web-app/includes/ $< $@
 
 build/robots.txt: frontend/robots.txt
 	cp frontend/robots.txt build/

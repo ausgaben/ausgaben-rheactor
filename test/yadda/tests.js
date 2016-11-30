@@ -1,9 +1,9 @@
 'use strict'
 
-let path = require('path')
-let glob = require('glob')
-let app = require('../../server/server')
-let runner = require('rheactor-yadda-feature-runner')(app)
+const path = require('path')
+const glob = require('glob')
+const app = require('../../server/server')
+const runner = require('rheactor-yadda-feature-runner')(app)
 
 // Configure parsing for superagent
 require('superagent').serialize[app.webConfig.mimeType] = JSON.stringify

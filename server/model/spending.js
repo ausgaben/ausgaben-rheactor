@@ -31,9 +31,9 @@ function SpendingModel (checkingAccount, author, category, title, amount, booked
     category: Joi.string().min(1).required().trim(),
     title: Joi.string().min(1).required().trim(),
     amount: Joi.number().integer().required(),
-    booked: Joi.boolean().required(),
+    booked: Joi.boolean().required().falsy(0).truthy(1),
     bookedAt: Joi.number().integer().min(1),
-    saving: Joi.boolean().default(false)
+    saving: Joi.boolean().default(false).falsy(0).truthy(1)
   })
   Joi.validate({checkingAccount, author, category, title, amount, booked, bookedAt, saving}, schema, (err, data) => {
     if (err) {

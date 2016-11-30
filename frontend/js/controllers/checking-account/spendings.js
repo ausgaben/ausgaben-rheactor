@@ -122,10 +122,6 @@ module.exports = (app) => {
             })
         })
 
-        vm.hasNextMonth = () => {
-          return !moment(vm.date).isSame(new Date(), 'month')
-        }
-
         vm.nextMonth = () => {
           spendingsCollection.items = []
           vm.date = moment(vm.date).add(1, 'month').toDate()

@@ -16,5 +16,6 @@ Feature: SearchTitles
     Then the status code should be 200
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
     And a list of "https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Title" with 2 of 2 items should be returned
+    And I filter the list by title contains "Markus' December Salary"
     And "title" of the 1st item should equal "Markus' December Salary"
     And "category" of the 1st item should equal "Salary"

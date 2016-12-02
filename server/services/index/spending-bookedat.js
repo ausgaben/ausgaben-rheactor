@@ -65,7 +65,6 @@ SpendingBookedAtIndex.prototype.indexSpending = function (spending) {
   const self = this
   if (!spending.bookedAt) return
   const score = spending.bookedAt
-  console.log(spending.aggregateId(), score)
   return self.redis.zaddAsync(self.indexKey(spending.checkingAccount), score, spending.aggregateId())
 }
 

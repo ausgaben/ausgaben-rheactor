@@ -1,6 +1,6 @@
 {
   "name": "ausgaben-rheactor",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Personal spending build with Node.js",
   "main": "server/server.js",
   "scripts": {

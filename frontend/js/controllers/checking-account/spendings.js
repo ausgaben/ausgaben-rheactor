@@ -5,6 +5,7 @@ const Promise = require('bluebird')
 const Spending = require('../../model/spending')
 const LiveCollection = require('rheactor-web-app/js/util/live-collection')
 const _reduce = require('lodash/reduce')
+const _debounce = require('lodash/debounce')
 const moment = require('moment')
 
 module.exports = (app) => {
@@ -31,16 +32,21 @@ module.exports = (app) => {
         }
         let spendingsCollection
 
-        const fetchSpendings = (list, token) => {
+        const fetchSpendings = (list, token, forDate) => {
           list()
             .then((paginatedList) => {
+              if (forDate !== vm.date.getTime()) {
+                // User has navigate to a different month, abort
+                return
+              }
               return Promise
                 .map(paginatedList.items, spending => spendingsCollection.items.push(new Spending(spending)))
                 .then(() => {
                   if (paginatedList.hasNext) {
                     return fetchSpendings(
                       SpendingService.navigateList.bind(SpendingService, paginatedList, 'next', token),
-                      token
+                      token,
+                      forDate
                     )
                   }
                   return paginatedList
@@ -91,22 +97,22 @@ module.exports = (app) => {
             })
         }
 
-        const fetchSpendingsForDate = date => ClientStorageService
+        const fetchSpendingsForMonth = _debounce(() => ClientStorageService
           .getValidToken()
           .then((token) => {
             const query = {}
             if (vm.checkingAccount.monthly) {
-              const startDate = moment(date).startOf('month')
-              const endDate = moment(date).endOf('month')
+              const startDate = moment(vm.date).startOf('month')
+              const endDate = moment(vm.date).endOf('month')
               query.dateFrom = startDate.toDate()
               query.dateTo = endDate.toDate()
             }
-            fetchSpendings(SpendingService.findByCheckingAccount.bind(SpendingService, vm.checkingAccount, query, token), token)
+            fetchSpendings(SpendingService.findByCheckingAccount.bind(SpendingService, vm.checkingAccount, query, token), token, vm.date.getTime())
             ReportService.report(vm.checkingAccount, query, token)
               .then(report => {
                 vm.report = report
               })
-          })
+          }), 500)
 
         vm.toggleMonthly = () => ClientStorageService.getValidToken()
           .then((token) => {
@@ -125,13 +131,13 @@ module.exports = (app) => {
         vm.nextMonth = () => {
           spendingsCollection.items = []
           vm.date = moment(vm.date).add(1, 'month').toDate()
-          fetchSpendingsForDate(vm.date)
+          fetchSpendingsForMonth()
         }
 
         vm.previousMonth = () => {
           spendingsCollection.items = []
           vm.date = moment(vm.date).subtract(1, 'month').toDate()
-          fetchSpendingsForDate(vm.date)
+          fetchSpendingsForMonth()
         }
 
         // Init
@@ -162,7 +168,7 @@ module.exports = (app) => {
               }
             })
           })
-          .then(() => fetchSpendingsForDate(vm.date))
+          .then(() => fetchSpendingsForMonth())
 
         return vm
       }]

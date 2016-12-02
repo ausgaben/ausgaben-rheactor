@@ -1,4 +1,7 @@
 <section class="col-xs-12 col-lg-6">
+  <div class="hidden-lg-up">
+    <%= includes.summary %>
+  </div>
   <div class="card">
     <div class="card-header">
       <h1 class="card-title">
@@ -75,66 +78,8 @@
   </div>
 </section>
 <section class="col-xs-12 col-lg-6">
-  <div class="card" data-ng-if="vm.report">
-    <div class="card-header">
-      <h2 class="card-title">
-        Summary
-        <i class="material-icons">poll</i>
-      </h2>
-    </div>
-    <div class="card-block spendings">
-      <table class="table">
-        <colgroup>
-          <col>
-          <col width="10%">
-        </colgroup>
-        <thead>
-        <tr>
-          <th>
-            Balance
-            <span data-ng-if="!vm.checkingAccount.savings">(%%(vm.report.balance/vm.report.income)|percent%%)</span>
-          </th>
-          <th class="money">
-            %%vm.report.balance|money%%
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>
-            Income
-          </td>
-          <td class="money">
-            %%vm.report.income|money%%
-          </td>
-        </tr>
-        <tr data-ng-if="vm.report.spendings < 0">
-          <td>
-            Spendings (%%(vm.report.spendings/vm.report.income)*-1|percent%%)
-          </td>
-          <td class="money">
-            %%vm.report.spendings|money%%
-          </td>
-        </tr>
-        <tr data-ng-if="vm.report.savings < 0">
-          <td>
-            Savings (%%(vm.report.savings/vm.report.income)*-1|percent%%)
-          </td>
-          <td class="money">
-            %%vm.report.savings|money%%
-          </td>
-        </tr>
-        <tr data-ng-if="vm.pending < 0">
-          <td>
-            Pending
-          </td>
-          <td class="money">
-            %%vm.pending|money%%
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="hidden-md-down">
+    <%= includes.summary %>
   </div>
 
   <div class="card" data-ng-if="vm.pendingSpendings.length">

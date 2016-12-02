@@ -28,7 +28,7 @@ const TitlesIndex = function (repositories, redis, emitter) {
   emitter.on(
     emitter.toEventName(SpendingUpdatedEvent),
     event => {
-      if (event.data.property === 'title') {
+      if (event.data.title) {
         return repositories.spending.getById(event.aggregateId).then(spending => self.indexSpending(spending))
       }
     }

@@ -28,7 +28,7 @@ const CategoriesIndex = function (repositories, redis, emitter) {
   emitter.on(
     emitter.toEventName(SpendingUpdatedEvent),
     event => {
-      if (event.data.property === 'category') {
+      if (event.data.category) {
         return repositories.spending.getById(event.aggregateId).then(spending => self.indexSpending(spending))
       }
     }

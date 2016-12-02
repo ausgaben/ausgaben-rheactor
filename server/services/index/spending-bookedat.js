@@ -36,7 +36,7 @@ const SpendingBookedAtIndex = function (repositories, redis, emitter) {
   emitter.on(
     emitter.toEventName(SpendingUpdatedEvent),
     event => {
-      if (event.data.property === 'bookedAt') {
+      if (event.data.bookedAt) {
         return repositories.spending.getById(event.aggregateId).then(spending => self.indexSpending(spending))
       }
     }
@@ -45,10 +45,17 @@ const SpendingBookedAtIndex = function (repositories, redis, emitter) {
 
 SpendingBookedAtIndex.prototype.index = function () {
   let self = this
-  return self.repositories.spending.findAll()
-    .map(spending => self.indexSpending(spending))
+  return self.repositories.checkingAccount.findAll()
+    .map(checkingAccount => self.redis.delAsync(self.indexKey(checkingAccount.aggregateId())))
+    .then(() => self.repositories.spending.findAll()
+      .map(spending => self.indexSpending(spending))
+    )
 }
 
+SpendingBookedAtIndex.prototype.indexKey = function (checkingAccount) {
+  scalarType(checkingAccount)
+  return 'checkingAccount:spending-bookedAt:' + checkingAccount
+}
 /**
  * @param {SpendingModel} spending
  * @return {Promise}
@@ -58,7 +65,8 @@ SpendingBookedAtIndex.prototype.indexSpending = function (spending) {
   const self = this
   if (!spending.bookedAt) return
   const score = spending.bookedAt
-  return self.redis.zaddAsync('checkingAccount:spending-bookedAt:' + spending.checkingAccount, score, spending.aggregateId())
+  console.log(spending.aggregateId(), score)
+  return self.redis.zaddAsync(self.indexKey(spending.checkingAccount), score, spending.aggregateId())
 }
 
 /**

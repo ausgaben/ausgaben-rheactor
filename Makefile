@@ -64,7 +64,7 @@ deploy: ## Deploy to production
 	ENVIRONMENT=production make -B build
 	rm build/js/app.js
 	rm build/css/styles.css
-	rsync -crvz --delete --delete-after build/ `node server/console config rsync`
+	rsync -crvz --delete --delete-after build/ `./server/config/cli rsync`
 
 help: ## (default), display the list of make commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

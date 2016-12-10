@@ -1,0 +1,16 @@
+#!/bin/env node
+
+/**
+ * Prints config values to the command line
+ *
+ * Usage: server/config/cli <value>
+ */
+
+const config = require('./config')
+const k = process.argv[process.argv.length - 1]
+const v = config.get(k)
+if (v === undefined) {
+  console.error(`"${k}" is not defined in config`)
+  process.exit(1)
+}
+console.log(v)

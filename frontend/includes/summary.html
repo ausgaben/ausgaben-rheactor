@@ -47,12 +47,12 @@
           %%vm.report.savings|money%%
         </td>
       </tr>
-      <tr data-ng-if="vm.pending < 0">
+      <tr data-ng-if="vm.pending">
         <td>
-          Pending
+          Pending <span data-ng-if="vm.report.income && vm.pending">(%%(vm.pending/vm.report.income)*-1|percent%%)</span>
         </td>
         <td class="money">
-          %%vm.pending|money%% <span data-ng-if="vm.report.income && vm.pending">(%%(vm.pending/vm.report.income)*-1|percent%%)</span>
+          %%vm.pending|money%%
         </td>
       </tr>
       </tbody>

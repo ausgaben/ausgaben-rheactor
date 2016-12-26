@@ -22,7 +22,7 @@ module.exports = {
       })
       .then(() => {
         forIn(report, (v, k) => {
-          console.log(`${k}\t${v/100}`)
+          console.log(`${k}\t${v / 100}`)
         })
       })
   }

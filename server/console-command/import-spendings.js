@@ -3,13 +3,18 @@
 const Promise = require('bluebird')
 const fs = Promise.promisifyAll(require('fs'))
 const CreateSpendingCommand = require('../command/spending/create')
+const moment = require('moment')
 
 module.exports = {
   arguments: '<importfile> <account> <user> <month>',
   description: 'import spendings from a tab-separated file',
   action: (backend, importfile, account, user, month) => {
     const bookedAt = new Date()
-    bookedAt.setMonth(parseInt(month, 10) - 1, 1)
+    month = parseInt(month, 10)
+    bookedAt.setMonth(month - 1, 1)
+    if (month < moment().month() + 1) {
+      bookedAt.setYear(moment().year() + 1)
+    }
     return Promise
       .join(
         backend.repositories.checkingAccount.getById(account),

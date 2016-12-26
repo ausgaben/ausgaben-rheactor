@@ -52,7 +52,7 @@
           Pending
         </td>
         <td class="money">
-          %%vm.pending|money%%
+          %%vm.pending|money%% <span data-ng-if="vm.report.income && vm.pending">(%%(vm.pending/vm.report.income)*-1|percent%%)</span>
         </td>
       </tr>
       </tbody>

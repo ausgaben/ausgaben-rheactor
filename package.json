@@ -64,7 +64,7 @@
     "rheactor-build-views": "^3.1.0",
     "rheactor-event-store": "^3.1.0",
     "rheactor-server": "^7.0.0",
-    "rheactor-value-objects": "^3.2.0",
+    "rheactor-value-objects": "^4.3.1",
     "rheactor-web-app": "^2.11.0",
     "showdown": "^1.5.1",
     "tcomb": "^3.2.15",

@@ -90,7 +90,7 @@
     "supertest": "^2.0.1",
     "toposort": "^1.0.0",
     "validate-commit-msg": "^2.8.2",
-    "yadda": "^0.22.1"
+    "yadda": "^1.0.0"
   },
   "browserify": {
     "transform": [

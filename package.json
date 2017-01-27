@@ -47,7 +47,7 @@
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "compare-versions": "^3.0.0",
-    "event-source-polyfill": "0.0.7",
+    "event-source-polyfill": "0.0.9",
     "express": "^4.14.0",
     "glob": "^7.1.1",
     "isemail": "^2.2.1",

@@ -63,7 +63,7 @@
     "node-sass": "^4.0.0",
     "rheactor-build-views": "^3.1.0",
     "rheactor-event-store": "^3.1.0",
-    "rheactor-server": "^7.0.0",
+    "rheactor-server": "^8.4.1",
     "rheactor-value-objects": "^3.2.0",
     "rheactor-web-app": "^2.11.0",
     "showdown": "^1.5.1",

@@ -1,17 +1,12 @@
-'use strict'
-
-const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
-const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
-const CheckingAccount = require('../../frontend/js/model/checking-account')
-const CreateCheckingAccountCommand = require('../command/checking-account/create')
-const UpdateCheckingAccountPropertyCommand = require('../command/checking-account/update-property')
-const URIValue = require('rheactor-value-objects/uri')
-const Promise = require('bluebird')
-const Joi = require('joi')
-const Pagination = require('rheactor-server/util/pagination')
-const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
-const _merge = require('lodash/merge')
-const checkVersion = require('rheactor-server/api/check-version')
+import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import CheckingAccount from '../../frontend/js/model/checking-account'
+import CreateCheckingAccountCommand from '../command/checking-account/create'
+import UpdateCheckingAccountPropertyCommand from '../command/checking-account/update-property'
+import {URIValue} from 'rheactor-value-objects'
+import Promise from 'bluebird'
+import Joi from 'joi'
+import {Pagination, sendPaginatedListResponse, checkVersion} from 'rheactor-server'
+import _merge from 'lodash/merge'
 
 /**
  * @param {express.app} app
@@ -27,11 +22,24 @@ const checkVersion = require('rheactor-server/api/check-version')
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-module.exports = function (app, config, emitter, checkingAccountRepo, checkingAccountUserRepo, spendingRepo, userRepo, search, tokenAuth, jsonld, sendHttpProblem, transformer) {
+export default (
+  app,
+  config,
+  emitter,
+  checkingAccountRepo,
+  checkingAccountUserRepo,
+  spendingRepo,
+  userRepo,
+  search,
+  tokenAuth,
+  jsonld,
+  sendHttpProblem,
+  transformer
+) => {
   /**
    * Search checkingAccounts
    */
-  app.post('/api/search/checking-account', tokenAuth, function (req, res) {
+  app.post('/api/search/checking-account', tokenAuth, (req, res) => {
     let schema = Joi.object().keys({
       user: Joi.number().min(1),
       identifier: Joi.alternatives().try(Joi.number().min(1), Joi.string().min(1)),
@@ -67,7 +75,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   /**
    * Create a checking account
    */
-  app.post('/api/checking-account', tokenAuth, function (req, res) {
+  app.post('/api/checking-account', tokenAuth, (req, res) => {
     let schema = Joi.object().keys({
       name: Joi.string().min(1).required().trim(),
       monthly: Joi.boolean().default(false).falsy(0).truthy(1),
@@ -104,20 +112,18 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       .catch(sendHttpProblem.bind(null, res))
   })
 
-  app.get('/api/checking-account/:id', tokenAuth, function (req, res) {
-    return Promise
-      .join(
-        checkingAccountRepo.getById(req.params.id),
-        checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
-      )
-      .spread((checkingAccount, checkingAccountUser) => {
-        if (!checkingAccountUser) {
-          throw new AccessDeniedError(req.url, 'Not your checking account!')
-        }
-        return res.send(transformer(checkingAccount))
-      })
-      .catch(sendHttpProblem.bind(null, res))
-  })
+  app.get('/api/checking-account/:id', tokenAuth, (req, res) => Promise
+    .join(
+      checkingAccountRepo.getById(req.params.id),
+      checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
+    )
+    .spread((checkingAccount, checkingAccountUser) => {
+      if (!checkingAccountUser) {
+        throw new AccessDeniedError(req.url, 'Not your checking account!')
+      }
+      return res.send(transformer(checkingAccount))
+    })
+    .catch(sendHttpProblem.bind(null, res)))
 
   /**
    * Update a checking account
@@ -147,7 +153,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
             throw new AccessDeniedError(req.url, 'Not your checking account!')
           }
           checkVersion(req.headers['if-match'], checkingAccount)
-          if (checkingAccount[v.value.property] === v.value.value) throw new ValidationFailedError(v.value.property + ' unchanged', v.value.value)
+          if (checkingAccount[v.value.property] === v.value.value) throw new ValidationFailedError(`${v.value.property} unchanged`, v.value.value)
           return emitter.emit(new UpdateCheckingAccountPropertyCommand(checkingAccount, v.value.property, v.value.value, user))
             .then(() => checkingAccount)
         })

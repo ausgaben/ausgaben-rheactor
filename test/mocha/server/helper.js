@@ -1,17 +1,16 @@
-'use strict'
-
-let request = require('supertest')
-let Promise = require('bluebird')
+import request from 'supertest'
+import superagent from 'superagent'
+import Promise from 'bluebird'
 Promise.promisifyAll(request)
 
-let backend = require('../../../server/backend')
+import backend from '../../../server/backend'
 
-exports.clearDb = function () {
+export function clearDb () {
   return backend.redis.client.flushdb()
 }
 
-exports.redis = backend.redis.client
-exports.repositories = backend.repositories
+export const redis = backend.redis.client
+export const repositories = backend.repositories
 
 // Configure parsing for superagent
-require('superagent').serialize[backend.webConfig.mimeType] = JSON.stringify
+superagent.serialize[backend.webConfig.mimeType] = JSON.stringify

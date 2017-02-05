@@ -1,14 +1,10 @@
-'use strict'
-
-const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
-const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
-const Category = require('../../frontend/js/model/category')
-const URIValue = require('rheactor-value-objects/uri')
-const Promise = require('bluebird')
-const Joi = require('joi')
-const Pagination = require('rheactor-server/util/pagination')
-const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
-const _merge = require('lodash/merge')
+import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import Category from '../../frontend/js/model/category'
+import {URIValue} from 'rheactor-value-objects'
+import Promise from 'bluebird'
+import Joi from 'joi'
+import {Pagination, sendPaginatedListResponse} from 'rheactor-server'
+import _merge from 'lodash/merge'
 
 /**
  * @param {express.app} app
@@ -23,7 +19,19 @@ const _merge = require('lodash/merge')
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-module.exports = function (app, config, emitter, checkingAccountRepo, checkingAccountUserRepo, userRepo, search, tokenAuth, jsonld, sendHttpProblem, transformer) {
+export default (
+  app,
+  config,
+  emitter,
+  checkingAccountRepo,
+  checkingAccountUserRepo,
+  userRepo,
+  search,
+  tokenAuth,
+  jsonld,
+  sendHttpProblem,
+  transformer
+) => {
   /**
    * Search categorys in the given checking account
    */

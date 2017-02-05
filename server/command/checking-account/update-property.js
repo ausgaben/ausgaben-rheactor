@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @param {CheckingAccountModel} checkingAccount
  * @param {String} property
@@ -13,4 +11,4 @@ function UpdateCheckingAccountPropertyCommand (checkingAccount, property, value,
   this.author = author
 }
 
-module.exports = UpdateCheckingAccountPropertyCommand
+export default UpdateCheckingAccountPropertyCommand

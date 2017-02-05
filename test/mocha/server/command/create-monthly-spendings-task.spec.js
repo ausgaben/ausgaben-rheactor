@@ -1,19 +1,19 @@
-'use strict'
-
 /* global describe, it, after */
 
-const CreateMonthlySpendingsCommand = require('../../../../server/command/create-monthly-spendings')
-const PeriodicalsRepository = require('../../../../server/repository/periodical')
-const SpendingsRepository = require('../../../../server/repository/spending')
-const PeriodicalModel = require('../../../../server/model/periodical')
-const Promise = require('bluebird')
-const simple = require('simple-mock')
-simple.Promise = Promise
-const expect = require('chai').expect
+import CreateMonthlySpendingsCommand from '../../../../server/command/create-monthly-spendings'
 
-describe('CreateMonthlySpendingsCommand', function () {
+import {PeriodicalRepository} from '../../../../server/repository/periodical'
+import {SpendingRepository} from '../../../../server/repository/spending'
+import {PeriodicalModel} from '../../../../server/model/periodical'
+import Promise from 'bluebird'
+import simple from 'simple-mock'
+simple.Promise = Promise
+import {expect} from 'chai'
+
+describe('CreateMonthlySpendingsCommand', () => {
   let task
-  let mockPeriodicalsRepository, mockSpendingsRepository
+  let mockPeriodicalRepository
+  let mockSpendingRepository
 
   let periodical1 = new PeriodicalModel(
     '42',
@@ -35,22 +35,22 @@ describe('CreateMonthlySpendingsCommand', function () {
     new Date('2015-01-02').getTime()
   )
 
-  after(function () {
+  after(() => {
     simple.restore()
   })
 
-  it('should create spendings for the given month', function (done) {
+  it('should create spendings for the given month', done => {
     let periodicals = [periodical1, periodical2]
-    mockPeriodicalsRepository = new PeriodicalsRepository()
-    simple.mock(mockPeriodicalsRepository, 'findByMonth').resolveWith(periodicals)
-    mockSpendingsRepository = new SpendingsRepository()
-    simple.mock(mockSpendingsRepository, 'add').resolveWith(null)
+    mockPeriodicalRepository = new PeriodicalRepository()
+    simple.mock(mockPeriodicalRepository, 'findByMonth').resolveWith(periodicals)
+    mockSpendingRepository = new SpendingRepository()
+    simple.mock(mockSpendingRepository, 'add').resolveWith(null)
     let month = new Date()
-    task = new CreateMonthlySpendingsCommand(mockPeriodicalsRepository, mockSpendingsRepository)
+    task = new CreateMonthlySpendingsCommand(mockPeriodicalRepository, mockSpendingRepository)
     task.execute(month.getTime()).then(() => {
-      expect(mockPeriodicalsRepository.findByMonth.callCount).to.equal(1)
-      expect(mockPeriodicalsRepository.findByMonth.lastCall.arg).to.equal(month.getTime())
-      expect(mockSpendingsRepository.add.callCount).to.equal(periodicals.length)
+      expect(mockPeriodicalRepository.findByMonth.callCount).to.equal(1)
+      expect(mockPeriodicalRepository.findByMonth.lastCall.arg).to.equal(month.getTime())
+      expect(mockSpendingRepository.add.callCount).to.equal(periodicals.length)
       done()
     })
   })

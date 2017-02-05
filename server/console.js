@@ -1,15 +1,12 @@
-'use strict'
-
-const program = require('commander')
-const Promise = require('bluebird')
-const glob = require('glob')
+import program from 'commander'
+import Promise from 'bluebird'
+import glob from 'glob'
 const globAsync = Promise.promisify(glob)
-const path = require('path')
-const colors = require('colors')
-const _map = require('lodash/map')
-const _concat = require('lodash/concat')
-
-const backend = require('./backend')
+import path from 'path'
+import colors from 'colors'
+import _map from 'lodash/map'
+import _concat from 'lodash/concat'
+import backend from './backend'
 const config = backend.config
 
 program
@@ -58,7 +55,7 @@ const configureCommand = (cmdFile) => {
     .action(runCommand.bind(null, cmd))
   if (cmd.options) {
     _map(cmd.options, (option) => {
-      c.option.apply(c, option)
+      c.option(...option)
     })
   }
   return cmdName

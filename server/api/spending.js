@@ -1,18 +1,13 @@
-'use strict'
-
-const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
-const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
-const Spending = require('../../frontend/js/model/spending')
-const CreateSpendingCommand = require('../command/spending/create')
-const UpdateSpendingCommand = require('../command/spending/update')
-const DeleteSpendingCommand = require('../command/spending/delete')
-const URIValue = require('rheactor-value-objects/uri')
-const Promise = require('bluebird')
-const Joi = require('joi')
-const Pagination = require('rheactor-server/util/pagination')
-const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
-const _merge = require('lodash/merge')
-const checkVersion = require('rheactor-server/api/check-version')
+import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import Spending from '../../frontend/js/model/spending'
+import CreateSpendingCommand from '../command/spending/create'
+import UpdateSpendingCommand from '../command/spending/update'
+import DeleteSpendingCommand from '../command/spending/delete'
+import {URIValue} from 'rheactor-value-objects'
+import Promise from 'bluebird'
+import Joi from 'joi'
+import {checkVersion, sendPaginatedListResponse, Pagination} from 'rheactor-server'
+import _merge from 'lodash/merge'
 
 /**
  * @param {express.app} app
@@ -28,7 +23,20 @@ const checkVersion = require('rheactor-server/api/check-version')
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-module.exports = function (app, config, emitter, checkingAccountRepo, checkingAccountUserRepo, spendingRepo, userRepo, search, tokenAuth, jsonld, sendHttpProblem, transformer) {
+export default (
+  app,
+  config,
+  emitter,
+  checkingAccountRepo,
+  checkingAccountUserRepo,
+  spendingRepo,
+  userRepo,
+  search,
+  tokenAuth,
+  jsonld,
+  sendHttpProblem,
+  transformer
+) => {
   /**
    * Search spendings in the given checking account
    */
@@ -69,7 +77,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   /**
    * Create a spending in the given checking account
    */
-  app.post('/api/checking-account/:id/spending', tokenAuth, function (req, res) {
+  app.post('/api/checking-account/:id/spending', tokenAuth, (req, res) => {
     let schema = Joi.object().keys({
       category: Joi.string().min(1).required().trim(),
       title: Joi.string().min(1).required().trim(),
@@ -122,7 +130,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       .catch(sendHttpProblem.bind(null, res))
   })
 
-  app.get('/api/spending/:id', tokenAuth, function (req, res) {
+  app.get('/api/spending/:id', tokenAuth, (req, res) => {
     spendingRepo.getById(req.params.id)
       .then((spending) => {
         return checkingAccountUserRepo.findByCheckingAccountId(spending.checkingAccount).filter(checkingAccountUser => checkingAccountUser.user === req.user)
@@ -142,7 +150,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
   /**
    * Update a spending
    */
-  app.put('/api/spending/:id', tokenAuth, function (req, res) {
+  app.put('/api/spending/:id', tokenAuth, (req, res) => {
     let schema = Joi.object().keys({
       category: Joi.string().min(1).trim(),
       title: Joi.string().min(1).trim(),

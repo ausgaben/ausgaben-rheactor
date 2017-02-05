@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @param {SpendingModel} spending
  * @param {String} category
@@ -21,4 +19,4 @@ function UpdateSpendingCommand (spending, category, title, amount, booked, booke
   this.author = author
 }
 
-module.exports = UpdateSpendingCommand
+export default UpdateSpendingCommand

@@ -1,9 +1,5 @@
-'use strict'
-
-const AggregateRepository = require('rheactor-event-store/aggregate-repository')
-const util = require('util')
-const CheckingAccountModel = require('../model/checking-account')
-const CheckingAccountCreatedEvent = require('../event/checking-account/created')
+import {AggregateRepository} from 'rheactor-event-store'
+import {CheckingAccountModel} from '../model/checking-account'
 
 /**
  * Creates a new checkingAccount repository
@@ -11,21 +7,8 @@ const CheckingAccountCreatedEvent = require('../event/checking-account/created')
  * @param {redis.client} redis
  * @constructor
  */
-var CheckingAccountRepository = function (redis) {
-  AggregateRepository.call(this, CheckingAccountModel, 'checkingAccount', redis)
+export class CheckingAccountRepository extends AggregateRepository {
+  constructor (redis) {
+    super(CheckingAccountModel, 'checkingAccount', redis)
+  }
 }
-util.inherits(CheckingAccountRepository, AggregateRepository)
-
-/**
- * @param {CheckingAccountModel} checkingAccount
- * @returns {Promise.<CheckingAccountCreatedEvent>}
- */
-CheckingAccountRepository.prototype.add = function (checkingAccount) {
-  let self = this
-  return AggregateRepository.prototype.add.call(self, checkingAccount)
-    .then((event) => {
-      return new CheckingAccountCreatedEvent(event)
-    })
-}
-
-module.exports = CheckingAccountRepository

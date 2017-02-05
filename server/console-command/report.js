@@ -1,9 +1,7 @@
-'use strict'
+import moment from 'moment'
+import forIn from 'lodash/forIn'
 
-const moment = require('moment')
-const forIn = require('lodash/forIn')
-
-module.exports = {
+export default {
   arguments: '<account> <year> [title]',
   description: 'create a simple report',
   action: (backend, account, year, title) => {
@@ -11,7 +9,7 @@ module.exports = {
     return backend.repositories.checkingAccount.getById(account)
       .then(account => backend.repositories.spending.findByCheckingAccountId(account.aggregateId()))
       .filter(spending => spending.booked)
-      .filter(spending => moment(new Date(spending.bookedAt)).isBetween((+year - 1) + '-12-31', (+year + 1) + '-01-01', 'day'))
+      .filter(spending => moment(new Date(spending.bookedAt)).isBetween(`${+year - 1}-12-31`, `${+year + 1}-01-01`, 'day'))
       .filter(spending => title ? spending.title.match(new RegExp(title, 'i')) : true)
       .map(spending => {
         let label = title ? spending.title : spending.category

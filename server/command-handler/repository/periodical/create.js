@@ -1,9 +1,7 @@
-'use strict'
+import CreatePeriodicalCommand from '../../../command/periodical/create'
+import {PeriodicalModel} from '../../../model/periodical'
 
-const CreatePeriodicalCommand = require('../../../command/periodical/create')
-const PeriodicalModel = require('../../../model/periodical')
-
-module.exports = {
+export default {
   command: CreatePeriodicalCommand,
   /**
    * @param {BackendEmitter} emitter

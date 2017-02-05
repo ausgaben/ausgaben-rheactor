@@ -1,11 +1,12 @@
-'use strict'
+import {EmittedEventsHandlerRegistry} from 'rheactor-server'
 
-const EmittedEventsHandlerRegistry = require('rheactor-server/services/emitted-events-handler-registry')
-const glob = require('glob')
-const path = require('path')
-const _last = require('lodash/last')
-const _map = require('lodash/map')
-const _camelCase = require('lodash/camelCase')
+import createCheckingAccountCommandHandler from '../command-handler/repository/checking-account/create'
+import updateCheckingAccountPropertyCommandHandler from '../command-handler/repository/checking-account/update-property'
+import createCheckingAccountUserCommandHandler from '../command-handler/repository/checking-account-user/create'
+import createPeriodicalCommandHandler from '../command-handler/repository/periodical/create'
+import createSpendingCommandHandler from '../command-handler/repository/spending/create'
+import updateSpendingCommandHandler from '../command-handler/repository/spending/update'
+import deleteSpendingCommandHandler from '../command-handler/repository/spending/delete'
 
 /**
  * @param {Array.<AggregateRepository>} repos
@@ -14,15 +15,43 @@ const _camelCase = require('lodash/camelCase')
  * @param {object} webConfig
  * @param {TemplateMailerClient} templateMailerClient
  */
-module.exports = (repos, emitter, config, webConfig, templateMailerClient) => {
+export default (repos, emitter, config, webConfig, templateMailerClient) => {
   let c = new EmittedEventsHandlerRegistry(emitter)
 
+  const commandHandler = [
+    {
+      repository: repos.checkingAccount,
+      handler: [
+        createCheckingAccountCommandHandler,
+        updateCheckingAccountPropertyCommandHandler
+      ]
+    },
+    {
+      repository: repos.checkingAccountUser,
+      handler: [
+        createCheckingAccountUserCommandHandler
+      ]
+    },
+    {
+      repository: repos.periodical,
+      handler: [
+        createPeriodicalCommandHandler
+      ]
+    },
+    {
+      repository: repos.spending,
+      handler: [
+        createSpendingCommandHandler,
+        updateSpendingCommandHandler,
+        deleteSpendingCommandHandler
+      ]
+    }
+  ]
+
   // Register repository command handler
-  let matches = glob.sync(path.join(__dirname, '/../command-handler/repository/**/*.js'))
-  _map(matches, (match) => {
-    let handler = require(match)
-    // Bind the repository based on the subfolder name
-    let repoName = _camelCase(_last(path.dirname(match).split(path.sep)))
-    c.addHandler(handler.command, handler.handler.bind(null, emitter, repos[repoName]))
+  commandHandler.map(repoHandler => {
+    repoHandler.handler.map(handler => {
+      c.addHandler(handler.command, handler.handler.bind(null, emitter, repoHandler.repository))
+    })
   })
 }

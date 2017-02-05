@@ -1,8 +1,6 @@
-'use strict'
-
-const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
-const Promise = require('bluebird')
-const ModelEvent = require('rheactor-event-store/model-event')
+import {AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import Promise from 'bluebird'
+import {ModelEvent} from 'rheactor-event-store'
 
 /**
  * @param {express.app} app
@@ -15,7 +13,7 @@ const ModelEvent = require('rheactor-event-store/model-event')
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-module.exports = (app, emitter, verifyToken, checkingAccountRepo, checkingAccountUserRepo, spendingRepo, jsonld, sendHttpProblem, transformer) => {
+export default (app, emitter, verifyToken, checkingAccountRepo, checkingAccountUserRepo, spendingRepo, jsonld, sendHttpProblem, transformer) => {
   app.get('/api/checking-account/:id/stream', (req, res) => {
     let checkingAccountId = req.params.id
     let userId
@@ -44,8 +42,8 @@ module.exports = (app, emitter, verifyToken, checkingAccountRepo, checkingAccoun
         let sendEvent = (event) => {
           messageCount++
           res.write('event: ModelEvent\n')
-          res.write('id: ' + messageCount + '\n')
-          res.write('data: ' + JSON.stringify(event) + '\n\n')
+          res.write(`id: ${messageCount}\n`)
+          res.write(`data: ${JSON.stringify(event)}\n\n`)
         }
 
         let handler =

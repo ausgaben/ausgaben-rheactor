@@ -1,12 +1,10 @@
-'use strict'
+import {CheckingAccountRepository} from '../repository/checking-account'
+import {CheckingAccountUserRepository} from '../repository/checking-account-user'
+import {PeriodicalRepository} from '../repository/periodical'
+import {SpendingRepository} from '../repository/spending'
+import {UserRepository} from 'rheactor-server'
 
-const CheckingAccountRepository = require('../repository/checking-account')
-const CheckingAccountUserRepository = require('../repository/checking-account-user')
-const PeriodicalRepository = require('../repository/periodical')
-const SpendingRepository = require('../repository/spending')
-const UserRepository = require('rheactor-server/repository/user-repository')
-
-module.exports = (redis) => {
+export default (redis) => {
   return {
     user: new UserRepository(redis),
     checkingAccount: new CheckingAccountRepository(redis),

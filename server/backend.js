@@ -1,16 +1,15 @@
-'use strict'
-
-const Promise = require('bluebird')
+import {RedisConnection, rheactorCommandHandler, rheactorEventHandler, BackendEmitter} from 'rheactor-server'
+import Promise from 'bluebird'
 Promise.longStackTraces()
-const colors = require('colors')
-
-const config = require('./config/config')
-const webConfig = require('./config/config.web')
+import colors from 'colors'
+import config from './config/config'
+import webConfig from './config/config.web'
 const environment = config.get('environment')
-const appName = config.get('app') + '@' + environment + ' v' + config.get('version')
+const appName = `${config.get('app')}@${environment} v${config.get('version')}`
 
 // Event listening
-const emitter = require('rheactor-server/services/emitter')
+const emitter = new BackendEmitter()
+
 emitter.on('error', (err) => {
   // TODO: Log
   if (/EntityNotFoundError/.test(err.name) || /EntryAlreadyExistsError/.test(err.name)) {
@@ -25,29 +24,29 @@ if (environment === 'development') {
 }
 
 if (environment === 'production') {
-  process.on('uncaughtException', function (err) {
+  process.on('uncaughtException', err => {
     console.error('UNCAUGHT EXCEPTION - keeping process alive:', err)
   })
 }
 
 // Persistence
-const RedisConnection = require('rheactor-server/services/redis-connection')
 const redisConfig = config.get('redis')
 const redis = new RedisConnection(redisConfig.host, redisConfig.port, redisConfig.database, redisConfig.password)
 redis.connect().then((client) => {
-  client.on('error', function (err) {
+  client.on('error', err => {
     console.error(err)
   })
 })
-const repositories = require('./services/repositories')(redis.client)
-const Search = require('./services/search')
+import repos from './services/repositories'
+const repositories = repos(redis.client)
+import Search from './services/search'
 const search = new Search(repositories, redis.client, emitter)
 
 // Generate RSA keys for JWT
 Promise
   .join(
-    redis.client.getAsync(environment + ':id_rsa'),
-    redis.client.getAsync(environment + ':id_rsa.pub')
+    redis.client.getAsync(`${environment}:id_rsa`),
+    redis.client.getAsync(`${environment}:id_rsa.pub`)
   )
   .spread((privateKey, publicKey) => {
     if (privateKey && publicKey) {
@@ -67,14 +66,15 @@ Promise
         console.log(config.get('public_key'))
       }
       return Promise.join(
-        redis.client.setAsync(environment + ':id_rsa', pair.private),
-        redis.client.setAsync(environment + ':id_rsa.pub', pair.public)
+        redis.client.setAsync(`${environment}:id_rsa`, pair.private),
+        redis.client.setAsync(`${environment}:id_rsa.pub`, pair.public)
       )
     }
   })
 
 // TemplateMailer
-const TemplateMailerClient = require('template-mailer-aws-lambda-client')
+import TemplateMailerClient from 'template-mailer-aws-lambda-client'
+
 let templateMailer
 if ((environment === 'production' || config.get('force_mails')) && !config.get('disable_mails')) {
   console.log(colors.yellow('   ^                                 ^'))
@@ -87,7 +87,7 @@ if ((environment === 'production' || config.get('force_mails')) && !config.get('
   templateMailer = {
     send: (cfg, template, to, name, data) => {
       if (environment !== 'testing') {
-        console.log('TemplateMailer:Dummy', template, '->', name, '<' + to + '>')
+        console.log('TemplateMailer:Dummy', template, '->', name, `<${to}>`)
       }
       return Promise.resolve()
     }
@@ -95,17 +95,17 @@ if ((environment === 'production' || config.get('force_mails')) && !config.get('
 }
 
 // Event handling
-require('rheactor-server/config/command-handler')(repositories, emitter, config, webConfig, templateMailer)
-require('rheactor-server/config/event-handler')(repositories, emitter, config)
-require('./config/command-handler')(repositories, emitter, config, webConfig, templateMailer)
-require('./config/event-handler')(repositories, emitter, config, templateMailer)
+rheactorCommandHandler(repositories, emitter, config, webConfig, templateMailer)
+rheactorEventHandler(repositories, emitter, config)
+import commandHandler from './config/command-handler'
+commandHandler(repositories, emitter, config, webConfig, templateMailer)
 
 // Password strength
 if (environment !== 'production') {
   config.set('bcrypt_rounds', 1)
 }
 
-module.exports = {
+export default {
   repositories,
   search,
   config,

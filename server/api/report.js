@@ -1,11 +1,8 @@
-'use strict'
-
-const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
-const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
-const Promise = require('bluebird')
-const _merge = require('lodash/merge')
-const _reduce = require('lodash/reduce')
-const Joi = require('joi')
+import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import Promise from 'bluebird'
+import _merge from 'lodash/merge'
+import _reduce from 'lodash/reduce'
+import Joi from 'joi'
 
 function ReportModel (checkingAccount) {
   this.checkingAccount = checkingAccount
@@ -29,7 +26,20 @@ function ReportModel (checkingAccount) {
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-module.exports = function (app, config, emitter, checkingAccountRepo, checkingAccountUserRepo, spendingRepo, userRepo, search, tokenAuth, jsonld, sendHttpProblem, transformer) {
+export default (
+  app,
+  config,
+  emitter,
+  checkingAccountRepo,
+  checkingAccountUserRepo,
+  spendingRepo,
+  userRepo,
+  search,
+  tokenAuth,
+  jsonld,
+  sendHttpProblem,
+  transformer
+) => {
   app.post('/api/checking-account/:id/report', tokenAuth, (req, res) => Promise
     .try(() => {
       const schema = Joi.object().keys({

@@ -1,8 +1,6 @@
-'use strict'
+import UpdateSpendingCommand from '../../../command/spending/update'
 
-const UpdateSpendingCommand = require('../../../command/spending/update')
-
-module.exports = {
+export default {
   command: UpdateSpendingCommand,
   /**
    * @param {BackendEmitter} emitter

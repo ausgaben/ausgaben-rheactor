@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @param {CheckingAccountModel} checkingAccount
  * @param {String} category
@@ -45,4 +43,4 @@ function CreatePeriodicalCommand (checkingAccount, category, title, amount, esti
   this.author = author
 }
 
-module.exports = CreatePeriodicalCommand
+export default CreatePeriodicalCommand

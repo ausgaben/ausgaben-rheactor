@@ -1,8 +1,6 @@
-'use strict'
+import DeleteSpendingCommand from '../../../command/spending/delete'
 
-const DeleteSpendingCommand = require('../../../command/spending/delete')
-
-module.exports = {
+export default {
   command: DeleteSpendingCommand,
   /**
    * @param {BackendEmitter} emitter

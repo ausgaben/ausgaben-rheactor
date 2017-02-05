@@ -1,12 +1,9 @@
-'use strict'
+import {ValidationFailedError, UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
+import {AggregateRoot, ModelEvent} from 'rheactor-event-store'
+import {CheckingAccountPropertyChangedEvent, CheckingAccountCreatedEvent} from '../events'
+import {Boolean as BooleanType, Integer as IntegerType, String as StringType, refinement, maybe} from 'tcomb'
 
-const util = require('util')
-const Joi = require('joi')
-const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
-const UnhandledDomainEventError = require('rheactor-value-objects/errors/unhandled-domain-event')
-const AggregateRoot = require('rheactor-event-store/aggregate-root')
-const CheckingAccountPropertyChangedEvent = require('../event/checking-account/property-changed')
-const CheckingAccountCreatedEvent = require('../event/checking-account/created')
+const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
 
 /**
  * @param {String} name
@@ -15,88 +12,70 @@ const CheckingAccountCreatedEvent = require('../event/checking-account/created')
  * @constructor
  * @throws ValidationFailedError if the creation fails due to invalid data
  */
-function CheckingAccountModel (name, monthly, savings) {
-  monthly = !!monthly
-  savings = !!savings
-  AggregateRoot.call(this)
-  let schema = Joi.object().keys({
-    name: Joi.string().min(1).required().trim(),
-    monthly: Joi.boolean().required().falsy(0).truthy(1),
-    savings: Joi.boolean().required().falsy(0).truthy(1)
-  })
-  Joi.validate({name, monthly, savings}, schema, (err, data) => {
-    if (err) {
-      throw new ValidationFailedError('CheckingAccountModel validation failed: ' + err, data, err)
+export class CheckingAccountModel extends AggregateRoot {
+  constructor (name, monthly = false, savings = false) {
+    super()
+    NonEmptyStringType(name)
+    BooleanType(monthly)
+    BooleanType(savings)
+    this.name = name
+    this.monthly = monthly
+    this.savings = savings
+  }
+
+  /**
+   * Applies the event
+   *
+   * @param {ModelEvent} event
+   */
+  applyEvent (event) {
+    const data = event.data
+    switch (event.name) {
+      case CheckingAccountCreatedEvent:
+        this.name = data.name
+        this.monthly = data.monthly
+        this.savings = data.savings
+        this.persisted(event.aggregateId, event.createdAt)
+        break
+      case CheckingAccountPropertyChangedEvent:
+        this[data.property] = data.value
+        this.updated(event.createdAt)
+        break
+      default:
+        console.error('Unhandled CheckingAccountModel event', event.name)
+        throw new UnhandledDomainEventError(event.name)
     }
-    this.name = data.name
-    this.monthly = data.monthly
-    this.savings = data.savings
-  })
-}
-util.inherits(CheckingAccountModel, AggregateRoot)
-
-/**
- * Applies the event
- *
- * @param {ModelEvent} event
- */
-CheckingAccountModel.prototype.applyEvent = function (event) {
-  let data = event.data
-  switch (event.name) {
-    case CheckingAccountCreatedEvent.name:
-      this.name = data.name
-      this.monthly = data.monthly
-      this.savings = data.savings
-      this.persisted(event.aggregateId, event.createdAt)
-      break
-    case CheckingAccountPropertyChangedEvent.name:
-      this[data.property] = data.value
-      this.updated(event.createdAt)
-      break
-    default:
-      console.error('Unhandled CheckingAccountModel event', event.name)
-      throw new UnhandledDomainEventError(event.name)
   }
-}
 
-/**
- * @param  {boolean} monthly
- * @returns {SpendingUpdatedEvent}
- */
-CheckingAccountModel.prototype.setMonthly = function (monthly) {
-  let self = this
-  if (self.monthly === !!monthly) {
-    throw new ValidationFailedError('Monthly unchanged', monthly)
-  }
-  self.monthly = !!monthly
-  self.updated()
-  return new CheckingAccountPropertyChangedEvent({
-    aggregateId: self.aggregateId(),
-    data: {
+  /**
+   * @param  {boolean} monthly
+   * @returns {ModelEvent}
+   */
+  setMonthly (monthly = false) {
+    if (this.monthly === monthly) {
+      throw new ValidationFailedError('Monthly unchanged', monthly)
+    }
+    this.monthly = monthly
+    this.updated()
+    return new ModelEvent(this.aggregateId(), CheckingAccountPropertyChangedEvent, {
       property: 'monthly',
       value: monthly
-    }
-  })
-}
-
-/**
- * @param  {boolean} savings
- * @returns {SpendingUpdatedEvent}
- */
-CheckingAccountModel.prototype.setSavings = function (savings) {
-  let self = this
-  if (self.savings === !!savings) {
-    throw new ValidationFailedError('Savings unchanged', savings)
+    })
   }
-  self.savings = !!savings
-  self.updated()
-  return new CheckingAccountPropertyChangedEvent({
-    aggregateId: self.aggregateId(),
-    data: {
+
+  /**
+   * @param  {boolean} savings
+   * @returns {SpendingUpdatedEvent}
+   */
+  setSavings (savings = false) {
+    if (this.savings === savings) {
+      throw new ValidationFailedError('Savings unchanged', savings)
+    }
+    this.savings = savings
+    this.updated()
+    return new ModelEvent(this.aggregateId(), CheckingAccountPropertyChangedEvent, {
       property: 'savings',
       value: savings
-    }
-  })
+    })
+  }
 }
-
-module.exports = CheckingAccountModel

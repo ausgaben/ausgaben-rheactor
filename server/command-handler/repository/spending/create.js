@@ -1,9 +1,7 @@
-'use strict'
+import CreateSpendingCommand from '../../../command/spending/create'
+import SpendingModel from '../../../model/spending'
 
-const CreateSpendingCommand = require('../../../command/spending/create')
-const SpendingModel = require('../../../model/spending')
-
-module.exports = {
+export default {
   command: CreateSpendingCommand,
   /**
    * @param {BackendEmitter} emitter

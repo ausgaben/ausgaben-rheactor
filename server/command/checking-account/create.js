@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @param {String} name
  * @param {Boolean} monthly
@@ -12,4 +10,4 @@ function CreateCheckingAccountCommand (name, monthly, savings, author) {
   this.author = author
 }
 
-module.exports = CreateCheckingAccountCommand
+export default CreateCheckingAccountCommand

@@ -1,8 +1,6 @@
-'use strict'
+import UpdateCheckingAccountPropertyCommand from '../../../command/checking-account/update-property'
 
-const UpdateCheckingAccountPropertyCommand = require('../../../command/checking-account/update-property')
-
-module.exports = {
+export default {
   command: UpdateCheckingAccountPropertyCommand,
   /**
    * @param {BackendEmitter} emitter

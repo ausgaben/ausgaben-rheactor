@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @param {CheckingAccountModel} checkingAccount
  * @param {UserModel} user
@@ -9,4 +7,4 @@ function CreateCheckingAccountUserCommand (checkingAccount, user) {
   this.user = user
 }
 
-module.exports = CreateCheckingAccountUserCommand
+export default CreateCheckingAccountUserCommand

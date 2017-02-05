@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @param {SpendingModel} spending
  * @param {UserModel} author
@@ -9,4 +7,4 @@ function DeleteSpendingCommand (spending, author) {
   this.author = author
 }
 
-module.exports = DeleteSpendingCommand
+export default DeleteSpendingCommand

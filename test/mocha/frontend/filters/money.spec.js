@@ -1,10 +1,9 @@
-'use strict'
-
 /* global describe, it */
 
-const money = require('../../../../frontend/js/filters/money')
-const expect = require('chai').expect
-const Promise = require('bluebird')
+import money from '../../../../frontend/js/filters/money'
+
+import {expect} from 'chai'
+import Promise from 'bluebird'
 
 describe('money filter', () => {
   it('should format floats', done => {

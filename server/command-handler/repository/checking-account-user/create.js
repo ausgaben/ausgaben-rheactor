@@ -1,9 +1,7 @@
-'use strict'
+import CreateCheckingAccountUserCommand from '../../../command/checking-account-user/create'
+import CheckingAccountUserModel from '../../../model/checking-account-user'
 
-const CreateCheckingAccountUserCommand = require('../../../command/checking-account-user/create')
-const CheckingAccountUserModel = require('../../../model/checking-account-user')
-
-module.exports = {
+export default {
   command: CreateCheckingAccountUserCommand,
   /**
    * @param {BackendEmitter} emitter

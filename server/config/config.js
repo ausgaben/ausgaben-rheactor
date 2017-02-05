@@ -1,7 +1,5 @@
-'use strict'
-
-const nconf = require('nconf')
-const pjson = require('../../package.json')
+import nconf from 'nconf'
+import pjson from '../../package.json'
 
 nconf.use('memory')
 
@@ -40,8 +38,8 @@ nconf.defaults({
   'environment': 'development',
   port,
   host,
-  'api_host': 'http://' + host + ':' + port,
-  'web_host': 'http://' + host + ':' + port,
+  'api_host': `http://${host}:${port}`,
+  'web_host': `http://${host}:${port}`,
   'token_lifetime': 60 * 60 * 24 * 30, // 30 days
   'redis': {
     'host': '127.0.0.1',
@@ -71,4 +69,4 @@ nconf.defaults({
   'uploads_location': '/tmp'
 })
 
-module.exports = nconf
+export default nconf

@@ -1,16 +1,14 @@
-'use strict'
+import path from 'path'
+import UserCreateCmd from 'rheactor-server/console-command/user-create'
+import CreateCheckingAccountCommand from '../command/checking-account/create'
+import CreateCheckingAccountUserCommand from '../command/checking-account-user/create'
+import CreateSpendingCommand from '../command/spending/create'
+import Promise from 'bluebird'
+import {EmailValue} from 'rheactor-value-objects'
+import _filter from 'lodash/filter'
+import _padStart from 'lodash/padStart'
 
-const path = require('path')
-const UserCreateCmd = require('rheactor-server/console-command/user-create')
-const CreateCheckingAccountCommand = require('../command/checking-account/create')
-const CreateCheckingAccountUserCommand = require('../command/checking-account-user/create')
-const CreateSpendingCommand = require('../command/spending/create')
-const Promise = require('bluebird')
-const EmailValue = require('rheactor-value-objects/email')
-const _filter = require('lodash/filter')
-const _padStart = require('lodash/padStart')
-
-module.exports = {
+export default {
   arguments: '<importfile>',
   description: 'import ausgaben 1.0 export created with phpMyAdmin JSON export',
   action: (backend, importfile) => {
@@ -61,7 +59,7 @@ module.exports = {
             spendingData.description,
               Math.round(parseFloat(spendingData.value) * 100) * (spendingData.type === '1' ? -1 : 1),
               spendingData.booked === '1',
-            new Date(spendingData.year + '-' + _padStart(spendingData.month, 2, '0') + '-' + _padStart(spendingData.day, 2, '0') + 'T12:00:00+02:00').getTime(),
+            new Date(`${spendingData.year}-${_padStart(spendingData.month, 2, '0')}-${_padStart(spendingData.day, 2, '0')}T12:00:00+02:00`).getTime(),
             false,
             userId2newEntity[spendingData.user_id]
             ))

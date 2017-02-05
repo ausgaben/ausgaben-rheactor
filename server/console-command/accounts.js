@@ -1,6 +1,4 @@
-'use strict'
-
-module.exports = {
+export default {
   description: 'list all accounts',
   action: (backend) => {
     return backend.repositories.checkingAccount.findAll()

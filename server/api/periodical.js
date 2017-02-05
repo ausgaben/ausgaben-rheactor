@@ -1,15 +1,11 @@
-'use strict'
-
-const ValidationFailedError = require('rheactor-value-objects/errors/validation-failed')
-const AccessDeniedError = require('rheactor-value-objects/errors/access-denied')
-const Periodical = require('../../frontend/js/model/periodical')
-const CreatePeriodicalCommand = require('../command/periodical/create')
-const URIValue = require('rheactor-value-objects/uri')
-const Promise = require('bluebird')
-const Joi = require('joi')
-const Pagination = require('rheactor-server/util/pagination')
-const sendPaginatedListResponse = require('rheactor-server/api/pagination').sendPaginatedListResponse
-const _merge = require('lodash/merge')
+import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import Periodical from '../../frontend/js/model/periodical'
+import CreatePeriodicalCommand from '../command/periodical/create'
+import {URIValue} from 'rheactor-value-objects'
+import Promise from 'bluebird'
+import Joi from 'joi'
+import {Pagination, sendPaginatedListResponse} from 'rheactor-server'
+import _merge from 'lodash/merge'
 
 /**
  * @param {express.app} app
@@ -25,44 +21,55 @@ const _merge = require('lodash/merge')
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-module.exports = function (app, config, emitter, checkingAccountRepo, checkingAccountUserRepo, periodicalRepo, userRepo, search, tokenAuth, jsonld, sendHttpProblem, transformer) {
+export default (
+  app,
+  config,
+  emitter,
+  checkingAccountRepo,
+  checkingAccountUserRepo,
+  periodicalRepo,
+  userRepo,
+  search,
+  tokenAuth,
+  jsonld,
+  sendHttpProblem,
+  transformer
+) => {
   /**
    * Search periodicals in the given checking account
    */
-  app.post('/api/checking-account/:id/search/periodical', tokenAuth, function (req, res) {
-    return checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
-      .then((checkingAccountUser) => {
-        if (!checkingAccountUser) {
-          throw new AccessDeniedError(req.url, 'Not your checking account!')
-        }
-        let schema = Joi.object().keys({
-          checkingAccount: Joi.number().min(1),
-          offset: Joi.number().min(0)
-        })
-        return Promise
-          .try(() => {
-            let query = _merge({}, req.body, req.query)
-            query.checkingAccount = req.params.id
-
-            let v = Joi.validate(query, schema)
-            if (v.error) {
-              throw new ValidationFailedError('Validation failed', query, v.error)
-            }
-
-            let pagination = new Pagination(query.offset)
-            return search.searchPeriodicals(query, pagination)
-              .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, Periodical.$context, jsonld, (periodical) => {
-                return transformer(periodical)
-              }))
-          })
+  app.post('/api/checking-account/:id/search/periodical', tokenAuth, (req, res) => checkingAccountUserRepo.findByCheckingAccountId(req.params.id).filter(checkingAccountUser => checkingAccountUser.user === req.user)
+    .then((checkingAccountUser) => {
+      if (!checkingAccountUser) {
+        throw new AccessDeniedError(req.url, 'Not your checking account!')
+      }
+      let schema = Joi.object().keys({
+        checkingAccount: Joi.number().min(1),
+        offset: Joi.number().min(0)
       })
-      .catch(sendHttpProblem.bind(null, res))
-  })
+      return Promise
+        .try(() => {
+          let query = _merge({}, req.body, req.query)
+          query.checkingAccount = req.params.id
+
+          let v = Joi.validate(query, schema)
+          if (v.error) {
+            throw new ValidationFailedError('Validation failed', query, v.error)
+          }
+
+          let pagination = new Pagination(query.offset)
+          return search.searchPeriodicals(query, pagination)
+            .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, Periodical.$context, jsonld, (periodical) => {
+              return transformer(periodical)
+            }))
+        })
+    })
+    .catch(sendHttpProblem.bind(null, res)))
 
   /**
    * Create a periodical in the given checking account
    */
-  app.post('/api/checking-account/:id/periodical', tokenAuth, function (req, res) {
+  app.post('/api/checking-account/:id/periodical', tokenAuth, (req, res) => {
     let schema = Joi.object().keys({
       category: Joi.string().min(1).required().trim(),
       title: Joi.string().min(1).required().trim(),
@@ -138,7 +145,7 @@ module.exports = function (app, config, emitter, checkingAccountRepo, checkingAc
       .catch(sendHttpProblem.bind(null, res))
   })
 
-  app.get('/api/periodical/:id', tokenAuth, function (req, res) {
+  app.get('/api/periodical/:id', tokenAuth, (req, res) => {
     periodicalRepo.getById(req.params.id)
       .then((periodical) => {
         return checkingAccountUserRepo.findByCheckingAccountId(periodical.checkingAccount).filter(checkingAccountUser => checkingAccountUser.user === req.user)

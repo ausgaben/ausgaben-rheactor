@@ -1,21 +1,20 @@
-'use strict'
-
 /* global describe, it, before */
 
-const expect = require('chai').expect
-const helper = require('../helper')
-const SpendingRepository = require('../../../../server/repository/spending')
-const SpendingModel = require('../../../../server/model/spending')
-const Promise = require('bluebird')
-const ModelEvent = require('rheactor-event-store/model-event')
+import {expect} from 'chai'
+
+import {clearDb, redis} from '../helper'
+import {SpendingRepository} from '../../../../server/repository/spending'
+import {SpendingModel} from '../../../../server/model/spending'
+import Promise from 'bluebird'
+import {ModelEvent} from 'rheactor-event-store'
 
 describe('SpendingRepository', () => {
-  before(helper.clearDb)
+  before(clearDb)
 
   let spendingRepo
 
   before(() => {
-    spendingRepo = new SpendingRepository(helper.redis)
+    spendingRepo = new SpendingRepository(redis)
   })
 
   it('should persist', (done) => {

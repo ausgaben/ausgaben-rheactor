@@ -1,21 +1,20 @@
-'use strict'
-
 /* global describe, it, before */
 
-const expect = require('chai').expect
-const helper = require('../helper')
-const PeriodicalRepository = require('../../../../server/repository/periodical')
-const PeriodicalModel = require('../../../../server/model/periodical')
-const Promise = require('bluebird')
-const ModelEvent = require('rheactor-event-store/model-event')
+import {expect} from 'chai'
+
+import {clearDb, redis} from '../helper'
+import {PeriodicalRepository} from '../../../../server/repository/periodical'
+import {PeriodicalModel} from '../../../../server/model/periodical'
+import Promise from 'bluebird'
+import {ModelEvent} from 'rheactor-event-store'
 
 describe('PeriodicalRepository', () => {
-  before(helper.clearDb)
+  before(clearDb)
 
   let periodicalRepo
 
   before(() => {
-    periodicalRepo = new PeriodicalRepository(helper.redis)
+    periodicalRepo = new PeriodicalRepository(redis)
   })
 
   it('should persist', (done) => {
@@ -59,7 +58,7 @@ describe('PeriodicalRepository', () => {
   })
 
   it('should find periodicals by month', (done) => {
-    periodicalRepo.findByMonth(new Date('2015-01-02')).then((periodicals) => {
+    periodicalRepo.findByMonth(new Date('2015-01-02').getTime()).then((periodicals) => {
       expect(periodicals.length).to.equal(2)
       done()
     })

@@ -1,8 +1,6 @@
-'use strict'
-
-const rheactorExpressConfig = require('rheactor-server/config/express')
-const AusgabenModelTransformer = require('../api/transformer')
-const JSONLD = require('../config/jsonld')
+import rheactorExpressConfig from 'rheactor-server/config/express'
+import AusgabenModelTransformer from '../api/transformer'
+import JSONLD from '../config/jsonld'
 
 /**
  * @param {express.app} app
@@ -12,7 +10,7 @@ const JSONLD = require('../config/jsonld')
  * @param {Search} search
  * @param {BackendEmitter} emitter
  */
-module.exports = (app, config, webConfig, repositories, search, emitter) => {
+export default (app, config, webConfig, repositories, search, emitter) => {
   let jsonld = JSONLD(config.get('api_host'))
   let modelTransformer = new AusgabenModelTransformer()
   let transformer = (jsonld, model, extra) => {

@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @param {CheckingAccountModel} checkingAccount
  * @param {String} category
@@ -21,4 +19,4 @@ function CreateSpendingCommand (checkingAccount, category, title, amount, booked
   this.author = author
 }
 
-module.exports = CreateSpendingCommand
+export default CreateSpendingCommand

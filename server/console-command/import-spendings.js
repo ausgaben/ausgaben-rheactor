@@ -1,11 +1,9 @@
-'use strict'
-
-const Promise = require('bluebird')
+import Promise from 'bluebird'
 const fs = Promise.promisifyAll(require('fs'))
-const CreateSpendingCommand = require('../command/spending/create')
-const moment = require('moment')
+import CreateSpendingCommand from '../command/spending/create'
+import moment from 'moment'
 
-module.exports = {
+export default {
   arguments: '<importfile> <account> <user> <month>',
   description: 'import spendings from a tab-separated file',
   action: (backend, importfile, account, user, month) => {

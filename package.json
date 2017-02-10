@@ -70,7 +70,7 @@
     "tcomb": "^3.2.15",
     "template-mailer-aws-lambda-client": "^2.0.0",
     "tether": "^1.3.8",
-    "transactional-emails": "^1.16.0",
+    "transactional-emails": "^1.17.0",
     "uglifycss": "0.0.25",
     "uglifyjs": "^2.4.10"
   },

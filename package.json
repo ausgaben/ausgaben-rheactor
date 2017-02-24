@@ -65,7 +65,7 @@
     "rheactor-event-store": "^3.1.0",
     "rheactor-server": "^7.0.0",
     "rheactor-value-objects": "^3.2.0",
-    "rheactor-web-app": "^2.11.0",
+    "rheactor-web-app": "^4.0.0",
     "showdown": "^1.5.1",
     "tcomb": "^3.2.15",
     "template-mailer-aws-lambda-client": "^2.0.0",

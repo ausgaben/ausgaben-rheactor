@@ -1,13 +1,16 @@
-'use strict'
+import {URIValue} from 'rheactor-value-objects'
 
-/**
- * @param {string} title
- * @constructor
- */
-function Category (title) {
-  this.title = title
-  this.$context = Category.$context
+const $context = new URIValue('https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Category')
+
+export class Category {
+  /**
+   * @param {string} title
+   */
+  constructor (title) {
+    this.title = title
+  }
+
+  static get $context () {
+    return $context
+  }
 }
-Category.$context = 'https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Category'
-
-module.exports = Category

@@ -1,6 +1,4 @@
-'use strict'
-
-module.exports = (app) => {
+export default (app) => {
   require('./checking-account/index')(app)
   app
     .config(['$stateProvider', ($stateProvider) => {

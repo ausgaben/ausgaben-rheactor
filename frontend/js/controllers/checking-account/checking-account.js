@@ -1,10 +1,7 @@
-'use strict'
+import Promise from 'bluebird'
+import {ModelEventConnection, JSONLD} from 'rheactor-web-app'
 
-const Promise = require('bluebird')
-const ModelEventConnection = require('rheactor-web-app/js/util/model-event-connection')
-const jsonld = require('rheactor-web-app/js/util/jsonld')
-
-module.exports = (app) => {
+export default (app) => {
   app
     .controller('CheckingAccountController', ['$rootScope', '$scope', '$state', '$stateParams', 'CheckingAccountService', 'ClientStorageService',
       /**
@@ -35,7 +32,7 @@ module.exports = (app) => {
 
                 $rootScope.windowTitle = checkingAccount.name
 
-                let mec = new ModelEventConnection(jsonld.getRelLink('stream', checkingAccount))
+                let mec = new ModelEventConnection(JSONLD.getRelLink('stream', checkingAccount))
                 mec.connect(token)
                 $scope.$on('$destroy', () => {
                   mec.disconnect()

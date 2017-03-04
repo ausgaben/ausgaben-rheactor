@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * @param {string} title
  * @param {string} category
@@ -12,4 +10,4 @@ function Title (title, category) {
 }
 Title.$context = 'https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Title'
 
-module.exports = Title
+export default Title

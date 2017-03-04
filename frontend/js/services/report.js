@@ -1,31 +1,30 @@
-'use strict'
-
-const _create = require('lodash/create')
-const GenericAPIService = require('rheactor-web-app/js/services/generic')
-const Report = require('../model/report')
-const jsonld = require('rheactor-web-app/js/util/jsonld')
+import _create from 'lodash/create'
+import {GenericAPIService, JSONLD} from 'rheactor-web-app'
+import {Report} from '../model/report'
 
 /**
  * @param $http
  * @param {APIService} apiService
  * @constructor
  */
-function ReportService ($http, apiService) {
-  GenericAPIService.call(this, $http, apiService, Report.$context)
+class ReportService {
+  constructor ($http, apiService) {
+    GenericAPIService.call(this, $http, apiService, Report.$context)
+  }
+
+  /**
+   * @param {CheckingAccount} checkingAccount
+   * @param {Object} filter
+   * @param {JsonWebToken} token
+   * @return {Promise.<List>}
+   */
+  report (checkingAccount, filter, token) {
+    return GenericAPIService.prototype.query.call(this, JSONLD.getRelLink('report', checkingAccount), filter, token)
+  }
 }
 
 ReportService.prototype = _create(GenericAPIService.prototype, {
   'constructor': ReportService
 })
 
-/**
- * @param {CheckingAccount} checkingAccount
- * @param {Object} filter
- * @param {JsonWebToken} token
- * @return {Promise.<List>}
- */
-ReportService.prototype.report = function (checkingAccount, filter, token) {
-  return GenericAPIService.prototype.query.call(this, jsonld.getRelLink('report', checkingAccount), filter, token)
-}
-
-module.exports = ReportService
+export default ReportService

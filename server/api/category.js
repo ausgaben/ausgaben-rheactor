@@ -1,5 +1,5 @@
 import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
-import Category from '../../frontend/js/model/category'
+import {Category} from '../../build/js-es5/model/category'
 import {URIValue} from 'rheactor-value-objects'
 import Promise from 'bluebird'
 import Joi from 'joi'

@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * format the number as percent
  *
@@ -7,10 +5,10 @@
  * @return {string}
  */
 const percentFormat = (value) => {
-  return Math.round(value) + '%'
+  return `${Math.round(value)}%`
 }
 
-module.exports = (value) => {
+export default (value) => {
   if (!value) return
   return percentFormat(value * 100)
 }

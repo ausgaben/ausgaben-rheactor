@@ -1,6 +1,4 @@
-'use strict'
-
-module.exports = function (app) {
+export default app => {
   require('./dashboard')(app)
   require('./checking-account')(app)
   require('rheactor-web-app/js/controller/navigation')(app)

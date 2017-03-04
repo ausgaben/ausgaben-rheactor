@@ -1,7 +1,7 @@
 import {ValidationFailedError, UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
 import {AggregateRoot, ModelEvent} from 'rheactor-event-store'
 import {CheckingAccountPropertyChangedEvent, CheckingAccountCreatedEvent} from '../events'
-import {Boolean as BooleanType, Integer as IntegerType, String as StringType, refinement, maybe} from 'tcomb'
+import {Boolean as BooleanType, String as StringType, refinement} from 'tcomb'
 
 const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
 

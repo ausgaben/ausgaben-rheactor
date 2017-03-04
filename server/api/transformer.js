@@ -1,15 +1,14 @@
 import {transform} from 'rheactor-server'
-import CheckingAccount from '../../frontend/js/model/checking-account'
-import Spending from '../../frontend/js/model/spending'
-import Periodical from '../../frontend/js/model/periodical'
-import Report from '../../frontend/js/model/report'
+import {CheckingAccount} from '../../build/js-es5/model/checking-account'
+import {Spending} from '../../build/js-es5/model/spending'
+import {Periodical} from '../../build/js-es5/model/periodical'
+import {Report} from '../../build/js-es5/model/report'
 import {PeriodicalModel} from '../model/periodical'
 
 /**
  * @constructor
  */
 export class AusgabenModelTransformer {
-
   /**
    * @param {JSONLD} jsonld
    * @param {AggregateRoot} model

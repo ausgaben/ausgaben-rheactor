@@ -1,10 +1,10 @@
-'use strict'
-
-const APIService = require('./api')
-const CheckingAccountService = require('./checking-account')
-const SpendingService = require('./spending')
-const ReportService = require('./report')
-const GenericApiService = require('rheactor-web-app/js/services/generic')
+import APIService from './api'
+import CheckingAccountService from './checking-account'
+import SpendingService from './spending'
+import ReportService from './report'
+import {Category} from '../model/category'
+import {Title} from '../model/title'
+import {GenericApiService} from 'rheactor-web-app'
 
 require('angular')
   .module('AusgabenServiceModule', [])
@@ -21,8 +21,8 @@ require('angular')
     return new ReportService($http, APIService)
   }])
   .factory('CategoryService', ['$http', 'APIService', ($http, APIService) => {
-    return new GenericApiService($http, APIService, require('../model/category').$context)
+    return new GenericApiService($http, APIService, Category.$context)
   }])
   .factory('TitleService', ['$http', 'APIService', ($http, APIService) => {
-    return new GenericApiService($http, APIService, require('../model/title').$context)
+    return new GenericApiService($http, APIService, Title.$context)
   }])

@@ -1,8 +1,6 @@
-'use strict'
-
 /* global: window, document */
 
-const logger = require('rheactor-web-app/js/util/logger')
+import logger from 'rheactor-web-app/js/util/logger'
 
 logger.appInfo('Init …')
 require('bluebird').longStackTraces()
@@ -32,21 +30,21 @@ const app = require('angular')
   ])
 
 app
-  .config(['$interpolateProvider', function ($interpolateProvider) {
+  .config(['$interpolateProvider', $interpolateProvider => {
     $interpolateProvider.startSymbol('%%')
     $interpolateProvider.endSymbol('%%')
   }])
-  .config(['$locationProvider', function ($locationProvider) {
+  .config(['$locationProvider', $locationProvider => {
     $locationProvider.hashPrefix('!')
   }])
-  .config(['$urlRouterProvider', function ($urlRouterProvider) {
-    $urlRouterProvider.otherwise(function ($injector) {
+  .config(['$urlRouterProvider', $urlRouterProvider => {
+    $urlRouterProvider.otherwise($injector => {
       logger.appInfo('Opening default state: dashboard')
       let $state = $injector.get('$state')
       $state.go('dashboard')
     })
   }])
-  .config(['$compileProvider', function ($compileProvider) {
+  .config(['$compileProvider', $compileProvider => {
     // https://code.angularjs.org/1.5.5/docs/guide/production
     $compileProvider.debugInfoEnabled(false)
   }])

@@ -1,8 +1,6 @@
-'use strict'
-
-const Aggregate = require('rheactor-web-app/js/model/aggregate')
-const _forEach = require('lodash/forEach')
-const _create = require('lodash/create')
+import {Aggregate} from 'rheactor-models'
+import _forEach from 'lodash/forEach'
+import _create from 'lodash/create'
 
 /**
  * @param {object} data
@@ -23,8 +21,8 @@ function Spending (data) {
   this.saving = undefined
 
   if (data) {
-    var self = this
-    _forEach(this, function (value, key) {
+    const self = this
+    _forEach(this, (value, key) => {
       self[key] = data[key] === undefined ? undefined : data[key]
     })
   }
@@ -42,4 +40,4 @@ Spending.prototype = _create(Aggregate.prototype, {
 
 Spending.$context = 'https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending'
 
-module.exports = Spending
+export default Spending

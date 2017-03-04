@@ -1,14 +1,11 @@
-'use strict'
+import LiveCollection, {waitFor} from 'rheactor-web-app'
+import Promise from 'bluebird'
+import _reduce from 'lodash/reduce'
+import _debounce from 'lodash/debounce'
+import moment from 'moment'
+import {Spending} from '../../model/spending'
 
-const waitFor = require('rheactor-web-app/js/util/wait-for')
-const Promise = require('bluebird')
-const Spending = require('../../model/spending')
-const LiveCollection = require('rheactor-web-app/js/util/live-collection')
-const _reduce = require('lodash/reduce')
-const _debounce = require('lodash/debounce')
-const moment = require('moment')
-
-module.exports = (app) => {
+export default (app) => {
   app
     .controller('CheckingAccountSpendingsController', ['$scope', '$state', '$window', '$timeout', '$stateParams', 'CheckingAccountService', 'SpendingService', 'ReportService', 'ClientStorageService',
       /**
@@ -55,17 +52,19 @@ module.exports = (app) => {
             .then(updateGroupedSpendings)
         }
 
-        function SpendingGroup (title) {
-          this.title = title
-          this.spendings = []
-        }
+        class SpendingGroup {
+          constructor (title) {
+            this.title = title
+            this.spendings = []
+          }
 
-        /**
-         * @return {Number} total of all spendings for this group
-         */
-        SpendingGroup.prototype.total = function () {
-          const self = this
-          return _reduce(self.spendings, (total, spending) => total + spending.amount, 0)
+          /**
+           * @return {Number} total of all spendings for this group
+           */
+          total () {
+            const self = this
+            return _reduce(self.spendings, (total, spending) => total + spending.amount, 0)
+          }
         }
 
         const updateGroupedSpendings = () => {

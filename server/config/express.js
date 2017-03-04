@@ -1,4 +1,4 @@
-import rheactorExpressConfig from 'rheactor-server/config/express'
+import {rheactorExpressConfig} from 'rheactor-server'
 import AusgabenModelTransformer from '../api/transformer'
 import JSONLD from '../config/jsonld'
 

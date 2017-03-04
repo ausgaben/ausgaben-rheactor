@@ -1,8 +1,14 @@
 import {AggregateRoot, AggregateIdType} from 'rheactor-event-store'
 import _reduce from 'lodash/reduce'
-import {ValidationFailedError, UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
-import {irreducible} from 'tcomb'
-import {Boolean as BooleanType, Integer as IntegerType, String as StringType, refinement, maybe} from 'tcomb'
+import {UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
+import {
+  irreducible,
+  Boolean as BooleanType,
+  Integer as IntegerType,
+  String as StringType,
+  refinement,
+  maybe
+} from 'tcomb'
 const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
 const ZeroOrPositiveIntegerType = refinement(IntegerType, n => n >= 0, 'ZeroOrPositiveIntegerType')
 const TimestampType = refinement(IntegerType, n => n > 0, 'TimestampType')

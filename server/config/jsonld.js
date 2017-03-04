@@ -1,13 +1,13 @@
 import _trimEnd from 'lodash/trimEnd'
 import {JSONLD} from 'rheactor-server'
-import {User, JsonWebToken, Status} from 'rheactor-models'
+import {User, JsonWebToken, Status, Link} from 'rheactor-models'
 import {URIValue} from 'rheactor-value-objects'
-import CheckingAccount from '../../frontend/js/model/checking-account'
-import Spending from '../../frontend/js/model/spending'
-import Category from '../../frontend/js/model/category'
-import Title from '../../frontend/js/model/title'
-import Periodical from '../../frontend/js/model/periodical'
-import Report from '../../frontend/js/model/report'
+import {CheckingAccount} from '../../build/js-es5/model/checking-account'
+import {Spending} from '../../build/js-es5/model/spending'
+import {Category} from '../../build/js-es5/model/category'
+import {Title} from '../../build/js-es5/model/title'
+import {Periodical} from '../../build/js-es5/model/periodical'
+import {Report} from '../../build/js-es5/model/report'
 
 /**
  * @param apiHost
@@ -22,18 +22,18 @@ export default apiHost => {
   relations.mapType(Spending.$context, new URIValue(`${apiBase}/spending/:id`))
   relations.mapType(Periodical.$context, new URIValue(`${apiBase}/periodical/:id`))
 
-  relations.addLink('index', new URIValue(`${apiBase}/status`), Status.$context, 'status')
-  relations.addLink('index', new URIValue(`${apiBase}/login`), Token.$context, 'login')
-  relations.addLink('index', new URIValue(`${apiBase}/registration`), User.$context, 'register')
-  relations.addLink('index', new URIValue(`${apiBase}/password-change`), User.$context, 'password-change')
-  relations.addLink('index', new URIValue(`${apiBase}/password-change/confirm`), User.$context, 'password-change-confirm')
-  relations.addLink('index', new URIValue(`${apiBase}/activate-account`), User.$context, 'activate-account')
-  relations.addLink('index', new URIValue(`${apiBase}/avatar`), User.$context, 'avatar-upload')
+  relations.addIndexLink(new Link(new URIValue(`${apiBase}/status`), Status.$context, false, 'status'))
+  relations.addIndexLink(new Link(new URIValue(`${apiBase}/login`), JsonWebToken.$context, false, 'login'))
+  relations.addIndexLink(new Link(new URIValue(`${apiBase}/registration`), User.$context, false, 'register'))
+  relations.addIndexLink(new Link(new URIValue(`${apiBase}/password-change`), User.$context, false, 'password-change'))
+  relations.addIndexLink(new Link(new URIValue(`${apiBase}/password-change/confirm`), User.$context, false, 'password-change-confirm'))
+  relations.addIndexLink(new Link(new URIValue(`${apiBase}/activate-account`), User.$context, false, 'activate-account'))
+  relations.addIndexLink(new Link(new URIValue(`${apiBase}/avatar`), User.$context, false, 'avatar-upload'))
 
-  relations.addLink(Token.$context, new URIValue(`${apiBase}/token/verify`), Token.$context, 'token-verify')
-  relations.addLink(Token.$context, new URIValue(`${apiBase}/token/renew`), Token.$context, 'token-renew')
+  relations.addLink(JsonWebToken.$context, new URIValue(`${apiBase}/token/verify`), JsonWebToken.$context, 'token-verify')
+  relations.addLink(JsonWebToken.$context, new URIValue(`${apiBase}/token/renew`), JsonWebToken.$context, 'token-renew')
 
-  relations.addLink('index', new URIValue(`${apiBase}/checking-account`), CheckingAccount.$context, 'create-checking-account')
+  relations.addIndexLink(new Link(new URIValue(`${apiBase}/checking-account`), CheckingAccount.$context, false, 'create-checking-account'))
   relations.addLink(User.$context, new URIValue(`${apiBase}/search/checking-account`), CheckingAccount.$context, 'my-checking-accounts', true)
   relations.addLink(User.$context, new URIValue(`${apiBase}/user/:id/email-change`), User.$context, 'change-email')
   relations.addLink(User.$context, new URIValue(`${apiBase}/user/:id/email-change/confirm`), User.$context, 'change-email-confirm')

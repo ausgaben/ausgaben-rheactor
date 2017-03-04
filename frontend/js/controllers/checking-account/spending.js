@@ -1,14 +1,10 @@
-'use strict'
+import {waitFor, HttpProgress, JSONLD} from 'rheactor-web-app'
+import {HttpProblem} from 'rheactor-models'
+import _merge from 'lodash/merge'
+import {Spending} from '../../model/spending'
+import debounce from 'lodash/debounce'
 
-const waitFor = require('rheactor-web-app/js/util/wait-for')
-const HttpProgress = require('rheactor-web-app/js/util/http').HttpProgress
-const HttpProblem = require('rheactor-web-app/js/model/http-problem')
-const _merge = require('lodash/merge')
-const Spending = require('../../model/spending')
-const jsonld = require('rheactor-web-app/js/util/jsonld')
-const debounce = require('lodash/debounce')
-
-module.exports = (app) => {
+export default (app) => {
   app
     .controller('CheckingAccountSpendingController', ['$window', '$scope', '$state', '$stateParams', 'SpendingService', 'ClientStorageService', 'CategoryService', 'TitleService', 'IDService',
       /**
@@ -104,7 +100,7 @@ module.exports = (app) => {
             return
           }
           ClientStorageService.getValidToken()
-            .then((token) => CategoryService.list(jsonld.getRelLink('categories', vm.checkingAccount), {q: vm.spending.category}, token))
+            .then((token) => CategoryService.list(JSONLD.getRelLink('categories', vm.checkingAccount), {q: vm.spending.category}, token))
             .then(listResponse => {
               vm.categoriesMatch = listResponse.items
             })
@@ -116,7 +112,7 @@ module.exports = (app) => {
             return
           }
           ClientStorageService.getValidToken()
-            .then((token) => TitleService.list(jsonld.getRelLink('titles', vm.checkingAccount), {category: vm.spending.category, q: vm.spending.title}, token))
+            .then((token) => TitleService.list(JSONLD.getRelLink('titles', vm.checkingAccount), {category: vm.spending.category, q: vm.spending.title}, token))
             .then(listResponse => {
               vm.titlesMatch = listResponse.items
             })

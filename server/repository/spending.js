@@ -1,4 +1,4 @@
-import {AggregateRepository, AggregateIndex, AggregateRelation, ModelEvent} from 'rheactor-event-store'
+import {AggregateRepository, AggregateRelation, ModelEvent} from 'rheactor-event-store'
 import {SpendingModel} from '../model/spending'
 import {SpendingCreatedEvent, SpendingDeletedEvent} from '../events'
 

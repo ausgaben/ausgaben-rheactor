@@ -1,5 +1,5 @@
 import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
-import Periodical from '../../frontend/js/model/periodical'
+import {Periodical} from '../../build/js-es5/model/periodical'
 import CreatePeriodicalCommand from '../command/periodical/create'
 import {URIValue} from 'rheactor-value-objects'
 import Promise from 'bluebird'

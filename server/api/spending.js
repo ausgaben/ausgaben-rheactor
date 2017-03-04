@@ -1,5 +1,5 @@
 import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
-import Spending from '../../frontend/js/model/spending'
+import {Spending} from '../../build/js-es5/model/spending'
 import CreateSpendingCommand from '../command/spending/create'
 import UpdateSpendingCommand from '../command/spending/update'
 import DeleteSpendingCommand from '../command/spending/delete'

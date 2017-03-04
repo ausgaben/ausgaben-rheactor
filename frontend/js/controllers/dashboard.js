@@ -1,11 +1,9 @@
-'use strict'
+import {HttpProgress} from 'rheactor-web-app'
+import {HttpProblem} from 'rheactor-models'
+import Promise from 'bluebird'
+import moment from 'moment'
 
-const HttpProgress = require('rheactor-web-app/js/util/http').HttpProgress
-const HttpProblem = require('rheactor-web-app/js/model/http-problem')
-const Promise = require('bluebird')
-const moment = require('moment')
-
-module.exports = function (app) {
+export default app => {
   app
     .config(['$stateProvider', ($stateProvider) => {
       $stateProvider

@@ -41,9 +41,9 @@ describe('CreateMonthlySpendingsCommand', () => {
 
   it('should create spendings for the given month', done => {
     let periodicals = [periodical1, periodical2]
-    mockPeriodicalRepository = new PeriodicalRepository()
+    mockPeriodicalRepository = new PeriodicalRepository({})
     simple.mock(mockPeriodicalRepository, 'findByMonth').resolveWith(periodicals)
-    mockSpendingRepository = new SpendingRepository()
+    mockSpendingRepository = new SpendingRepository({})
     simple.mock(mockSpendingRepository, 'add').resolveWith(null)
     let month = new Date()
     task = new CreateMonthlySpendingsCommand(mockPeriodicalRepository, mockSpendingRepository)

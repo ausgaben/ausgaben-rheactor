@@ -1,4 +1,4 @@
-import {AggregateRepository, AggregateIndex, AggregateRelation, ModelEvent} from 'rheactor-event-store'
+import {AggregateRepository, AggregateRelation, ModelEvent} from 'rheactor-event-store'
 import {PeriodicalModel} from '../model/periodical'
 import {PeriodicalCreatedEvent} from '../events'
 import {Integer as IntegerType, refinement} from 'tcomb'

@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * format the decimal value as a currency e.g. 12.345.678,00 €
  *
@@ -21,11 +19,11 @@ const moneyFormat = (value, opts) => {
   if (isNaN(value) || value === null || value === '') {
     return '—'
   }
-  let result = (+value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1' + delimiter.charAt(0)).replace(/\.(\d+)$/, delimiter.charAt(1) + '$1')
+  let result = (+value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, `$1${delimiter.charAt(0)}`).replace(/\.(\d+)$/, `${delimiter.charAt(1)}$1`)
   result = decimal ? result : result.substr(0, result.length - 3)
   return placeBefore ? symbol + result : result + symbol
 }
 
-module.exports = (value) => {
+export default (value) => {
   return moneyFormat(value / 100, {decimal: true})
 }

@@ -1,10 +1,17 @@
 .DEFAULT_GOAL := help
-.PHONY: help build development
+.PHONY: help build development test-prepare
 
 development: ## Build for development environment
 	ENVIRONMENT=development make build
 
 build: build/css/styles.min.css build/js/app.min.js build/index.html build/favicon.ico build/robots.txt ## Build for production environment
+
+build/js-es5/app.js: frontend/js frontend/js/*.js frontend/js/**/*.js frontend/js/**/**/*.js
+ifeq ($(WATCH),1)
+else
+	@mkdir -p $(dir $@)
+	./node_modules/.bin/babel -q $< -d $(dir $@)
+endif
 
 build/js:
 	mkdir -p build/js
@@ -59,6 +66,17 @@ build/img: frontend/img/*.*
 build/favicon.ico: frontend/favicon/*.*
 	cp -u frontend/favicon/* build/
 
+# node.js files
+
+dist: server server/*.js server/**/*.js server/*.js server/**/**/*.js
+ifeq ($(WATCH),1)
+else
+	@mkdir -p $(dir $@)
+	./node_modules/.bin/babel -q $< -d $@
+endif
+
+# Main
+
 deploy: ## Deploy to production
 	rm -rf build
 	ENVIRONMENT=production make -B build
@@ -68,3 +86,5 @@ deploy: ## Deploy to production
 
 help: ## (default), display the list of make commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+test-prepare: dist build/js-es5/app.js ## Prepare project for testing

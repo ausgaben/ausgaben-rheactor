@@ -1,5 +1,5 @@
 import {AggregateRoot, ModelEvent, AggregateIdType} from 'rheactor-event-store'
-import {PeriodicalModel, PeriodicalModelType} from './periodical'
+import {PeriodicalModelType} from './periodical'
 import {ValidationFailedError, UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
 import {SpendingCreatedEvent, SpendingUpdatedEvent, SpendingDeletedEvent} from '../events'
 import {Boolean as BooleanType, Integer as IntegerType, String as StringType, refinement, maybe} from 'tcomb'

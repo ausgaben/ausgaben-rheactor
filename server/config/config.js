@@ -28,7 +28,7 @@ nconf
     separator: '__'
   })
 
-const host = nconf.get('host') || 'localhost'
+const host = nconf.get('host') || '127.0.0.1'
 const port = nconf.get('port') || 8080
 
 // Set defaults

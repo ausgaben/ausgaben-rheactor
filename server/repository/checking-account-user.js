@@ -1,6 +1,5 @@
-import {AggregateRepository, AggregateIndex, AggregateRelation, ModelEvent} from 'rheactor-event-store'
+import {AggregateRepository, AggregateIndex, AggregateRelation} from 'rheactor-event-store'
 import {CheckingAccountUserModel} from '../model/checking-account-user'
-import {CheckingAccountUserCreatedEvent} from '../events'
 
 /**
  * Creates a new CheckingAccountUser repository

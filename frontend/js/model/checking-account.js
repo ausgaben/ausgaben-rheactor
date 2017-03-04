@@ -1,39 +1,78 @@
-'use strict'
+import {Aggregate, VersionNumberType} from 'rheactor-models'
+import {URIValue} from 'rheactor-value-objects'
+import {Boolean as BooleanType, String as StringType, refinement, struct, maybe, irreducible} from 'tcomb'
+const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
+const MaybeBooleanType = maybe(BooleanType)
+const MaybeStringType = maybe(StringType)
 
-const Aggregate = require('rheactor-web-app/js/model/aggregate')
-const _forEach = require('lodash/forEach')
-const _create = require('lodash/create')
+const $context = new URIValue('https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#CheckingAccount')
 
-/**
- * @param {object} data
- * @constructor
- */
-function CheckingAccount (data) {
-  this.$id = undefined
-  this.$version = undefined
-  this.$links = undefined
-  this.$createdAt = undefined
-  this.$updatedAt = undefined
-  this.$deletedAt = undefined
-  this.identifier = undefined
-  this.name = undefined
-  this.monthly = undefined
-  this.savings = undefined
-
-  if (data) {
-    var self = this
-    _forEach(this, function (value, key) {
-      self[key] = data[key] === undefined ? undefined : data[key]
-    })
+export class CheckingAccount extends Aggregate {
+  constructor (fields) {
+    super(Object.assign(fields, {$context}))
+    const {identifier, name, monthly, savings} = fields
+    NonEmptyStringType(identifier, ['CheckingAccount', 'identifier:AggregateId'])
+    NonEmptyStringType(name, ['CheckingAccount', 'name:String'])
+    BooleanType(monthly, ['CheckingAccount', 'monthly:Boolean'])
+    BooleanType(savings, ['CheckingAccount', 'monthly:savings'])
+    this.identifier = identifier
+    this.name = name
+    this.monthly = monthly
+    this.savings = savings
   }
-  this.$context = CheckingAccount.$context
-  this.$acceptedEvents = []
-  this.$aggregateAlias = 'checkingAccount'
+
+  toJSON () {
+    return Object.assign(
+      super.toJSON(),
+      {
+        identifier: this.identifier,
+        name: this.name,
+        monthly: this.monthly,
+        savings: this.savings
+      }
+    )
+  }
+
+  static fromJSON (data) {
+    CheckingAccountJSONType(data)
+    return new CheckingAccount(Object.assign(
+      super.fromJSON(data), {
+        identifier: data.identifier,
+        name: data.name,
+        monthly: data.monthly,
+        savings: data.savings
+      })
+    )
+  }
+
+  /**
+   * @returns {URIValue}
+   */
+  static get $context () {
+    return $context
+  }
+
+  /**
+   * Returns true if x is of type CheckingAccount
+   *
+   * @param {object} x
+   * @returns {boolean}
+   */
+  static is (x) {
+    return (x instanceof CheckingAccount) || (Aggregate.is(x) && '$context' in x && URIValue.is(x.$context) && $context.equals(x.$context))
+  }
 }
-CheckingAccount.prototype = _create(Aggregate.prototype, {
-  'constructor': CheckingAccount
-})
 
-CheckingAccount.$context = 'https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#CheckingAccount'
-
-module.exports = CheckingAccount
+export const CheckingAccountJSONType = struct({
+  $id: StringType,
+  $version: VersionNumberType,
+  $deleted: MaybeBooleanType,
+  $createdAt: StringType,
+  $updatedAt: MaybeStringType,
+  $deletedAt: MaybeStringType,
+  identifier: NonEmptyStringType,
+  name: NonEmptyStringType,
+  monthly: BooleanType,
+  savings: BooleanType
+}, 'CheckingAccountJSONType')
+export const CheckingAccountType = irreducible('CheckingAccountType', CheckingAccount.is)

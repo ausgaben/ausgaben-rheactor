@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "codacy-coverage": "^2.0.0",
+    "codacy-coverage": "^2.0.2",
     "husky": "<2.0.0",
     "istanbul": "^0.4.5",
     "lolex": "^1.5.2",

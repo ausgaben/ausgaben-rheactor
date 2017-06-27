@@ -1,10 +1,10 @@
 /* global describe, it, after */
 
-import CreateMonthlySpendingsCommand from '../../../../server/command/create-monthly-spendings'
+import CreateMonthlySpendingsCommand from '../../../../src/command/create-monthly-spendings'
 
-import {PeriodicalRepository} from '../../../../server/repository/periodical'
-import {SpendingRepository} from '../../../../server/repository/spending'
-import {PeriodicalModel} from '../../../../server/model/periodical'
+import {PeriodicalRepository} from '../../../../src/repository/periodical'
+import {SpendingRepository} from '../../../../src/repository/spending'
+import {PeriodicalModel} from '../../../../src/model/periodical'
 import Promise from 'bluebird'
 import simple from 'simple-mock'
 simple.Promise = Promise

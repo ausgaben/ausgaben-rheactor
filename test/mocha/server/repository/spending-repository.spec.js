@@ -3,8 +3,8 @@
 import {expect} from 'chai'
 
 import {clearDb, redis} from '../helper'
-import {SpendingRepository} from '../../../../server/repository/spending'
-import {SpendingModel} from '../../../../server/model/spending'
+import {SpendingRepository} from '../../../../src/repository/spending'
+import {SpendingModel} from '../../../../src/model/spending'
 import Promise from 'bluebird'
 import {ModelEvent} from '@rheactorjs/event-store'
 

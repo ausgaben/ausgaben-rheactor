@@ -1,6 +1,6 @@
 import path from 'path'
 import glob from 'glob'
-import app from '../../server/server'
+import app from '../../src/server'
 import runner from '@rheactorjs/yadda-feature-runner'
 import superagent from 'superagent'
 import {TimeContext, RestClientContext, InternalContext} from '@rheactorjs/bdd-contexts'

@@ -3,7 +3,7 @@
 /**
  * Prints config values to the command line
  *
- * Usage: server/config/cli <value>
+ * Usage: src/config/cli <value>
  */
 
 const config = require('./config')

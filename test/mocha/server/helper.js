@@ -3,7 +3,7 @@ import superagent from 'superagent'
 import Promise from 'bluebird'
 Promise.promisifyAll(request)
 
-import backend from '../../../server/backend'
+import backend from '../../../src/backend'
 
 export function clearDb () {
   return backend.redis.client.flushdb()

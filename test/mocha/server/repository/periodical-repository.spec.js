@@ -3,8 +3,8 @@
 import {expect} from 'chai'
 
 import {clearDb, redis} from '../helper'
-import {PeriodicalRepository} from '../../../../server/repository/periodical'
-import {PeriodicalModel} from '../../../../server/model/periodical'
+import {PeriodicalRepository} from '../../../../src/repository/periodical'
+import {PeriodicalModel} from '../../../../src/model/periodical'
 import Promise from 'bluebird'
 import {ModelEvent} from '@rheactorjs/event-store'
 

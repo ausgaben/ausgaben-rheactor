@@ -2,10 +2,10 @@
   "name": "ausgaben-rheactor",
   "version": "0.3.3",
   "description": "Personal spending build with Node.js",
-  "main": "server/server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev-server": "environment=development nodemon -e 'js,html,css' -w ./server -w ./util -d 1 ./server/server.js",
+    "start": "node src/server.js",
+    "dev-server": "environment=development nodemon -e 'js,html,css' -w ./server -w ./util -d 1 ./src/server.js",
     "test": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/\\*\\*/\\*.js",
     "test:api": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/yadda/\\*\\*/\\*.js",
     "test:backend": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/mocha/\\*\\*/\\*.js",

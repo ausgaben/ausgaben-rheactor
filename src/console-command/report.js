@@ -2,6 +2,7 @@ import moment from 'moment'
 import forIn from 'lodash/forIn'
 
 export default {
+  name: 'report',
   arguments: '<account> <year> [title]',
   description: 'create a simple report',
   action: (backend, account, year, title) => {

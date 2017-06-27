@@ -4,6 +4,7 @@ import CreateSpendingCommand from '../command/spending/create'
 import moment from 'moment'
 
 export default {
+  name: 'import-spendings',
   arguments: '<importfile> <account> <user> <month>',
   description: 'import spendings from a tab-separated file',
   action: (backend, importfile, account, user, month) => {

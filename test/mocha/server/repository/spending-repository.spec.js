@@ -6,7 +6,7 @@ import {clearDb, redis} from '../helper'
 import {SpendingRepository} from '../../../../server/repository/spending'
 import {SpendingModel} from '../../../../server/model/spending'
 import Promise from 'bluebird'
-import {ModelEvent} from 'rheactor-event-store'
+import {ModelEvent} from '@rheactorjs/event-store'
 
 describe('SpendingRepository', () => {
   before(clearDb)
@@ -18,8 +18,8 @@ describe('SpendingRepository', () => {
   })
 
   it('should persist', (done) => {
-    let spending1 = new SpendingModel('42', '17', 'Salary', 'Tanja\'s Salary', 165432, true, new Date('2015-01-01').getTime())
-    let spending2 = new SpendingModel('42', '17', 'Salary', 'Markus\'s Salary', 123456, true, new Date('2015-01-02').getTime())
+    let spending1 = new SpendingModel('42', '17', 'Salary', 'Tanja\'s Salary', 165432, true, new Date('2015-01-01'))
+    let spending2 = new SpendingModel('42', '17', 'Salary', 'Markus\'s Salary', 123456, true, new Date('2015-01-02'))
     Promise
       .join(
         spendingRepo.add(spending1),
@@ -40,7 +40,7 @@ describe('SpendingRepository', () => {
             expect(s1.category).to.equal('Salary')
             expect(s1.title).to.equal('Tanja\'s Salary')
             expect(s1.amount).to.equal(165432)
-            expect(s1.bookedAt).to.equal(new Date('2015-01-01').getTime())
+            expect(s1.bookedAt.getTime()).to.equal(new Date('2015-01-01').getTime())
             expect(s1.booked).to.equal(true)
             expect(s2.aggregateId()).to.be.above(0)
             expect(s2.checkingAccount).to.equal('42')
@@ -48,7 +48,7 @@ describe('SpendingRepository', () => {
             expect(s2.category).to.equal('Salary')
             expect(s2.title).to.equal('Markus\'s Salary')
             expect(s2.amount).to.equal(123456)
-            expect(s2.bookedAt).to.equal(new Date('2015-01-02').getTime())
+            expect(s2.bookedAt.getTime()).to.equal(new Date('2015-01-02').getTime())
             expect(s2.booked).to.equal(true)
             done()
           })

@@ -1,5 +1,5 @@
 import CreateCheckingAccountUserCommand from '../../../command/checking-account-user/create'
-import CheckingAccountUserModel from '../../../model/checking-account-user'
+import {CheckingAccountUserModel} from '../../../model/checking-account-user'
 
 export default {
   command: CreateCheckingAccountUserCommand,

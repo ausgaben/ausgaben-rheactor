@@ -1,43 +1,89 @@
-import {Aggregate} from 'rheactor-models'
-import _forEach from 'lodash/forEach'
-import _create from 'lodash/create'
+import {Aggregate, VersionNumberType} from '@rheactorjs/models'
+import {URIValue} from '@rheactorjs/value-objects'
+import {
+  Boolean as BooleanType,
+  String as StringType,
+  refinement,
+  struct,
+  maybe,
+  irreducible,
+  Date as DateType,
+  Integer as IntegerType
+} from 'tcomb'
+const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
+const MaybeBooleanType = maybe(BooleanType)
+const MaybeStringType = maybe(StringType)
+const MaybeDateType = maybe(DateType)
 
-/**
- * @param {object} data
- * @constructor
- */
-function Spending (data) {
-  this.$id = undefined
-  this.$version = undefined
-  this.$links = undefined
-  this.$createdAt = undefined
-  this.$updatedAt = undefined
-  this.$deletedAt = undefined
-  this.category = undefined
-  this.title = undefined
-  this.amount = undefined
-  this.booked = undefined
-  this.bookedAt = undefined
-  this.saving = undefined
+const $context = new URIValue('https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending')
 
-  if (data) {
-    const self = this
-    _forEach(this, (value, key) => {
-      self[key] = data[key] === undefined ? undefined : data[key]
-    })
+export class Spending extends Aggregate {
+  constructor (fields) {
+    super(Object.assign(fields, {$context}))
+    const {category, title, amount, booked, saving, bookedAt} = fields
+    this.category = NonEmptyStringType(category, ['Spending', 'category:String'])
+    this.title = NonEmptyStringType(title, ['Spending', 'title:String'])
+    this.amount = IntegerType(amount, ['Spending', 'amount:Integer'])
+    this.booked = BooleanType(booked || false, ['Spending', 'booked:Boolean'])
+    this.bookedAt = MaybeDateType(bookedAt, ['Spending', 'bookedAt:?Date'])
+    this.saving = BooleanType(saving || false, ['Spending', 'saving:Boolean'])
   }
-  this.$context = Spending.$context
-  this.$acceptedEvents = []
-  this.$aggregateAlias = 'spending'
-  if (this.bookedAt) this.bookedAt = new Date(this.bookedAt)
-  this.booked = !!this.booked
-  this.saving = !!this.saving
-  this.amount = +this.amount
+
+  static get $context () {
+    return $context
+  }
+
+  toJSON () {
+    return Object.assign(
+      super.toJSON(),
+      {
+        category: this.category,
+        title: this.title,
+        amount: this.amount,
+        booked: this.booked,
+        bookedAt: this.bookedAt ? this.bookedAt.toISOString() : undefined,
+        saving: this.saving
+      }
+    )
+  }
+
+  static fromJSON (data) {
+    SpendingJSONType(data)
+    return new Spending(Object.assign(
+      super.fromJSON(data), {
+        category: data.category,
+        title: data.title,
+        amount: data.amount,
+        booked: data.booked,
+        bookedAt: data.bookedAt ? new Date(data.bookedAt) : undefined,
+        saving: data.saving
+      })
+    )
+  }
+
+  /**
+   * Returns true if x is of type Spending
+   *
+   * @param {object} x
+   * @returns {boolean}
+   */
+  static is (x) {
+    return (x instanceof Spending) || (Aggregate.is(x) && '$context' in x && URIValue.is(x.$context) && $context.equals(x.$context))
+  }
 }
-Spending.prototype = _create(Aggregate.prototype, {
-  'constructor': Spending
-})
 
-Spending.$context = 'https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Spending'
-
-export default Spending
+export const SpendingJSONType = struct({
+  $id: StringType,
+  $version: VersionNumberType,
+  $deleted: MaybeBooleanType,
+  $createdAt: StringType,
+  $updatedAt: MaybeStringType,
+  $deletedAt: MaybeStringType,
+  category: NonEmptyStringType,
+  title: NonEmptyStringType,
+  booked: BooleanType,
+  bookedAt: MaybeDateType,
+  saving: BooleanType,
+  amount: IntegerType
+}, 'SpendingJSONType')
+export const SpendingType = irreducible('SpendingType', Spending.is)

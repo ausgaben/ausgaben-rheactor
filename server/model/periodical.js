@@ -1,18 +1,16 @@
-import {AggregateRoot, AggregateIdType} from 'rheactor-event-store'
-import _reduce from 'lodash/reduce'
-import {UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
+import {AggregateRoot, AggregateIdType} from '@rheactorjs/event-store'
+import {UnhandledDomainEventError} from '@rheactorjs/errors'
 import {
   irreducible,
   Boolean as BooleanType,
   Integer as IntegerType,
   String as StringType,
   refinement,
-  maybe
+  maybe,
+  Date as DateType
 } from 'tcomb'
 const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
-const ZeroOrPositiveIntegerType = refinement(IntegerType, n => n >= 0, 'ZeroOrPositiveIntegerType')
-const TimestampType = refinement(IntegerType, n => n > 0, 'TimestampType')
-const MaybeTimestampType = maybe(TimestampType, 'MaybeTimestampType')
+const MaybeDateType = maybe(DateType, 'MaybeDateType')
 
 /**
  * @param {String} checkingAccount
@@ -21,33 +19,24 @@ const MaybeTimestampType = maybe(TimestampType, 'MaybeTimestampType')
  * @param {String} title
  * @param {Number} amount
  * @param {Boolean} estimate
- * @param {Number} startsAt
+ * @param {Date} startsAt
+ * @param {Number} enabledIn
  * @param {Boolean} saving
  * @constructor
  * @throws ValidationFailedError if the creation fails due to invalid data
  */
 export class PeriodicalModel extends AggregateRoot {
-  constructor (checkingAccount, author, category, title, amount, estimate, startsAt, saving = false) {
+  constructor (checkingAccount, author, category, title, amount, estimate, startsAt, enabledIn, saving = false) {
     super()
-    AggregateIdType(checkingAccount, ['PeriodicalModel', 'checkingAccount:AggregateId'])
-    AggregateIdType(author, ['PeriodicalModel', 'author:AggregateId'])
-    NonEmptyStringType(category, ['PeriodicalModel', 'category:String'])
-    NonEmptyStringType(title, ['PeriodicalModel', 'title:String'])
-    ZeroOrPositiveIntegerType(amount, ['PeriodicalModel', 'amount:Integer>=0'])
-    BooleanType(estimate, ['PeriodicalModel', 'estimate:Boolean'])
-    MaybeTimestampType(startsAt, ['PeriodicalModel', 'startsAt:Timestamp'])
-    BooleanType(saving, ['PeriodicalModel', 'saving:Boolean'])
-    this.checkingAccount = checkingAccount
-    this.author = author
-    this.category = category
-    this.title = title
-    this.amount = amount
-    this.estimate = estimate
-    this.startsAt = startsAt
-    this.saving = saving
-    this.enabledIn = _reduce(PeriodicalModel.monthFlags, (all, flag) => {
-      return all | flag
-    }, 0)
+    this.checkingAccount = AggregateIdType(checkingAccount, ['PeriodicalModel', 'checkingAccount:AggregateId'])
+    this.author = AggregateIdType(author, ['PeriodicalModel', 'author:AggregateId'])
+    this.category = NonEmptyStringType(category, ['PeriodicalModel', 'category:String'])
+    this.title = NonEmptyStringType(title, ['PeriodicalModel', 'title:String'])
+    this.amount = IntegerType(amount, ['PeriodicalModel', 'amount:Integer'])
+    this.estimate = BooleanType(estimate, ['PeriodicalModel', 'estimate:Boolean'])
+    this.startsAt = MaybeDateType(startsAt, ['PeriodicalModel', 'startsAt:Date'])
+    this.enabledIn = IntegerType(enabledIn || PeriodicalModel.monthFlags.reduce((all, flag) => all | flag, 0), ['PeriodicalModel', 'enabledIn:Integer'])
+    this.saving = BooleanType(saving, ['PeriodicalModel', 'saving:Boolean'])
   }
 
   /**
@@ -66,7 +55,7 @@ export class PeriodicalModel extends AggregateRoot {
         self.title = data.title
         self.amount = data.amount
         self.estimate = data.estimate
-        self.startsAt = data.startsAt
+        self.startsAt = data.startsAt ? new Date(data.startsAt) : undefined
         self.enabledIn = data.enabledIn
         self.saving = data.saving
         this.persisted(event.aggregateId, event.createdAt)
@@ -93,39 +82,6 @@ export class PeriodicalModel extends AggregateRoot {
       2048
     ]
   }
-
-  /**
-   * Returns true if x is of type PeriodicalModel
-   *
-   * @param {object} x
-   * @returns {boolean}
-   */
-  static is (x) {
-    return (x instanceof PeriodicalModel) || (
-        x &&
-        x.constructor &&
-        x.constructor.name === PeriodicalModel.name &&
-        'persisted' in x &&
-        'updated' in x &&
-        'deleted' in x &&
-        'aggregateVersion' in x &&
-        'aggregateId' in x &&
-        'isDeleted' in x &&
-        'createdAt' in x &&
-        'modifiedAt' in x &&
-        'updatedAt' in x &&
-        'deletedAt' in x &&
-        'checkingAccount' in x &&
-        'author' in x &&
-        'category' in x &&
-        'title' in x &&
-        'amount' in x &&
-        'estimate' in x &&
-        'startsAt' in x &&
-        'enabledIn' in x &&
-        'saving'
-      )
-  }
 }
 
-export const PeriodicalModelType = irreducible('PeriodicalModelType', PeriodicalModel.is)
+export const PeriodicalModelType = irreducible('PeriodicalModelType', x => x instanceof PeriodicalModel)

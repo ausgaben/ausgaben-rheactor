@@ -1,5 +1,5 @@
-import {Aggregate, VersionNumberType} from 'rheactor-models'
-import {URIValue} from 'rheactor-value-objects'
+import {Aggregate, VersionNumberType} from '@rheactorjs/models'
+import {URIValue} from '@rheactorjs/value-objects'
 import {Boolean as BooleanType, String as StringType, refinement, struct, maybe, irreducible} from 'tcomb'
 const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
 const MaybeBooleanType = maybe(BooleanType)
@@ -11,14 +11,10 @@ export class CheckingAccount extends Aggregate {
   constructor (fields) {
     super(Object.assign(fields, {$context}))
     const {identifier, name, monthly, savings} = fields
-    NonEmptyStringType(identifier, ['CheckingAccount', 'identifier:AggregateId'])
-    NonEmptyStringType(name, ['CheckingAccount', 'name:String'])
-    BooleanType(monthly, ['CheckingAccount', 'monthly:Boolean'])
-    BooleanType(savings, ['CheckingAccount', 'monthly:savings'])
-    this.identifier = identifier
-    this.name = name
-    this.monthly = monthly
-    this.savings = savings
+    this.identifier = NonEmptyStringType(identifier, ['CheckingAccount', 'identifier:AggregateId'])
+    this.name = NonEmptyStringType(name, ['CheckingAccount', 'name:String'])
+    this.monthly = BooleanType(monthly, ['CheckingAccount', 'monthly:Boolean'])
+    this.savings = BooleanType(savings, ['CheckingAccount', 'monthly:savings'])
   }
 
   toJSON () {

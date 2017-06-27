@@ -1,4 +1,4 @@
-import {EmittedEventsHandlerRegistry} from 'rheactor-server'
+import {EmittedEventsHandlerRegistry} from '@rheactorjs/server'
 
 import createCheckingAccountCommandHandler from '../command-handler/repository/checking-account/create'
 import updateCheckingAccountPropertyCommandHandler from '../command-handler/repository/checking-account/update-property'

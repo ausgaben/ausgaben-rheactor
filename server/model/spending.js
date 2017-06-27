@@ -1,12 +1,10 @@
-import {AggregateRoot, ModelEvent, AggregateIdType} from 'rheactor-event-store'
+import {AggregateRoot, ModelEvent, AggregateIdType} from '@rheactorjs/event-store'
 import {PeriodicalModelType} from './periodical'
-import {ValidationFailedError, UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
+import {ValidationFailedError, UnhandledDomainEventError} from '@rheactorjs/errors'
 import {SpendingCreatedEvent, SpendingUpdatedEvent, SpendingDeletedEvent} from '../events'
-import {Boolean as BooleanType, Integer as IntegerType, String as StringType, refinement, maybe} from 'tcomb'
+import {Boolean as BooleanType, Integer as IntegerType, String as StringType, refinement, maybe, Date as DateType, irreducible} from 'tcomb'
 const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
-const ZeroOrPositiveIntegerType = refinement(IntegerType, n => n >= 0, 'ZeroOrPositiveIntegerType')
-const TimestampType = refinement(IntegerType, n => n > 0, 'TimestampType')
-const MaybeTimestampType = maybe(TimestampType, 'MaybeTimestampType')
+const MaybeDateType = maybe(DateType, 'MaybeDateType')
 
 /**
  * @param {String} checkingAccount
@@ -15,7 +13,7 @@ const MaybeTimestampType = maybe(TimestampType, 'MaybeTimestampType')
  * @param {String} title
  * @param {Number} amount
  * @param {Boolean} booked
- * @param {Number} bookedAt
+ * @param {Date} bookedAt
  * @param {Boolean} saving
  * @constructor
  * @throws ValidationFailedError if the creation fails due to invalid data
@@ -23,22 +21,14 @@ const MaybeTimestampType = maybe(TimestampType, 'MaybeTimestampType')
 export class SpendingModel extends AggregateRoot {
   constructor (checkingAccount, author, category, title, amount, booked = false, bookedAt, saving = false) {
     super()
-    AggregateIdType(checkingAccount, ['SpendingModel', 'checkingAccount:AggregateId'])
-    AggregateIdType(author, ['SpendingModel', 'author:AggregateId'])
-    NonEmptyStringType(category, ['SpendingModel', 'category:String'])
-    NonEmptyStringType(title, ['SpendingModel', 'title:String'])
-    ZeroOrPositiveIntegerType(amount, ['SpendingModel', 'amount:Integer>=0'])
-    BooleanType(booked, ['SpendingModel', 'booked:Boolean'])
-    MaybeTimestampType(bookedAt, ['SpendingModel', 'bookedAt:Timestamp'])
-    BooleanType(saving, ['SpendingModel', 'saving:Boolean'])
-    this.checkingAccount = checkingAccount
-    this.author = author
-    this.category = category
-    this.title = title
-    this.amount = amount
-    this.booked = booked
-    this.bookedAt = bookedAt
-    this.saving = saving
+    this.checkingAccount = AggregateIdType(checkingAccount, ['SpendingModel', 'checkingAccount:AggregateId'])
+    this.author = AggregateIdType(author, ['SpendingModel', 'author:AggregateId'])
+    this.category = NonEmptyStringType(category, ['SpendingModel', 'category:String'])
+    this.title = NonEmptyStringType(title, ['SpendingModel', 'title:String'])
+    this.amount = IntegerType(amount, ['SpendingModel', 'amount:Integer'])
+    this.booked = BooleanType(booked, ['SpendingModel', 'booked:Boolean'])
+    this.bookedAt = MaybeDateType(bookedAt, ['SpendingModel', 'Date:Date'])
+    this.saving = BooleanType(saving, ['SpendingModel', 'saving:Boolean'])
   }
 
   /**
@@ -57,7 +47,7 @@ export class SpendingModel extends AggregateRoot {
         self.title = data.title
         self.amount = data.amount
         self.booked = data.booked
-        self.bookedAt = data.bookedAt
+        self.bookedAt = data.bookedAt ? new Date(data.bookedAt) : undefined
         self.saving = data.saving
         this.persisted(event.aggregateId, event.createdAt)
         break
@@ -108,7 +98,7 @@ export class SpendingModel extends AggregateRoot {
    */
   static fromPeriodical (periodical, bookedAt) {
     PeriodicalModelType(periodical)
-    TimestampType(bookedAt)
+    DateType(bookedAt)
     const spending = new SpendingModel(
       periodical.checkingAccount,
       periodical.author,
@@ -123,3 +113,5 @@ export class SpendingModel extends AggregateRoot {
     return spending
   }
 }
+
+export const SpendingModelType = irreducible('SpendingModelType', x => x instanceof SpendingModel)

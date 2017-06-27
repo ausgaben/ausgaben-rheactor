@@ -1,4 +1,4 @@
-import {AggregateRepository} from 'rheactor-event-store'
+import {AggregateRepository} from '@rheactorjs/event-store'
 import {CheckingAccountModel} from '../model/checking-account'
 
 /**

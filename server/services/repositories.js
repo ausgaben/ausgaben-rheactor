@@ -2,7 +2,7 @@ import {CheckingAccountRepository} from '../repository/checking-account'
 import {CheckingAccountUserRepository} from '../repository/checking-account-user'
 import {PeriodicalRepository} from '../repository/periodical'
 import {SpendingRepository} from '../repository/spending'
-import {UserRepository} from 'rheactor-server'
+import {UserRepository} from '@rheactorjs/server'
 
 export default (redis) => {
   return {

@@ -1,11 +1,11 @@
-import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import {ValidationFailedError, AccessDeniedError} from '@rheactorjs/errors'
 import {CheckingAccount} from '../../build/js-es5/model/checking-account'
 import CreateCheckingAccountCommand from '../command/checking-account/create'
 import UpdateCheckingAccountPropertyCommand from '../command/checking-account/update-property'
-import {URIValue} from 'rheactor-value-objects'
+import {URIValue} from '@rheactorjs/value-objects'
 import Promise from 'bluebird'
 import Joi from 'joi'
-import {Pagination, sendPaginatedListResponse, checkVersion} from 'rheactor-server'
+import {Pagination, sendPaginatedListResponse, checkVersion} from '@rheactorjs/server'
 import _merge from 'lodash/merge'
 
 /**
@@ -22,20 +22,18 @@ import _merge from 'lodash/merge'
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-export default (
-  app,
-  config,
-  emitter,
-  checkingAccountRepo,
-  checkingAccountUserRepo,
-  spendingRepo,
-  userRepo,
-  search,
-  tokenAuth,
-  jsonld,
-  sendHttpProblem,
-  transformer
-) => {
+export default (app,
+                config,
+                emitter,
+                checkingAccountRepo,
+                checkingAccountUserRepo,
+                spendingRepo,
+                userRepo,
+                search,
+                tokenAuth,
+                jsonld,
+                sendHttpProblem,
+                transformer) => {
   /**
    * Search checkingAccounts
    */
@@ -57,17 +55,7 @@ export default (
 
         let pagination = new Pagination(query.offset)
         return search.searchCheckingAccounts(query, pagination)
-          .then(
-            checkingAccounts => sendPaginatedListResponse(
-              new URIValue(config.get('api_host')),
-              req,
-              res,
-              CheckingAccount.$context,
-              jsonld,
-              checkingAccount => transformer(checkingAccount),
-              checkingAccounts
-            )
-          )
+          .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, checkingAccount => transformer(checkingAccount)))
       })
       .catch(sendHttpProblem.bind(null, res))
   })
@@ -76,10 +64,11 @@ export default (
    * Create a checking account
    */
   app.post('/api/checking-account', tokenAuth, (req, res) => {
+    const b = Joi.boolean().default(false).falsy([0, '0']).truthy([1, '1'])
     let schema = Joi.object().keys({
       name: Joi.string().min(1).required().trim(),
-      monthly: Joi.boolean().default(false).falsy(0).truthy(1),
-      savings: Joi.boolean().default(false).falsy(0).truthy(1)
+      monthly: b,
+      savings: b
     })
     Promise
       .try(() => {

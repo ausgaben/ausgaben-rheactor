@@ -1,9 +1,9 @@
-import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import {ValidationFailedError, AccessDeniedError} from '@rheactorjs/errors'
 import {Title} from '../../build/js-es5/model/title'
-import {URIValue} from 'rheactor-value-objects'
+import {URIValue} from '@rheactorjs/value-objects'
 import Promise from 'bluebird'
 import Joi from 'joi'
-import {Pagination, sendPaginatedListResponse} from 'rheactor-server'
+import {Pagination, sendPaginatedListResponse} from '@rheactorjs/server'
 import _merge from 'lodash/merge'
 
 /**
@@ -60,9 +60,7 @@ export default (
 
           let pagination = new Pagination(query.offset)
           return search.searchTitles(query, pagination)
-            .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, Title.$context, jsonld, (title) => {
-              return new Title(title, v.value.category)
-            }))
+            .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, ({title}) => new Title(title, v.value.category)))
         })
     })
     .catch(sendHttpProblem.bind(null, res))

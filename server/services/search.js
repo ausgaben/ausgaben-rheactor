@@ -77,8 +77,8 @@ class Search {
       .resolve(self.redis.sinterAsync(...sets))
       .then((ids) => {
         if (!query.dateFrom && !query.dateTo) return ids
-        const from = query.dateFrom ? new Date(query.dateFrom).getTime() : false
-        const to = query.dateTo ? new Date(query.dateTo).getTime() : false
+        const from = query.dateFrom ? new Date(query.dateFrom) : false
+        const to = query.dateTo ? new Date(query.dateTo) : false
         return self.spendingBookedAtIndex.range(query.checkingAccount, from, to)
           .then(dateIds => _intersection(dateIds, ids))
       })
@@ -136,9 +136,8 @@ class Search {
         total = categories.length
         return pagination.splice(categories)
       })
-      .then((items) => {
-        return pagination.result(items, total, query)
-      })
+      .map(category => ({category}))
+      .then((items) => pagination.result(items, total, query))
   }
 
   /**
@@ -160,9 +159,8 @@ class Search {
         total = titles.length
         return pagination.splice(titles)
       })
-      .then((items) => {
-        return pagination.result(items, total, query)
-      })
+      .map(title => ({title}))
+      .then(items => pagination.result(items, total, query))
   }
 }
 

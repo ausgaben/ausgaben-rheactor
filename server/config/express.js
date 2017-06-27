@@ -1,6 +1,14 @@
-import {rheactorExpressConfig} from 'rheactor-server'
+import {rheactorjsExpressConfig} from '@rheactorjs/server'
 import AusgabenModelTransformer from '../api/transformer'
 import JSONLD from '../config/jsonld'
+
+import checkingAccountRoutes from '../api/checking-account'
+import reportRoutes from '../api/report'
+import spendingRoutes from '../api/spending'
+import categoryRoutes from '../api/category'
+import titleRoutes from '../api/title'
+import periodicalRoutes from '../api/periodical'
+import streamRoutes from '../api/stream'
 
 /**
  * @param {express.app} app
@@ -16,24 +24,13 @@ export default (app, config, webConfig, repositories, search, emitter) => {
   let transformer = (jsonld, model, extra) => {
     return modelTransformer.transform(jsonld, model, extra)
   }
-  let e = rheactorExpressConfig(app, config, webConfig, repositories, emitter, transformer, jsonld)
+  let e = rheactorjsExpressConfig(app, config, webConfig, repositories, emitter, transformer, jsonld)
 
-  // Add sugar headers
-  let version = config.get('version')
-  let environment = config.get('environment')
-  app.use((req, res, next) => {
-    res.header('X-Ausgaben-version', version)
-    res.header('X-Ausgaben-environment', environment)
-    res.header('X-Made-By', 'Markus Tacker | https://coderbyheart.com/')
-    res.header('X-GitHub', 'https://github.com/ausgaben/ausgaben-rheactor')
-    next()
-  })
-
-  require('../api/checking-account')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
-  require('../api/report')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
-  require('../api/spending')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
-  require('../api/category')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
-  require('../api/title')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
-  require('../api/periodical')(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.periodical, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
-  require('../api/stream')(app, emitter, e.verifyToken, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
+  checkingAccountRoutes(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
+  reportRoutes(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
+  spendingRoutes(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
+  categoryRoutes(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
+  titleRoutes(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
+  periodicalRoutes(app, config, emitter, repositories.checkingAccount, repositories.checkingAccountUser, repositories.periodical, repositories.user, search, e.tokenAuth, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
+  streamRoutes(app, emitter, e.verifyToken, repositories.checkingAccount, repositories.checkingAccountUser, repositories.spending, jsonld, e.sendHttpProblem, transformer.bind(null, jsonld))
 }

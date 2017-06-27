@@ -1,8 +1,8 @@
 import _map from 'lodash/map'
 import _memoize from 'lodash/memoize'
-import {httpUtil, appLogger} from 'rheactor-web-app'
-import {HttpProblem, JsonWebToken, Status, List, User} from 'rheactor-models'
-import {ApplicationError} from '@resourcefulhumans/rheactor-errors'
+import {httpUtil, appLogger} from '@rheactorjs/web-app'
+import {HttpProblem, JsonWebToken, Status, List, User} from '@rheactorjs/models'
+import {ApplicationError} from '@rheactorjs/errors'
 import Promise from 'bluebird'
 import {CheckingAccount} from '../model/checking-account'
 import {Spending} from '../model/spending'
@@ -31,26 +31,26 @@ export default (apiIndex, mimeType, $http) => {
      */
     createModelInstance (data) {
       let self = this
-      switch (data.$context) {
-        case JsonWebToken.$context:
+      switch (data.$context.toString()) {
+        case JsonWebToken.$context.toString():
           return new JsonWebToken(data.token, data.$links)
-        case User.$context:
-          return new User(data)
-        case Status.$context:
-          return new Status(data)
-        case CheckingAccount.$context:
-          return new CheckingAccount(data)
-        case Spending.$context:
-          return new Spending(data)
-        case Periodical.$context:
-          return new Periodical(data)
-        case Report.$context:
-          return new Report(data)
-        case Title.$context:
-          return new Title(data.title, data.category)
-        case Category.$context:
-          return new Category(data.title)
-        case List.$context:
+        case User.$context.toString():
+          return User.fromJSON(data)
+        case Status.$context.toString():
+          return Status.fromJSON(data)
+        case CheckingAccount.$context.toString():
+          return CheckingAccount.fromJSON(data)
+        case Spending.$context.toString():
+          return Spending.fromJSON(data)
+        case Periodical.$context.toString():
+          return Periodical.fromJSON(data)
+        case Report.$context.toString():
+          return Report.fromJSON(data)
+        case Title.$context.toString():
+          return Title.fromJSON(data)
+        case Category.$context.toString():
+          return Category.fromJSON(data)
+        case List.$context.toString():
           return new List(data.context, _map(data.items, self.createModelInstance.bind(self)), data.total, data.offset, data.itemsPerPage, data.$links)
         default:
           logger.apiWarning('Unknown context', data.$context, data)
@@ -66,8 +66,8 @@ export default (apiIndex, mimeType, $http) => {
     return new Promise((resolve, reject) => {
       $http.get(`${apiIndex}?t=${Date.now()}`, httpUtil.accept(self.mimeType))
         .then(response => {
-          if (response.data.$context !== 'https://github.com/RHeactor/nucleus/wiki/JsonLD#Index') {
-            logger.apiWarning('Unexpected $context', response.data.$context, 'expected https://github.com/RHeactor/nucleus/wiki/JsonLD#Index')
+          if (response.data.$context !== 'https://github.com/RHeactorJS/models#Index') {
+            logger.apiWarning('Unexpected $context', response.data.$context, 'expected https://github.com/RHeactorJS/models#Index')
             reject(new ApplicationError('APIService.index(): Unexpected $context'))
           }
           resolve(response.data)

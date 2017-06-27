@@ -1,12 +1,12 @@
-import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import {ValidationFailedError, AccessDeniedError} from '@rheactorjs/errors'
 import {Spending} from '../../build/js-es5/model/spending'
 import CreateSpendingCommand from '../command/spending/create'
 import UpdateSpendingCommand from '../command/spending/update'
 import DeleteSpendingCommand from '../command/spending/delete'
-import {URIValue} from 'rheactor-value-objects'
+import {URIValue} from '@rheactorjs/value-objects'
 import Promise from 'bluebird'
 import Joi from 'joi'
-import {checkVersion, sendPaginatedListResponse, Pagination} from 'rheactor-server'
+import {checkVersion, sendPaginatedListResponse, Pagination} from '@rheactorjs/server'
 import _merge from 'lodash/merge'
 
 /**
@@ -66,9 +66,7 @@ export default (
 
           let pagination = new Pagination(query.offset)
           return search.searchSpendings(query, pagination)
-            .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, Spending.$context, jsonld, (spending) => {
-              return transformer(spending)
-            }))
+            .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, spending => transformer(spending)))
         })
     })
     .catch(sendHttpProblem.bind(null, res))
@@ -78,13 +76,14 @@ export default (
    * Create a spending in the given checking account
    */
   app.post('/api/checking-account/:id/spending', tokenAuth, (req, res) => {
+    const b = Joi.boolean().falsy([0, '0']).truthy([1, '1'])
     let schema = Joi.object().keys({
       category: Joi.string().min(1).required().trim(),
       title: Joi.string().min(1).required().trim(),
       amount: Joi.number().integer().required(),
-      booked: Joi.boolean().required(),
+      booked: b.required(),
       bookedAt: Joi.date(),
-      saving: Joi.boolean().default(false),
+      saving: b.default(false),
       paidWith: Joi.string().min(1).trim() // FIXME: Implement
     })
     Promise
@@ -109,7 +108,7 @@ export default (
               v.value.title,
               v.value.amount,
               v.value.booked,
-              v.value.bookedAt ? new Date(v.value.bookedAt).getTime() : undefined,
+              v.value.bookedAt ? new Date(v.value.bookedAt) : undefined,
               v.value.saving,
               user
             )
@@ -151,13 +150,14 @@ export default (
    * Update a spending
    */
   app.put('/api/spending/:id', tokenAuth, (req, res) => {
+    const b = Joi.boolean().falsy([0, '0']).truthy([1, '1'])
     let schema = Joi.object().keys({
       category: Joi.string().min(1).trim(),
       title: Joi.string().min(1).trim(),
       amount: Joi.number().integer(),
-      booked: Joi.boolean(),
+      booked: b,
       bookedAt: Joi.date(),
-      saving: Joi.boolean(),
+      saving: b,
       paidWith: Joi.string().min(1).trim() // FIXME: Implement
     })
     Promise
@@ -186,7 +186,7 @@ export default (
                 v.value.title,
                 v.value.amount,
                 v.value.booked,
-                v.value.bookedAt ? new Date(v.value.bookedAt).getTime() : undefined,
+                v.value.bookedAt ? new Date(v.value.bookedAt) : undefined,
                 v.value.saving,
                 user
               )

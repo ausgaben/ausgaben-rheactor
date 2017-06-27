@@ -1,8 +1,8 @@
 import {SpendingCreatedEvent, SpendingUpdatedEvent, SpendingDeletedEvent} from '../../events'
-import {EntityDeletedError} from '@resourcefulhumans/rheactor-errors'
-import t from 'tcomb'
-const PositiveIntegerType = t.refinement(t.Number, (n) => n % 1 === 0 && n > 0, 'PositiveInteger')
-const scalarType = t.union([t.String, t.Number])
+import {EntryDeletedError} from '@rheactorjs/errors'
+import {Date as DateType, Object as ObjectType} from 'tcomb'
+import {AggregateIdType} from '@rheactorjs/event-store'
+import {SpendingModelType} from '../../model/spending'
 
 /**
  * Maintains an index to sort spendings by bookedAt
@@ -14,43 +14,41 @@ const scalarType = t.union([t.String, t.Number])
  */
 class SpendingBookedAtIndex {
   constructor (repositories, redis, emitter) {
-    const self = this
-    t.Object(repositories)
-    t.Object(redis)
-    t.Object(emitter)
+    ObjectType(repositories)
+    ObjectType(redis)
+    ObjectType(emitter)
     this.repositories = repositories
     this.redis = redis
 
     emitter.on(
       emitter.toEventName(SpendingCreatedEvent),
-      event => repositories.spending.getById(event.aggregateId).then(spending => self.indexSpending(spending))
+      event => repositories.spending.getById(event.aggregateId).then(spending => this.indexSpending(spending))
     )
     emitter.on(
       emitter.toEventName(SpendingDeletedEvent),
       event => repositories.spending.getById(event.aggregateId)
-        .catch(err => EntityDeletedError.is(err), err => self.removeSpending(err.entry))
+        .catch(err => EntryDeletedError.is(err), err => this.removeSpending(err.entry))
     )
     emitter.on(
       emitter.toEventName(SpendingUpdatedEvent),
       event => {
         if (event.data.bookedAt) {
-          return repositories.spending.getById(event.aggregateId).then(spending => self.indexSpending(spending))
+          return repositories.spending.getById(event.aggregateId).then(spending => this.indexSpending(spending))
         }
       }
     )
   }
 
   index () {
-    let self = this
-    return self.repositories.checkingAccount.findAll()
-      .map(checkingAccount => self.redis.delAsync(self.indexKey(checkingAccount.aggregateId())))
-      .then(() => self.repositories.spending.findAll()
-        .map(spending => self.indexSpending(spending))
+    return this.repositories.checkingAccount.findAll()
+      .map(checkingAccount => this.redis.delAsync(this.indexKey(checkingAccount.aggregateId())))
+      .then(() => this.repositories.spending.findAll()
+        .map(spending => this.indexSpending(spending))
       )
   }
 
   indexKey (checkingAccount) {
-    scalarType(checkingAccount)
+    AggregateIdType(checkingAccount)
     return `checkingAccount:spending-bookedAt:${checkingAccount}`
   }
 
@@ -59,11 +57,10 @@ class SpendingBookedAtIndex {
    * @return {Promise}
    */
   indexSpending (spending) {
-    t.Object(spending)
-    const self = this
+    SpendingModelType(spending)
     if (!spending.bookedAt) return
-    const score = spending.bookedAt
-    return self.redis.zaddAsync(self.indexKey(spending.checkingAccount), score, spending.aggregateId())
+    const score = spending.bookedAt.getTime()
+    return this.redis.zaddAsync(this.indexKey(spending.checkingAccount), score, spending.aggregateId())
   }
 
   /**
@@ -71,25 +68,21 @@ class SpendingBookedAtIndex {
    * @return {Promise}
    */
   removeSpending (spending) {
-    t.Object(spending)
-    const self = this
-    return self.redis.zremAsync(`checkingAccount:spending-bookedAt:${spending.checkingAccount}`, spending.aggregateId())
+    SpendingModelType(spending)
+    return this.redis.zremAsync(`checkingAccount:spending-bookedAt:${spending.checkingAccount}`, spending.aggregateId())
   }
 
   /**
    * @param {Number} checkingAccount
-   * @param {Number} dateFrom
-   * @param {Number} dateTo
+   * @param {Date} dateFrom
+   * @param {Date} dateTo
    * @return {Promise.<Array.<Number>>}
    */
   range (checkingAccount, dateFrom, dateTo) {
-    scalarType(checkingAccount)
-    t.maybe(PositiveIntegerType)(dateFrom)
-    t.maybe(PositiveIntegerType)(dateTo)
-    if (!dateTo) dateTo = '+inf'
-    if (!dateFrom) dateFrom = '-inf'
-    const self = this
-    return self.redis.zrangebyscoreAsync(`checkingAccount:spending-bookedAt:${checkingAccount}`, `${dateFrom}`, `${dateTo}`)
+    AggregateIdType(checkingAccount)
+    const from = dateFrom ? DateType(dateFrom).getTime() : '-inf'
+    const to = dateTo ? DateType(dateTo).getTime() : '+inf'
+    return this.redis.zrangebyscoreAsync(`checkingAccount:spending-bookedAt:${checkingAccount}`, `${from}`, `${to}`)
   }
 }
 

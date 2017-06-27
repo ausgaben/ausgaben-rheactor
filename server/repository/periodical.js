@@ -1,8 +1,7 @@
-import {AggregateRepository, AggregateRelation, ModelEvent} from 'rheactor-event-store'
+import {AggregateRepository, AggregateRelation, ModelEvent} from '@rheactorjs/event-store'
 import {PeriodicalModel} from '../model/periodical'
 import {PeriodicalCreatedEvent} from '../events'
-import {Integer as IntegerType, refinement} from 'tcomb'
-export const TimestampType = refinement(IntegerType, n => n > 0, 'TimestampType')
+import {Date as DateType} from 'tcomb'
 
 /**
  * Creates a new periodical repository
@@ -46,11 +45,11 @@ export class PeriodicalRepository extends AggregateRepository {
   /**
    * Find all periodicals for a month
    *
-   * @param {Number} timestamp
+   * @param {Date} date
    */
-  findByMonth (timestamp) {
-    TimestampType(timestamp)
-    const mask = PeriodicalModel.monthFlags[new Date(timestamp).getMonth()]
+  findByMonth (date) {
+    DateType(date, ['PeriodicalRepository', 'findByMonth()', 'date:Date'])
+    const mask = PeriodicalModel.monthFlags[date.getMonth()]
     return this.findAll()
       .filter((periodical) => {
         return periodical.enabledIn & mask

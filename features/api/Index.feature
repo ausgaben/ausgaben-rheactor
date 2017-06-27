@@ -11,7 +11,7 @@ Feature: /api
     When I GET /api
     Then the status code should be 200
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
-    And "$context" should equal "https://github.com/RHeactor/nucleus/wiki/JsonLD#Index"
+    And "$context" should equal "https://github.com/RHeactorJS/models#Index"
     And I store the link to "status" as "statusEndpoint"
     And I store the link to "login" as "loginEndpoint"
     And I store the link to "register" as "registrationEndpoint"

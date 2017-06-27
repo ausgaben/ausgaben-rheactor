@@ -1,5 +1,5 @@
 import _create from 'lodash/create'
-import {GenericAPIService, JSONLD} from 'rheactor-web-app'
+import {GenericAPIService, JSONLD} from '@rheactorjs/web-app'
 import {Report} from '../model/report'
 
 /**

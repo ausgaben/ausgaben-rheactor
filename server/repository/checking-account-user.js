@@ -1,4 +1,4 @@
-import {AggregateRepository, AggregateIndex, AggregateRelation} from 'rheactor-event-store'
+import {AggregateRepository, AggregateIndex, AggregateRelation} from '@rheactorjs/event-store'
 import {CheckingAccountUserModel} from '../model/checking-account-user'
 
 /**
@@ -20,7 +20,7 @@ export class CheckingAccountUserRepository extends AggregateRepository {
    */
   add (checkingAccountUserModel) {
     return this.index.addToListIfNotPresent(`user-checkingAccounts:${checkingAccountUserModel.user}`, checkingAccountUserModel.checkingAccount)
-      .then(() => this.add(checkingAccountUserModel)
+      .then(() => super.add(checkingAccountUserModel)
         .then((event) => this.relation.addRelatedId('checkingAccount', checkingAccountUserModel.checkingAccount, event.aggregateId)
           .then(() => event)
         )

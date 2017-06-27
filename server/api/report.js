@@ -1,4 +1,4 @@
-import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import {ValidationFailedError, AccessDeniedError} from '@rheactorjs/errors'
 import Promise from 'bluebird'
 import _merge from 'lodash/merge'
 import _reduce from 'lodash/reduce'

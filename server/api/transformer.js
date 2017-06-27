@@ -1,9 +1,10 @@
-import {transform} from 'rheactor-server'
+import {transform} from '@rheactorjs/server'
 import {CheckingAccount} from '../../build/js-es5/model/checking-account'
 import {Spending} from '../../build/js-es5/model/spending'
 import {Periodical} from '../../build/js-es5/model/periodical'
 import {Report} from '../../build/js-es5/model/report'
 import {PeriodicalModel} from '../model/periodical'
+import {Reference} from '@rheactorjs/models'
 
 /**
  * @constructor
@@ -79,10 +80,7 @@ export class AusgabenModelTransformer {
           income: model.income,
           spendings: model.spendings,
           savings: model.savings,
-          checkingAccount: {
-            $context: CheckingAccount.$context,
-            $id: jsonld.createId(CheckingAccount.$context, model.checkingAccount)
-          }
+          checkingAccount: new Reference(CheckingAccount.$context, jsonld.createId(CheckingAccount.$context, model.checkingAccount))
         })
     }
   }

@@ -1,13 +1,18 @@
 import path from 'path'
 import glob from 'glob'
 import app from '../../server/server'
-const runner = require('rheactor-yadda-feature-runner')(app)
+import runner from '@rheactorjs/yadda-feature-runner'
+import superagent from 'superagent'
+import {TimeContext, RestClientContext, InternalContext} from '@rheactorjs/bdd-contexts'
+
+const featureRunner = runner(app)
 
 // Configure parsing for superagent
-require('superagent').serialize[app.webConfig.mimeType] = JSON.stringify
+superagent.serialize[app.webConfig.mimeType] = JSON.stringify
 
 app.redis.flushdb()
+app.app.set('env', 'test') // Suppress errors logged from express.js
 
 const apiFeaturesDir = path.normalize(path.join(__dirname, '/../../features/api'))
-const rheactorServerContextDir = path.normalize(path.join(__dirname, '/../../node_modules/rheactor-server/features/context/*.js'))
-runner.run(glob.sync(`${apiFeaturesDir}/*.feature`), glob.sync(rheactorServerContextDir))
+
+featureRunner.run(glob.sync(`${apiFeaturesDir}/*.feature`), [TimeContext, RestClientContext, InternalContext])

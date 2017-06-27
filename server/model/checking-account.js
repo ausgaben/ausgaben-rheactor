@@ -1,5 +1,5 @@
-import {ValidationFailedError, UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
-import {AggregateRoot, ModelEvent} from 'rheactor-event-store'
+import {ValidationFailedError, UnhandledDomainEventError} from '@rheactorjs/errors'
+import {AggregateRoot, ModelEvent} from '@rheactorjs/event-store'
 import {CheckingAccountPropertyChangedEvent, CheckingAccountCreatedEvent} from '../events'
 import {Boolean as BooleanType, String as StringType, refinement} from 'tcomb'
 

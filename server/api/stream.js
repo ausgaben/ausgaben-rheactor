@@ -1,6 +1,9 @@
-import {AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import {AccessDeniedError} from '@rheactorjs/errors'
 import Promise from 'bluebird'
-import {ModelEvent} from 'rheactor-event-store'
+import {ModelEvent} from '@rheactorjs/event-store'
+import {URIValue} from '@rheactorjs/value-objects'
+
+export const $context = new URIValue('https://github.com/ausgaben/ausgaben-rheactor/wiki/JsonLD#Stream')
 
 /**
  * @param {express.app} app

@@ -1,4 +1,4 @@
-import {RedisConnection, rheactorCommandHandler, rheactorEventHandler, BackendEmitter} from 'rheactor-server'
+import {RedisConnection, rheactorjsCommandHandler, rheactorjsEventHandler, BackendEmitter} from '@rheactorjs/server'
 import Promise from 'bluebird'
 Promise.longStackTraces()
 import colors from 'colors'
@@ -73,7 +73,7 @@ Promise
   })
 
 // TemplateMailer
-import TemplateMailerClient from 'template-mailer-aws-lambda-client'
+import TemplateMailerClient from '@rheactorjs/template-mailer-client'
 
 let templateMailer
 if ((environment === 'production' || config.get('force_mails')) && !config.get('disable_mails')) {
@@ -95,8 +95,8 @@ if ((environment === 'production' || config.get('force_mails')) && !config.get('
 }
 
 // Event handling
-rheactorCommandHandler(repositories, emitter, config, webConfig, templateMailer)
-rheactorEventHandler(repositories, emitter, config)
+rheactorjsCommandHandler(repositories, emitter, config, webConfig, templateMailer)
+rheactorjsEventHandler(repositories, emitter, config)
 import commandHandler from './config/command-handler'
 commandHandler(repositories, emitter, config, webConfig, templateMailer)
 

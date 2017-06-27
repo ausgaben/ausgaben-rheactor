@@ -1,5 +1,5 @@
-import {waitFor, HttpProgress, JSONLD} from 'rheactor-web-app'
-import {HttpProblem} from 'rheactor-models'
+import {waitFor, HttpProgress, JSONLD} from '@rheactorjs/web-app'
+import {HttpProblem} from '@rheactorjs/models'
 import _merge from 'lodash/merge'
 import {Spending} from '../../model/spending'
 import debounce from 'lodash/debounce'

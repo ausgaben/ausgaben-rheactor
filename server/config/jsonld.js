@@ -1,13 +1,8 @@
 import _trimEnd from 'lodash/trimEnd'
 import {JSONLD} from '@rheactorjs/server'
-import {User, JsonWebToken, Status, Link} from '@rheactorjs/models'
+import {JsonWebToken, Link, Status, User} from '@rheactorjs/models'
 import {URIValue} from '@rheactorjs/value-objects'
-import {CheckingAccount} from '../../build/js-es5/model/checking-account'
-import {Spending} from '../../build/js-es5/model/spending'
-import {Category} from '../../build/js-es5/model/category'
-import {Title} from '../../build/js-es5/model/title'
-import {Periodical} from '../../build/js-es5/model/periodical'
-import {Report} from '../../build/js-es5/model/report'
+import {Category, CheckingAccount, Periodical, Report, Spending, Title} from '@ausgaben/models'
 import {$context as streamContext} from '../api/stream'
 
 /**

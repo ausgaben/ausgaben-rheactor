@@ -1,5 +1,5 @@
 import {ValidationFailedError, AccessDeniedError} from '@rheactorjs/errors'
-import {CheckingAccount} from '../../build/js-es5/model/checking-account'
+import {CheckingAccount} from '@ausgaben/models'
 import CreateCheckingAccountCommand from '../command/checking-account/create'
 import UpdateCheckingAccountPropertyCommand from '../command/checking-account/update-property'
 import {URIValue} from '@rheactorjs/value-objects'

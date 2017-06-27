@@ -1,4 +1,4 @@
-import LiveCollection, {waitFor} from 'rheactor-web-app'
+import LiveCollection, {waitFor} from '@rheactorjs/web-app'
 import Promise from 'bluebird'
 import _reduce from 'lodash/reduce'
 import _debounce from 'lodash/debounce'

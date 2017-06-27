@@ -1,5 +1,5 @@
-import {HttpProgress} from 'rheactor-web-app'
-import {HttpProblem} from 'rheactor-models'
+import {HttpProgress} from '@rheactorjs/web-app'
+import {HttpProblem} from '@rheactorjs/models'
 import Promise from 'bluebird'
 import moment from 'moment'
 

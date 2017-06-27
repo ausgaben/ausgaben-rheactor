@@ -22,7 +22,7 @@ describe('CreateMonthlySpendingsCommand', () => {
     'Tanja\'s Salary',
     165432,
     false,
-    new Date('2015-01-01').getTime()
+    new Date('2015-01-01')
   )
 
   let periodical2 = new PeriodicalModel(
@@ -32,7 +32,7 @@ describe('CreateMonthlySpendingsCommand', () => {
     'Markus\'s Salary',
     123456,
     false,
-    new Date('2015-01-02').getTime()
+    new Date('2015-01-02')
   )
 
   after(() => {
@@ -47,9 +47,9 @@ describe('CreateMonthlySpendingsCommand', () => {
     simple.mock(mockSpendingRepository, 'add').resolveWith(null)
     let month = new Date()
     task = new CreateMonthlySpendingsCommand(mockPeriodicalRepository, mockSpendingRepository)
-    task.execute(month.getTime()).then(() => {
+    task.execute(month).then(() => {
       expect(mockPeriodicalRepository.findByMonth.callCount).to.equal(1)
-      expect(mockPeriodicalRepository.findByMonth.lastCall.arg).to.equal(month.getTime())
+      expect(mockPeriodicalRepository.findByMonth.lastCall.arg.getTime()).to.equal(month.getTime())
       expect(mockSpendingRepository.add.callCount).to.equal(periodicals.length)
       done()
     })

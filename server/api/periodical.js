@@ -1,10 +1,10 @@
-import {ValidationFailedError, AccessDeniedError} from '@resourcefulhumans/rheactor-errors'
+import {ValidationFailedError, AccessDeniedError} from '@rheactorjs/errors'
 import {Periodical} from '../../build/js-es5/model/periodical'
 import CreatePeriodicalCommand from '../command/periodical/create'
-import {URIValue} from 'rheactor-value-objects'
+import {URIValue} from '@rheactorjs/value-objects'
 import Promise from 'bluebird'
 import Joi from 'joi'
-import {Pagination, sendPaginatedListResponse} from 'rheactor-server'
+import {Pagination, sendPaginatedListResponse} from '@rheactorjs/server'
 import _merge from 'lodash/merge'
 
 /**
@@ -59,9 +59,7 @@ export default (
 
           let pagination = new Pagination(query.offset)
           return search.searchPeriodicals(query, pagination)
-            .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, Periodical.$context, jsonld, (periodical) => {
-              return transformer(periodical)
-            }))
+            .then(sendPaginatedListResponse.bind(null, new URIValue(config.get('api_host')), req, res, periodical => transformer(periodical)))
         })
     })
     .catch(sendHttpProblem.bind(null, res)))
@@ -70,25 +68,26 @@ export default (
    * Create a periodical in the given checking account
    */
   app.post('/api/checking-account/:id/periodical', tokenAuth, (req, res) => {
+    const b = Joi.boolean().falsy([0, '0']).truthy([1, '1']).default(false)
     let schema = Joi.object().keys({
       category: Joi.string().min(1).required().trim(),
       title: Joi.string().min(1).required().trim(),
       amount: Joi.number().integer().required(),
-      estimate: Joi.boolean().default(false),
+      estimate: b,
       startsAt: Joi.date(),
-      enabledIn01: Joi.boolean().default(false),
-      enabledIn02: Joi.boolean().default(false),
-      enabledIn03: Joi.boolean().default(false),
-      enabledIn04: Joi.boolean().default(false),
-      enabledIn05: Joi.boolean().default(false),
-      enabledIn06: Joi.boolean().default(false),
-      enabledIn07: Joi.boolean().default(false),
-      enabledIn08: Joi.boolean().default(false),
-      enabledIn09: Joi.boolean().default(false),
-      enabledIn10: Joi.boolean().default(false),
-      enabledIn11: Joi.boolean().default(false),
-      enabledIn12: Joi.boolean().default(false),
-      saving: Joi.boolean().default(false)
+      enabledIn01: b,
+      enabledIn02: b,
+      enabledIn03: b,
+      enabledIn04: b,
+      enabledIn05: b,
+      enabledIn06: b,
+      enabledIn07: b,
+      enabledIn08: b,
+      enabledIn09: b,
+      enabledIn10: b,
+      enabledIn11: b,
+      enabledIn12: b,
+      saving: b
     })
     Promise
       .try(() => {
@@ -112,7 +111,7 @@ export default (
               v.value.title,
               v.value.amount,
               v.value.estimate,
-              v.value.startsAt ? new Date(v.value.startsAt).getTime() : undefined,
+              v.value.startsAt ? new Date(v.value.startsAt) : undefined,
               v.value.enabledIn01,
               v.value.enabledIn02,
               v.value.enabledIn03,

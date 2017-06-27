@@ -4,7 +4,7 @@ import SpendingService from './spending'
 import ReportService from './report'
 import {Category} from '../model/category'
 import {Title} from '../model/title'
-import {GenericApiService} from 'rheactor-web-app'
+import {GenericApiService} from '@rheactorjs/web-app'
 
 require('angular')
   .module('AusgabenServiceModule', [])

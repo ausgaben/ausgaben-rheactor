@@ -41,6 +41,7 @@ nconf.defaults({
   'api_host': `http://${host}:${port}`,
   'web_host': `http://${host}:${port}`,
   'token_lifetime': 60 * 60 * 24 * 30, // 30 days
+  'activation_token_lifetime': 60 * 60 * 24 * 30, // 30 days
   'redis': {
     'host': '127.0.0.1',
     'port': 6379,
@@ -66,7 +67,9 @@ nconf.defaults({
   'slack': {
     'webhook': false
   },
-  'uploads_location': '/tmp'
+  'sentry_dsn': null,
+  'image_service': false,
+  'trustedAvatarURL': '^$'
 })
 
 export default nconf

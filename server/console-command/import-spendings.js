@@ -26,7 +26,7 @@ export default {
         const category = fields[1]
         const title = fields[2]
         const amount = Math.round(parseFloat(fields[3].replace(',', '.')) * 100)
-        return backend.emitter.emit(new CreateSpendingCommand(checkingAccount, category, title, amount, false, bookedAt.getTime(), type === 'Vorsorge', author))
+        return backend.emitter.emit(new CreateSpendingCommand(checkingAccount, category, title, amount, false, bookedAt, type === 'Vorsorge', author))
       }))
   }
 }

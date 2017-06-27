@@ -1,5 +1,5 @@
 import CreateSpendingCommand from '../../../command/spending/create'
-import SpendingModel from '../../../model/spending'
+import {SpendingModel} from '../../../model/spending'
 
 export default {
   command: CreateSpendingCommand,

@@ -15,10 +15,9 @@ Feature: User account
     When I GET {[storeName]TokenJwt.sub}
     Then the status code should be 200
     And the Content-Type header should equal "application/vnd.ausgaben.v1+json; charset=utf-8"
-    And "$context" should equal "https://github.com/RHeactor/nucleus/wiki/JsonLD#User"
+    And "$context" should equal "https://github.com/RHeactorJS/models#User"
     And "$id" should equal "{[storeName]TokenJwt.sub}"
     And "email" should equal "[email]"
-    And "name" should equal "[firstname] [lastname]"
     And "firstname" should equal "[firstname]"
     And "lastname" should equal "[lastname]"
     And "password" should not exist

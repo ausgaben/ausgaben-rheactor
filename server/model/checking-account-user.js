@@ -1,6 +1,6 @@
-import {AggregateRoot, AggregateIdType} from 'rheactor-event-store'
+import {AggregateRoot, AggregateIdType} from '@rheactorjs/event-store'
 import {CheckingAccountUserCreatedEvent} from '../events'
-import {UnhandledDomainEventError} from '@resourcefulhumans/rheactor-errors'
+import {UnhandledDomainEventError} from '@rheactorjs/errors'
 
 /**
  * @param {String} checkingAccount

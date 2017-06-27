@@ -1,6 +1,6 @@
 /* global: window, document */
 
-import logger from 'rheactor-web-app/js/util/logger'
+import logger from '@rheactorjs/web-app/js/util/logger'
 
 logger.appInfo('Init …')
 require('bluebird').longStackTraces()
@@ -63,10 +63,10 @@ app
 require('./services/index')
 require('./filters/index')
 require('./controllers/index')(app)
-require('rheactor-web-app/js/directives/index')
-require('rheactor-web-app/js/services/index')
-require('rheactor-web-app/js/model/index')
-require('rheactor-web-app/js/filters/index')
-require('rheactor-web-app/js/decorators/index')
+require('@rheactorjs/web-app/js/directives/index')
+require('@rheactorjs/web-app/js/services/index')
+require('@rheactorjs/web-app/js/model/index')
+require('@rheactorjs/web-app/js/filters/index')
+require('@rheactorjs/web-app/js/decorators/index')
 require('bootstrap')
-require('rheactor-web-app/js/util/handle-encoded-app-urls')
+require('@rheactorjs/web-app/js/util/handle-encoded-app-urls')

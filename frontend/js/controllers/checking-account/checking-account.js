@@ -1,5 +1,5 @@
 import Promise from 'bluebird'
-import {ModelEventConnection, JSONLD} from 'rheactor-web-app'
+import {ModelEventConnection, JSONLD} from '@rheactorjs/web-app'
 
 export default (app) => {
   app

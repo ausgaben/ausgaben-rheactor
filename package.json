@@ -6,11 +6,11 @@
   "scripts": {
     "start": "node server/server.js",
     "dev-server": "environment=development nodemon -e 'js,html,css' -w ./server -w ./util -d 1 ./server/server.js",
-    "test": "make test-prepare && environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/\\*\\*/\\*.js",
+    "test": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/\\*\\*/\\*.js",
     "test:api": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/yadda/\\*\\*/\\*.js",
     "test:backend": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/mocha/\\*\\*/\\*.js",
     "test:coverage": "NODE_ENV=nyc babel server --out-dir instrumented-server > /dev/null && nyc --reporter=text-summary --reporter=lcov npm run test",
-    "test:coverage-travis": "make test-prepare && npm run test:coverage && codeclimate-test-reporter < ./coverage/lcov.info && rm -rf ./coverage",
+    "test:coverage-travis": "npm run test:coverage && codeclimate-test-reporter < ./coverage/lcov.info && rm -rf ./coverage",
     "lint": "standard",
     "precommit": "npm run lint",
     "commitmsg": "validate-commit-msg"
@@ -31,40 +31,26 @@
   },
   "homepage": "https://github.com/ausgaben/ausgaben-rheactor#readme",
   "dependencies": {
+    "@ausgaben/models": "1.x",
     "@rheactorjs/errors": "1.x",
     "@rheactorjs/event-store": "1.x",
     "@rheactorjs/models": "1.x",
     "@rheactorjs/server": "1.x",
     "@rheactorjs/template-mailer-client": "1.x",
     "@rheactorjs/value-objects": "1.x",
-    "@rheactorjs/web-app": "1.x",
-    "angular": "^1.6.2",
-    "angular-bluebird-promises": "^1.0.2",
-    "angular-drag-and-drop-lists": "^2.1.0",
-    "angular-moment": "^1.0.1",
-    "angular-sanitize": "^1.6.2",
-    "angular-ui-router": "^0.4.2",
-    "angular-validation-match": "^1.9.0",
     "aws-sdk": "^2.22.0",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.0",
-    "bootstrap": "4.0.0-alpha.5",
-    "botkit": "^0.5.1",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "compare-versions": "^3.0.0",
-    "event-source-polyfill": "0.0.9",
     "express": "^4.15.0",
     "glob": "^7.1.1",
     "joi": "^10.2.2",
-    "jquery": "^3.1.1",
-    "keycode": "^2.1.8",
     "keypair": "^1.0.1",
     "lodash": "^4.17.4",
-    "material-design-icons": "^3.0.1",
     "moment": "^2.17.1",
     "nconf": "^0.8.4",
-    "ng-file-upload": "^12.2.13",
     "reds": "^0.2.5",
     "request": "^2.80.0",
     "request-promise": "^4.1.1",
@@ -81,15 +67,12 @@
     "babel-preset-env": "^1.2.0",
     "babel-preset-es2015": "^6.22.0",
     "babel-register": "^6.23.0",
-    "browserify": "^14.1.0",
-    "browserify-shim": "^3.8.13",
     "chai": "^3.5.0",
     "codeclimate-test-reporter": "^0.4.1",
     "husky": "^0.13.2",
     "inotifywait": "^1.8.3",
     "lolex": "^1.6.0",
     "mocha": "^3.2.0",
-    "node-sass": "^4.5.0",
     "nodemon": "^1.11.0",
     "nyc": "^10.1.2",
     "simple-mock": "^0.7.3",
@@ -97,144 +80,7 @@
     "superagent": "^3.5.0",
     "supertest": "^3.0.0",
     "toposort": "^1.0.3",
-    "uglifycss": "0.0.25",
-    "uglifyjs": "^2.4.10",
-    "validate-commit-email": "^1.0.1",
     "validate-commit-msg": "^2.11.1",
     "yadda": "^1.1.1"
-  },
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "presets": [
-            "es2015"
-          ],
-          "only": [
-            "/frontend/js/*.js",
-            "/frontend/js/**/*.js",
-            "/util/*.js",
-            "/vendor/*.js",
-            "/vendor/**/*.js"
-          ]
-        }
-      ],
-      "browserify-shim",
-      "aliasify"
-    ]
-  },
-  "browser": {
-    "jquery": "./node_modules/jquery/dist/jquery.js",
-    "angular": "./node_modules/angular/angular.js",
-    "angular-ui-router": "./node_modules/angular-ui-router/release/angular-ui-router.js",
-    "angular-sanitize": "./node_modules/angular-sanitize/angular-sanitize.js",
-    "angular-validation-match": "./node_modules/angular-validation-match/dist/angular-validation-match.js",
-    "showdown": "./node_modules/showdown/dist/showdown.js",
-    "tether": "./node_modules/tether/dist/js/tether.js",
-    "bootstrap": "./node_modules/bootstrap/dist/js/bootstrap.js",
-    "bluebird": "./node_modules/bluebird/js/browser/bluebird.js",
-    "moment": "./node_modules/moment/moment.js",
-    "angular-moment": "./node_modules/angular-moment/angular-moment.js"
-  },
-  "browserify-shim": {
-    "jquery": {
-      "exports": "$"
-    },
-    "angular": {
-      "exports": "angular",
-      "depends": "jquery"
-    },
-    "angular-ui-router": {
-      "depends": "angular"
-    },
-    "angular-validation-match": {
-      "depends": "angular"
-    },
-    "angular-sanitize": {
-      "depends": "angular"
-    },
-    "bootstrap": {
-      "exports": "bootstrap",
-      "depends": [
-        "tether",
-        "jquery"
-      ]
-    },
-    "tether": "tether"
-  },
-  "aliasify": {
-    "aliases": {
-      "@rheactorjs/web-app/js/bootstrap": "./vendor/@rheactorjs/web-app/bootstrap",
-      "@rheactorjs/web-app/js/controller/account-avatar": "./vendor/@rheactorjs/web-app/controller/account-avatar",
-      "@rheactorjs/web-app/js/controller/account": "./vendor/@rheactorjs/web-app/controller/account",
-      "@rheactorjs/web-app/js/controller/activation": "./vendor/@rheactorjs/web-app/controller/activation",
-      "@rheactorjs/web-app/js/controller/app-update": "./vendor/@rheactorjs/web-app/controller/app-update",
-      "@rheactorjs/web-app/js/controller/bluebird": "./vendor/@rheactorjs/web-app/controller/bluebird",
-      "@rheactorjs/web-app/js/controller/body": "./vendor/@rheactorjs/web-app/controller/body",
-      "@rheactorjs/web-app/js/controller/generic": "./vendor/@rheactorjs/web-app/controller/generic",
-      "@rheactorjs/web-app/js/controller/login": "./vendor/@rheactorjs/web-app/controller/login",
-      "@rheactorjs/web-app/js/controller/logout": "./vendor/@rheactorjs/web-app/controller/logout",
-      "@rheactorjs/web-app/js/controller/navigation": "./vendor/@rheactorjs/web-app/controller/navigation",
-      "@rheactorjs/web-app/js/controller/password-change": "./vendor/@rheactorjs/web-app/controller/password-change",
-      "@rheactorjs/web-app/js/controller/register": "./vendor/@rheactorjs/web-app/controller/register",
-      "@rheactorjs/web-app/js/controller/window-title": "./vendor/@rheactorjs/web-app/controller/window-title",
-      "@rheactorjs/web-app/js/decorators/index": "./vendor/@rheactorjs/web-app/decorators/index",
-      "@rheactorjs/web-app/js/directives/auto-focus": "./vendor/@rheactorjs/web-app/directives/auto-focus",
-      "@rheactorjs/web-app/js/directives/bootstrap-error-states": "./vendor/@rheactorjs/web-app/directives/bootstrap-error-states",
-      "@rheactorjs/web-app/js/directives/index": "./vendor/@rheactorjs/web-app/directives/index",
-      "@rheactorjs/web-app/js/directives/is-email": "./vendor/@rheactorjs/web-app/directives/is-email",
-      "@rheactorjs/web-app/js/directives/markdown-to-html": "./vendor/@rheactorjs/web-app/directives/markdown-to-html",
-      "@rheactorjs/web-app/js/filters/idparam": "./vendor/@rheactorjs/web-app/filters/idparam",
-      "@rheactorjs/web-app/js/filters/index": "./vendor/@rheactorjs/web-app/filters/index",
-      "@rheactorjs/web-app/js/model/aggregate": "./vendor/@rheactorjs/web-app/model/aggregate",
-      "@rheactorjs/web-app/js/model/http-error": "./vendor/@rheactorjs/web-app/model/http-error",
-      "@rheactorjs/web-app/js/model/http-problem": "./vendor/@rheactorjs/web-app/model/http-problem",
-      "@rheactorjs/web-app/js/model/index": "./vendor/@rheactorjs/web-app/model/index",
-      "@rheactorjs/web-app/js/model/jsonwebtoken": "./vendor/@rheactorjs/web-app/model/jsonwebtoken",
-      "@rheactorjs/web-app/js/model/list": "./vendor/@rheactorjs/web-app/model/list",
-      "@rheactorjs/web-app/js/model/login": "./vendor/@rheactorjs/web-app/model/login",
-      "@rheactorjs/web-app/js/model/password-change-confirm": "./vendor/@rheactorjs/web-app/model/password-change-confirm",
-      "@rheactorjs/web-app/js/model/password-change": "./vendor/@rheactorjs/web-app/model/password-change",
-      "@rheactorjs/web-app/js/model/registration": "./vendor/@rheactorjs/web-app/model/registration",
-      "@rheactorjs/web-app/js/model/relation": "./vendor/@rheactorjs/web-app/model/relation",
-      "@rheactorjs/web-app/js/model/status": "./vendor/@rheactorjs/web-app/model/status",
-      "@rheactorjs/web-app/js/model/user": "./vendor/@rheactorjs/web-app/model/user",
-      "@rheactorjs/web-app/js/services/client-storage": "./vendor/@rheactorjs/web-app/services/client-storage",
-      "@rheactorjs/web-app/js/services/generic": "./vendor/@rheactorjs/web-app/services/generic",
-      "@rheactorjs/web-app/js/services/google-analytics": "./vendor/@rheactorjs/web-app/services/google-analytics",
-      "@rheactorjs/web-app/js/services/id": "./vendor/@rheactorjs/web-app/services/id",
-      "@rheactorjs/web-app/js/services/index": "./vendor/@rheactorjs/web-app/services/index",
-      "@rheactorjs/web-app/js/services/status": "./vendor/@rheactorjs/web-app/services/status",
-      "@rheactorjs/web-app/js/services/token": "./vendor/@rheactorjs/web-app/services/token",
-      "@rheactorjs/web-app/js/services/refresh-token": "./vendor/@rheactorjs/web-app/services/refresh-token",
-      "@rheactorjs/web-app/js/services/user": "./vendor/@rheactorjs/web-app/services/user",
-      "@rheactorjs/web-app/js/util/event-source-connection": "./vendor/@rheactorjs/web-app/util/event-source-connection",
-      "@rheactorjs/web-app/js/util/handle-encoded-app-urls": "./vendor/@rheactorjs/web-app/util/handle-encoded-app-urls",
-      "@rheactorjs/web-app/js/util/http": "./vendor/@rheactorjs/web-app/util/http",
-      "@rheactorjs/web-app/js/util/jsonld": "./vendor/@rheactorjs/web-app/util/jsonld",
-      "@rheactorjs/web-app/js/util/live-collection": "./vendor/@rheactorjs/web-app/util/live-collection",
-      "@rheactorjs/web-app/js/util/logger": "./vendor/@rheactorjs/web-app/util/logger",
-      "@rheactorjs/web-app/js/util/model-event-connection": "./vendor/@rheactorjs/web-app/util/model-event-connection",
-      "@rheactorjs/web-app/js/util/wait-for": "./vendor/@rheactorjs/web-app/util/wait-for",
-      "@rheactorjs/value-objects/domain": "./vendor/@rheactorjs/value-objects/domain",
-      "@rheactorjs/value-objects/email": "./vendor/@rheactorjs/value-objects/email",
-      "@rheactorjs/value-objects/errors/access-denied": "./vendor/@rheactorjs/value-objects/errors/access-denied",
-      "@rheactorjs/value-objects/errors/application": "./vendor/@rheactorjs/value-objects/errors/application",
-      "@rheactorjs/value-objects/errors/conflict": "./vendor/@rheactorjs/value-objects/errors/conflict",
-      "@rheactorjs/value-objects/errors/entry-already-exists": "./vendor/@rheactorjs/value-objects/errors/entry-already-exists",
-      "@rheactorjs/value-objects/errors/entry-deleted": "./vendor/@rheactorjs/value-objects/errors/entry-deleted",
-      "@rheactorjs/value-objects/errors/entry-not-found": "./vendor/@rheactorjs/value-objects/errors/entry-not-found",
-      "@rheactorjs/value-objects/errors/index": "./vendor/@rheactorjs/value-objects/errors/index",
-      "@rheactorjs/value-objects/errors/payment-required": "./vendor/@rheactorjs/value-objects/errors/payment-required",
-      "@rheactorjs/value-objects/errors/token-expired": "./vendor/@rheactorjs/value-objects/errors/token-expired",
-      "@rheactorjs/value-objects/errors/unhandled-domain-event": "./vendor/@rheactorjs/value-objects/errors/unhandled-domain-event",
-      "@rheactorjs/value-objects/errors/validation-failed": "./vendor/@rheactorjs/value-objects/errors/validation-failed",
-      "@rheactorjs/value-objects/slug": "./vendor/@rheactorjs/value-objects/slug",
-      "@rheactorjs/value-objects/time-of-day": "./vendor/@rheactorjs/value-objects/time-of-day",
-      "@rheactorjs/value-objects/uri": "./vendor/@rheactorjs/value-objects/uri",
-      "isemail": "./vendor/isemail"
-    }
-  },
-  "false": {}
+  }
 }

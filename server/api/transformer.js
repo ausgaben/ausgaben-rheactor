@@ -1,8 +1,5 @@
 import {transform} from '@rheactorjs/server'
-import {CheckingAccount} from '../../build/js-es5/model/checking-account'
-import {Spending} from '../../build/js-es5/model/spending'
-import {Periodical} from '../../build/js-es5/model/periodical'
-import {Report} from '../../build/js-es5/model/report'
+import {CheckingAccount, Periodical, Report, Spending} from '@ausgaben/models'
 import {PeriodicalModel} from '../model/periodical'
 import {Reference} from '@rheactorjs/models'
 

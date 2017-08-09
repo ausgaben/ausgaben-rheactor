@@ -1,5 +1,8 @@
 import path from 'path'
 import backend from './backend'
+import express from 'express'
+import expressConfig from './config/express'
+
 const config = backend.config
 const webConfig = backend.webConfig
 const redis = backend.redis.client
@@ -9,9 +12,6 @@ const appName = backend.appName
 const search = backend.search
 
 // HTTP API
-import express from 'express'
-import expressConfig from './config/express'
-
 const app = express()
 expressConfig(app, config, webConfig, repositories, search, emitter)
 if (config.get('environment') === 'development') {

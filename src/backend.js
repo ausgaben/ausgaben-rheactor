@@ -1,9 +1,15 @@
 import {RedisConnection, rheactorjsCommandHandler, rheactorjsEventHandler, BackendEmitter} from '@rheactorjs/server'
 import Promise from 'bluebird'
-Promise.longStackTraces()
 import colors from 'colors'
 import config from './config/config'
 import webConfig from './config/config.web'
+import repos from './services/repositories'
+import Search from './services/search'
+import TemplateMailerClient from '@rheactorjs/template-mailer-client'
+import commandHandler from './config/command-handler'
+
+Promise.longStackTraces()
+
 const environment = config.get('environment')
 const appName = `${config.get('app')}@${environment} v${config.get('version')}`
 
@@ -37,9 +43,7 @@ redis.connect().then((client) => {
     console.error(err)
   })
 })
-import repos from './services/repositories'
 const repositories = repos(redis.client)
-import Search from './services/search'
 const search = new Search(repositories, redis.client, emitter)
 
 // Generate RSA keys for JWT
@@ -73,8 +77,6 @@ Promise
   })
 
 // TemplateMailer
-import TemplateMailerClient from '@rheactorjs/template-mailer-client'
-
 let templateMailer
 if ((environment === 'production' || config.get('force_mails')) && !config.get('disable_mails')) {
   console.log(colors.yellow('   ^                                 ^'))
@@ -97,7 +99,6 @@ if ((environment === 'production' || config.get('force_mails')) && !config.get('
 // Event handling
 rheactorjsCommandHandler(repositories, emitter, config, webConfig, templateMailer)
 rheactorjsEventHandler(repositories, emitter, config)
-import commandHandler from './config/command-handler'
 commandHandler(repositories, emitter, config, webConfig, templateMailer)
 
 // Password strength

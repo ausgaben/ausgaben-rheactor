@@ -18,22 +18,22 @@ export class AusgabenModelTransformer {
         return transform(jsonld, model)
       case 'CheckingAccountModel':
         return new CheckingAccount({
-          $id: jsonld.createId(CheckingAccount.$context, model.aggregateId()),
+          $id: jsonld.createId(CheckingAccount.$context, model.meta.id),
           $version: model.aggregateVersion(),
-          $links: jsonld.createLinks(CheckingAccount.$context, model.aggregateId()),
+          $links: jsonld.createLinks(CheckingAccount.$context, model.meta.id),
           $createdAt: model.createdAt(),
           $updatedAt: model.updatedAt(),
           $deletedAt: model.deletedAt(),
-          identifier: model.aggregateId(),
+          identifier: model.meta.id,
           name: model.name,
           monthly: model.monthly,
           savings: model.savings
         })
       case 'SpendingModel':
         return new Spending({
-          $id: jsonld.createId(Spending.$context, model.aggregateId()),
+          $id: jsonld.createId(Spending.$context, model.meta.id),
           $version: model.aggregateVersion(),
-          $links: jsonld.createLinks(Spending.$context, model.aggregateId()),
+          $links: jsonld.createLinks(Spending.$context, model.meta.id),
           $createdAt: model.createdAt(),
           $updatedAt: model.updatedAt(),
           $deletedAt: model.deletedAt(),
@@ -46,9 +46,9 @@ export class AusgabenModelTransformer {
         })
       case PeriodicalModel.name:
         return new Periodical({
-          $id: jsonld.createId(Spending.$context, model.aggregateId()),
+          $id: jsonld.createId(Spending.$context, model.meta.id),
           $version: model.aggregateVersion(),
-          $links: jsonld.createLinks(Spending.$context, model.aggregateId()),
+          $links: jsonld.createLinks(Spending.$context, model.meta.id),
           $createdAt: model.createdAt(),
           $updatedAt: model.updatedAt(),
           $deletedAt: model.deletedAt(),

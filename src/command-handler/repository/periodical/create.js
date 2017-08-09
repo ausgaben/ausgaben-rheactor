@@ -48,8 +48,8 @@ export default {
       enabledIn = enabledIn | PeriodicalModel.monthFlags[11]
     }
     let periodical = new PeriodicalModel(
-      cmd.checkingAccount.aggregateId(),
-      cmd.author.aggregateId(),
+      cmd.checkingAccount.meta.id,
+      cmd.author.meta.id,
       cmd.category,
       cmd.title,
       cmd.amount,

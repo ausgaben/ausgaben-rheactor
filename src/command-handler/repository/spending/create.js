@@ -10,7 +10,7 @@ export default {
    * @return {Promise.<SpendingUpdatedEvent>}
    */
   handler: (emitter, repository, cmd) => {
-    let spending = new SpendingModel(cmd.checkingAccount.aggregateId(), cmd.author.aggregateId(), cmd.category, cmd.title, cmd.amount, cmd.booked, cmd.bookedAt, cmd.saving)
+    let spending = new SpendingModel(cmd.checkingAccount.meta.id, cmd.author.meta.id, cmd.category, cmd.title, cmd.amount, cmd.booked, cmd.bookedAt, cmd.saving)
     return repository.add(spending)
   }
 }

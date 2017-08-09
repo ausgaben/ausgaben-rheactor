@@ -57,7 +57,7 @@ export class CheckingAccountModel extends AggregateRoot {
     }
     this.monthly = monthly
     this.updated()
-    return new ModelEvent(this.aggregateId(), CheckingAccountPropertyChangedEvent, {
+    return new ModelEvent(this.meta.id, CheckingAccountPropertyChangedEvent, {
       property: 'monthly',
       value: monthly
     })
@@ -73,7 +73,7 @@ export class CheckingAccountModel extends AggregateRoot {
     }
     this.savings = savings
     this.updated()
-    return new ModelEvent(this.aggregateId(), CheckingAccountPropertyChangedEvent, {
+    return new ModelEvent(this.meta.id, CheckingAccountPropertyChangedEvent, {
       property: 'savings',
       value: savings
     })

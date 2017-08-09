@@ -10,7 +10,7 @@ export default {
    * @return {Promise.<CheckingAccountUserCreatedEvent>}
    */
   handler: (emitter, repository, cmd) => {
-    let checkingAccountUser = new CheckingAccountUserModel(cmd.checkingAccount.aggregateId(), cmd.user.aggregateId())
+    let checkingAccountUser = new CheckingAccountUserModel(cmd.checkingAccount.meta.id, cmd.user.meta.id)
     return repository.add(checkingAccountUser)
   }
 }

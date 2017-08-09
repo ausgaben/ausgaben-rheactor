@@ -1,7 +1,8 @@
 import Promise from 'bluebird'
-const fs = Promise.promisifyAll(require('fs'))
 import CreateSpendingCommand from '../command/spending/create'
 import moment from 'moment'
+import {readFile} from 'fs'
+import {promisify} from 'util'
 
 export default {
   name: 'import-spendings',
@@ -18,7 +19,7 @@ export default {
       .join(
         backend.repositories.checkingAccount.getById(account),
         backend.repositories.user.getById(user),
-        fs.readFileAsync(importfile, 'utf8')
+        promisify(readFile)(importfile, 'utf8')
       )
       .spread((checkingAccount, author, data) => Promise.map(data.split('\n'), line => {
         const fields = line.split('\t')

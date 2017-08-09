@@ -1,4 +1,4 @@
-import {AggregateRoot, AggregateIdType} from '@rheactorjs/event-store'
+import {ImmutableAggregateRoot, AggregateIdType, AggregateMeta} from '@rheactorjs/event-store'
 import {UnhandledDomainEventError} from '@rheactorjs/errors'
 import {
   irreducible,
@@ -9,25 +9,26 @@ import {
   maybe,
   Date as DateType
 } from 'tcomb'
+import {PeriodicalCreatedEvent} from '../events'
 const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
 const MaybeDateType = maybe(DateType, 'MaybeDateType')
 
-/**
- * @param {String} checkingAccount
- * @param {String} author
- * @param {String} category
- * @param {String} title
- * @param {Number} amount
- * @param {Boolean} estimate
- * @param {Date} startsAt
- * @param {Number} enabledIn
- * @param {Boolean} saving
- * @constructor
- * @throws ValidationFailedError if the creation fails due to invalid data
- */
-export class PeriodicalModel extends AggregateRoot {
-  constructor (checkingAccount, author, category, title, amount, estimate, startsAt, enabledIn, saving = false) {
-    super()
+export class PeriodicalModel extends ImmutableAggregateRoot {
+  /**
+   * @param {String} checkingAccount
+   * @param {String} author
+   * @param {String} category
+   * @param {String} title
+   * @param {Number} amount
+   * @param {Boolean} estimate
+   * @param {Date} startsAt
+   * @param {Number} enabledIn
+   * @param {Boolean} saving
+   * @param {AggregateMeta} meta
+   * @throws TypeError if the creation fails due to invalid data
+   */
+  constructor (checkingAccount, author, category, title, amount, estimate, startsAt, enabledIn, saving = false, meta) {
+    super(meta)
     this.checkingAccount = AggregateIdType(checkingAccount, ['PeriodicalModel', 'checkingAccount:AggregateId'])
     this.author = AggregateIdType(author, ['PeriodicalModel', 'author:AggregateId'])
     this.category = NonEmptyStringType(category, ['PeriodicalModel', 'category:String'])
@@ -43,25 +44,15 @@ export class PeriodicalModel extends AggregateRoot {
    * Applies the event
    *
    * @param {ModelEvent} event
+   * @param {PeriodicalModel|undefined} periodical
+   * @return {PeriodicalModel}
    */
-  applyEvent (event) {
-    let self = this
-    let data = event.data
-    switch (event.name) {
-      case 'PeriodicalCreatedEvent':
-        self.checkingAccount = data.checkingAccount
-        self.author = data.author
-        self.category = data.category
-        self.title = data.title
-        self.amount = data.amount
-        self.estimate = data.estimate
-        self.startsAt = data.startsAt ? new Date(data.startsAt) : undefined
-        self.enabledIn = data.enabledIn
-        self.saving = data.saving
-        this.persisted(event.aggregateId, event.createdAt)
-        break
+  static applyEvent (event, periodical) {
+    const {name, data: {checkingAccount, author, category, title, amount, estimate, startsAt, enabledIn, saving}, createdAt, aggregateId} = event
+    switch (name) {
+      case PeriodicalCreatedEvent:
+        return new PeriodicalModel(checkingAccount, author, category, title, amount, estimate, startsAt ? new Date(startsAt) : undefined, enabledIn, saving, new AggregateMeta(aggregateId, 1, createdAt))
       default:
-        console.error('Unhandled SpendingModel event', event.name)
         throw new UnhandledDomainEventError(event.name)
     }
   }

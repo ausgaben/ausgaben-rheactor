@@ -34,7 +34,7 @@ describe('SpendingRepository', () => {
             spendingRepo.getById(event2.aggregateId)
           )
           .spread((s1, s2) => {
-            expect(s1.aggregateId()).to.be.above(0)
+            expect(s1.meta.id).to.be.above(0)
             expect(s1.checkingAccount).to.equal('42')
             expect(s1.author).to.equal('17')
             expect(s1.category).to.equal('Salary')
@@ -42,7 +42,7 @@ describe('SpendingRepository', () => {
             expect(s1.amount).to.equal(165432)
             expect(s1.bookedAt.getTime()).to.equal(new Date('2015-01-01').getTime())
             expect(s1.booked).to.equal(true)
-            expect(s2.aggregateId()).to.be.above(0)
+            expect(s2.meta.id).to.be.above(0)
             expect(s2.checkingAccount).to.equal('42')
             expect(s2.author).to.equal('17')
             expect(s2.category).to.equal('Salary')

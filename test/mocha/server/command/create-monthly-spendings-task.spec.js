@@ -1,14 +1,15 @@
 /* global describe, it, after */
 
 import CreateMonthlySpendingsCommand from '../../../../src/command/create-monthly-spendings'
-
 import {PeriodicalRepository} from '../../../../src/repository/periodical'
 import {SpendingRepository} from '../../../../src/repository/spending'
 import {PeriodicalModel} from '../../../../src/model/periodical'
 import Promise from 'bluebird'
 import simple from 'simple-mock'
-simple.Promise = Promise
 import {expect} from 'chai'
+import {AggregateMeta} from '@rheactorjs/event-store'
+
+simple.Promise = Promise
 
 describe('CreateMonthlySpendingsCommand', () => {
   let task
@@ -22,7 +23,10 @@ describe('CreateMonthlySpendingsCommand', () => {
     'Tanja\'s Salary',
     165432,
     false,
-    new Date('2015-01-01')
+    new Date('2015-01-01'),
+    undefined,
+    false,
+    new AggregateMeta(1, 1)
   )
 
   let periodical2 = new PeriodicalModel(
@@ -32,7 +36,10 @@ describe('CreateMonthlySpendingsCommand', () => {
     'Markus\'s Salary',
     123456,
     false,
-    new Date('2015-01-02')
+    new Date('2015-01-02'),
+    undefined,
+    false,
+    new AggregateMeta(1, 1)
   )
 
   after(() => {

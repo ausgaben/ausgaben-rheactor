@@ -1,26 +1,27 @@
-import {AggregateRoot, ModelEvent, AggregateIdType} from '@rheactorjs/event-store'
+import {ImmutableAggregateRoot, ModelEvent, AggregateIdType, AggregateMeta} from '@rheactorjs/event-store'
 import {PeriodicalModelType} from './periodical'
-import {ValidationFailedError, UnhandledDomainEventError} from '@rheactorjs/errors'
+import {UnhandledDomainEventError} from '@rheactorjs/errors'
 import {SpendingCreatedEvent, SpendingUpdatedEvent, SpendingDeletedEvent} from '../events'
 import {Boolean as BooleanType, Integer as IntegerType, String as StringType, refinement, maybe, Date as DateType, irreducible} from 'tcomb'
+
 const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
 const MaybeDateType = maybe(DateType, 'MaybeDateType')
 
-/**
- * @param {String} checkingAccount
- * @param {String} author
- * @param {String} category
- * @param {String} title
- * @param {Number} amount
- * @param {Boolean} booked
- * @param {Date} bookedAt
- * @param {Boolean} saving
- * @constructor
- * @throws ValidationFailedError if the creation fails due to invalid data
- */
-export class SpendingModel extends AggregateRoot {
-  constructor (checkingAccount, author, category, title, amount, booked = false, bookedAt, saving = false) {
-    super()
+export class SpendingModel extends ImmutableAggregateRoot {
+  /**
+   * @param {String} checkingAccount
+   * @param {String} author
+   * @param {String} category
+   * @param {String} title
+   * @param {Number} amount
+   * @param {Boolean} booked
+   * @param {Date} bookedAt
+   * @param {Boolean} saving
+   * @param {AggregateMeta} meta
+   * @throws TypeError if the creation fails due to invalid data
+   */
+  constructor (checkingAccount, author, category, title, amount, booked = false, bookedAt, saving = false, meta) {
+    super(meta)
     this.checkingAccount = AggregateIdType(checkingAccount, ['SpendingModel', 'checkingAccount:AggregateId'])
     this.author = AggregateIdType(author, ['SpendingModel', 'author:AggregateId'])
     this.category = NonEmptyStringType(category, ['SpendingModel', 'category:String'])
@@ -35,35 +36,22 @@ export class SpendingModel extends AggregateRoot {
    * Applies the event
    *
    * @param {ModelEvent} event
+   * @param {SpendingModel|undefined} spending
+   * @return {SpendingModel}
    */
-  applyEvent (event) {
-    let self = this
-    let data = event.data
-    switch (event.name) {
+  static applyEvent (event, spending) {
+    const {name, data: {checkingAccount, author, category, title, amount, booked, bookedAt, saving}, createdAt, aggregateId} = event
+    switch (name) {
       case SpendingCreatedEvent:
-        self.checkingAccount = data.checkingAccount
-        self.author = data.author
-        self.category = data.category
-        self.title = data.title
-        self.amount = data.amount
-        self.booked = data.booked
-        self.bookedAt = data.bookedAt ? new Date(data.bookedAt) : undefined
-        self.saving = data.saving
-        this.persisted(event.aggregateId, event.createdAt)
-        break
+        return new SpendingModel(checkingAccount, author, category, title, amount, booked, bookedAt ? new Date(bookedAt) : undefined, saving, new AggregateMeta(aggregateId, 1, createdAt))
       case SpendingDeletedEvent:
-        self.deleted(event.createdAt)
-        break
+        return new SpendingModel(spending.checkingAccount, spending.author, spending.category, spending.title, spending.amount, spending.booked, spending.bookedAt, spending.saving, spending.meta.deleted(createdAt))
       case SpendingUpdatedEvent:
-        for (let field in self) {
-          if (self.hasOwnProperty(field) && data[field] !== undefined) {
-            self[field] = data[field]
-          }
+        const d = {
+          checkingAccount, author, category, title, amount, booked, bookedAt, saving
         }
-        this.updated(event.createdAt)
-        break
+        return new SpendingModel(d.checkingAccount, d.author, d.category, d.title, d.amount, d.booked, d.bookedAt, d.saving, spending.meta.updated(createdAt))
       default:
-        console.error('Unhandled SpendingModel event', event.name)
         throw new UnhandledDomainEventError(event.name)
     }
   }
@@ -73,22 +61,8 @@ export class SpendingModel extends AggregateRoot {
    * @returns {ModelEvent}
    */
   update (data) {
-    let self = this
-    const updateData = {}
-    // FIXME: Implement: paidWith
-    let changed = false
-    for (let field in self) {
-      if (self.hasOwnProperty(field) && data[field] !== undefined && self[field] !== data[field]) {
-        updateData[field] = data[field]
-        self[field] = data[field]
-        changed = true
-      }
-    }
-    if (!changed) {
-      throw new ValidationFailedError('Spending unchanged', data)
-    }
-    self.updated()
-    return new ModelEvent(this.aggregateId(), SpendingUpdatedEvent, updateData)
+    const {checkingAccount, author, category, title, amount, booked, bookedAt, saving} = data
+    return new ModelEvent(this.meta.id, SpendingUpdatedEvent, {checkingAccount, author, category, title, amount, booked, bookedAt: bookedAt ? bookedAt.toISOString() : undefined, saving}, new Date())
   }
 
   /**
@@ -109,7 +83,7 @@ export class SpendingModel extends AggregateRoot {
       bookedAt,
       periodical.saving
     )
-    spending.periodical = periodical.aggregateId()
+    spending.periodical = periodical.meta.id
     return spending
   }
 }

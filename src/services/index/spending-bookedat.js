@@ -41,7 +41,7 @@ class SpendingBookedAtIndex {
 
   index () {
     return this.repositories.checkingAccount.findAll()
-      .map(checkingAccount => this.redis.delAsync(this.indexKey(checkingAccount.aggregateId())))
+      .map(checkingAccount => this.redis.delAsync(this.indexKey(checkingAccount.meta.id)))
       .then(() => this.repositories.spending.findAll()
         .map(spending => this.indexSpending(spending))
       )
@@ -60,7 +60,7 @@ class SpendingBookedAtIndex {
     SpendingModelType(spending)
     if (!spending.bookedAt) return
     const score = spending.bookedAt.getTime()
-    return this.redis.zaddAsync(this.indexKey(spending.checkingAccount), score, spending.aggregateId())
+    return this.redis.zaddAsync(this.indexKey(spending.checkingAccount), score, spending.meta.id)
   }
 
   /**
@@ -69,7 +69,7 @@ class SpendingBookedAtIndex {
    */
   removeSpending (spending) {
     SpendingModelType(spending)
-    return this.redis.zremAsync(`checkingAccount:spending-bookedAt:${spending.checkingAccount}`, spending.aggregateId())
+    return this.redis.zremAsync(`checkingAccount:spending-bookedAt:${spending.checkingAccount}`, spending.meta.id)
   }
 
   /**

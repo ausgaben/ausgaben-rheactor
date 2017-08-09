@@ -1,9 +1,9 @@
 import request from 'supertest'
 import superagent from 'superagent'
 import Promise from 'bluebird'
-Promise.promisifyAll(request)
-
 import backend from '../../../src/backend'
+
+Promise.promisifyAll(request)
 
 export function clearDb () {
   return backend.redis.client.flushdb()

@@ -8,7 +8,7 @@ export default {
   action: (backend, account, year, title) => {
     const report = {}
     return backend.repositories.checkingAccount.getById(account)
-      .then(account => backend.repositories.spending.findByCheckingAccountId(account.aggregateId()))
+      .then(account => backend.repositories.spending.findByCheckingAccountId(account.meta.id))
       .filter(spending => spending.booked)
       .filter(spending => moment(new Date(spending.bookedAt)).isBetween(`${+year - 1}-12-31`, `${+year + 1}-01-01`, 'day'))
       .filter(spending => title ? spending.title.match(new RegExp(title, 'i')) : true)

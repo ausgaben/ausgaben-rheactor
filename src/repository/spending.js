@@ -1,4 +1,4 @@
-import {AggregateRepository, AggregateRelation, ModelEvent} from '@rheactorjs/event-store'
+import {ImmutableAggregateRepository, AggregateRelation, ModelEvent} from '@rheactorjs/event-store'
 import {SpendingModel} from '../model/spending'
 import {SpendingCreatedEvent, SpendingDeletedEvent} from '../events'
 
@@ -8,7 +8,7 @@ import {SpendingCreatedEvent, SpendingDeletedEvent} from '../events'
  * @param {redis.client} redis
  * @constructor
  */
-export class SpendingRepository extends AggregateRepository {
+export class SpendingRepository extends ImmutableAggregateRepository {
   constructor (redis) {
     super(SpendingModel, 'spending', redis)
     this.relation = new AggregateRelation(this, redis)
@@ -31,14 +31,14 @@ export class SpendingRepository extends AggregateRepository {
       data.bookedAt = spending.bookedAt
     }
     return this.redis.incrAsync(`${this.aggregateAlias}:id`)
-      .then((aggregateId) => {
+      .then(aggregateId => {
         const event = new ModelEvent(aggregateId, SpendingCreatedEvent, data)
-        return this.persistEvent(event)
-          .then(() => this.relation.addRelatedId('checkingAccount', data.checkingAccount, aggregateId))
-          .then(() => {
-            spending.applyEvent(event)
-            return event
-          })
+        return Promise
+          .all([
+            this.persistEvent(event),
+            this.relation.addRelatedId('checkingAccount', data.checkingAccount, aggregateId)
+          ])
+          .then(() => event)
       })
   }
 
@@ -50,13 +50,10 @@ export class SpendingRepository extends AggregateRepository {
    * @return {Promise.<SpendingDeletedEvent>}
    */
   remove (spending, author) {
-    const event = new ModelEvent(spending.aggregateId(), SpendingDeletedEvent, {}, new Date(), author.aggregateId())
+    const event = new ModelEvent(spending.meta.id, SpendingDeletedEvent, {}, new Date(), author.meta.id)
     return this.persistEvent(event)
-      .then(() => this.relation.removeRelatedId('checkingAccount', spending.checkingAccount, spending.aggregateId()))
-      .then(() => {
-        spending.applyEvent(event)
-        return event
-      })
+      .then(() => this.relation.removeRelatedId('checkingAccount', spending.checkingAccount, spending.meta.id))
+      .then(() => event)
   }
 
   findByCheckingAccountId (checkingAccountId) {

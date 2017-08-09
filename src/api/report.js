@@ -64,7 +64,7 @@ export default (
           if (!checkingAccountUser) {
             throw new AccessDeniedError(req.url, 'Not your checking account!')
           }
-          return spendingRepo.findByCheckingAccountId(checkingAccount.aggregateId())
+          return spendingRepo.findByCheckingAccountId(checkingAccount.meta.id)
             .filter(spending => spending.booked)
             .filter(spending => v.value.dateFrom ? spending.bookedAt >= v.value.dateFrom : true)
             .filter(spending => v.value.dateTo ? spending.bookedAt <= v.value.dateTo : true)
@@ -81,7 +81,7 @@ export default (
                   }
                 }
                 return report
-              }, new ReportModel(checkingAccount.aggregateId()))
+              }, new ReportModel(checkingAccount.meta.id))
             )
             .then(summary => res.send(transformer(summary)))
         })

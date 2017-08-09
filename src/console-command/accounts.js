@@ -4,7 +4,7 @@ export default {
   action: (backend) => {
     return backend.repositories.checkingAccount.findAll()
       .map((account) => {
-        console.log('-', account.aggregateId(), account.name)
+        console.log('-', account.meta.id, account.name)
       })
   }
 }

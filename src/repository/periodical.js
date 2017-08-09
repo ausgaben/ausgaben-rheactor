@@ -1,4 +1,4 @@
-import {AggregateRepository, AggregateRelation, ModelEvent} from '@rheactorjs/event-store'
+import {ImmutableAggregateRepository, AggregateRelation, ModelEvent} from '@rheactorjs/event-store'
 import {PeriodicalModel} from '../model/periodical'
 import {PeriodicalCreatedEvent} from '../events'
 import {Date as DateType} from 'tcomb'
@@ -9,7 +9,7 @@ import {Date as DateType} from 'tcomb'
  * @param {redis.client} redis
  * @constructor
  */
-export class PeriodicalRepository extends AggregateRepository {
+export class PeriodicalRepository extends ImmutableAggregateRepository {
   constructor (redis) {
     super(PeriodicalModel, 'periodical', redis)
     this.relation = new AggregateRelation(this, redis)
@@ -31,15 +31,16 @@ export class PeriodicalRepository extends AggregateRepository {
       saving: periodical.saving
     }
     return this.redis.incrAsync(`${this.aggregateAlias}:id`)
-      .then((aggregateId) => {
+      .then(aggregateId => {
         const event = new ModelEvent(aggregateId, PeriodicalCreatedEvent, data)
-        return this.persistEvent(event)
-          .then(() => this.relation.addRelatedId('checkingAccount', data.checkingAccount, aggregateId))
-          .then(() => {
-            periodical.applyEvent(event)
-            return event
-          })
-      })
+        return Promise
+            .all([
+              this.persistEvent(event),
+              this.relation.addRelatedId('checkingAccount', data.checkingAccount, aggregateId)
+            ])
+            .then(() => event)
+      }
+      )
   }
 
   /**
@@ -51,8 +52,6 @@ export class PeriodicalRepository extends AggregateRepository {
     DateType(date, ['PeriodicalRepository', 'findByMonth()', 'date:Date'])
     const mask = PeriodicalModel.monthFlags[date.getMonth()]
     return this.findAll()
-      .filter((periodical) => {
-        return periodical.enabledIn & mask
-      })
+      .filter(({enabledIn}) => enabledIn & mask)
   }
 }

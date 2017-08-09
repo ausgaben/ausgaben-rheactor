@@ -34,9 +34,9 @@ describe('CheckingAccountRepository', () => {
             checkingAccountRepo.getById(event2.aggregateId)
           )
           .spread((a1, a2) => {
-            expect(a1.aggregateId()).to.be.above(0)
+            expect(a1.meta.id).to.be.above(0)
             expect(a1.name).to.equal('CheckingAccount 1')
-            expect(a2.aggregateId()).to.be.above(0)
+            expect(a2.meta.id).to.be.above(0)
             expect(a2.name).to.equal('CheckingAccount 2')
             done()
           })

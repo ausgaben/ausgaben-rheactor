@@ -5,11 +5,11 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev-server": "environment=development nodemon -e 'js,html,css' -w ./server -w ./util -d 1 ./src/server.js",
+    "dev-server": "environment=development nodemon -e 'js,html,css' -w ./src -w ./util -d 1 ./src/server.js",
     "test": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/\\*\\*/\\*.js",
     "test:api": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/yadda/\\*\\*/\\*.js",
     "test:backend": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/mocha/\\*\\*/\\*.js",
-    "test:coverage": "NODE_ENV=nyc babel server --out-dir instrumented-server > /dev/null && nyc --reporter=text-summary --reporter=lcov npm run test",
+    "test:coverage": "NODE_ENV=nyc babel src --out-dir instrumented-server > /dev/null && nyc --reporter=text-summary --reporter=lcov npm run test",
     "test:coverage-travis": "npm run test:coverage && codeclimate-test-reporter < ./coverage/lcov.info && rm -rf ./coverage",
     "lint": "standard",
     "precommit": "npm run lint",

@@ -1,5 +1,9 @@
 sudo: false
 language: node_js
+node_js:
+  - node
+  - 7
+  - 6
 env:
   - CXX=g++-4.8
 addons:
@@ -13,10 +17,12 @@ cache:
   - node_modules
 services:
   - redis-server
-node_js:
-  - node
-  - 7
-  - 6
+before_install:
+  - npm install -g npm@5
+  - npm install -g greenkeeper-lockfile@1
+  - npm install -g node-pre-gyp
+before_script: greenkeeper-lockfile-update
+after_script: greenkeeper-lockfile-upload
 script:
 - npm run lint
 - npm run test:coverage

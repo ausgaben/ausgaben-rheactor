@@ -1,6 +1,5 @@
 import CreateCheckingAccountCommand from '../../../command/checking-account/create'
 import CreateCheckingAccountUserCommand from '../../../command/checking-account-user/create'
-import {CheckingAccountModel} from '../../../model/checking-account'
 
 export default {
   command: CreateCheckingAccountCommand,
@@ -10,12 +9,11 @@ export default {
    * @param {CreateCheckingAccountCommand} cmd
    * @return {Promise.<CheckingAccountCreatedEvent>}
    */
-  handler: (emitter, repository, cmd) => {
-    let checkingAccount = new CheckingAccountModel(cmd.name, cmd.monthly, cmd.savings)
-    return repository.add(checkingAccount)
-      .then((event) => {
+  handler: (emitter, repository, cmd) => repository.add(cmd)
+    .then((event) => repository.getById(event.aggregateId)
+      .then(checkingAccount => {
         emitter.emit(new CreateCheckingAccountUserCommand(checkingAccount, cmd.author))
         return event
       })
-  }
+    )
 }

@@ -1,4 +1,4 @@
-@After=Registration
+@After=Account
 Feature: CheckingAccount
   As a user
   I should be able to create and fetch checking accounts

@@ -1,4 +1,4 @@
-import {AggregateRepository} from '@rheactorjs/event-store'
+import {ImmutableAggregateRepository} from '@rheactorjs/event-store'
 import {CheckingAccountModel} from '../model/checking-account'
 
 /**
@@ -7,7 +7,7 @@ import {CheckingAccountModel} from '../model/checking-account'
  * @param {redis.client} redis
  * @constructor
  */
-export class CheckingAccountRepository extends AggregateRepository {
+export class CheckingAccountRepository extends ImmutableAggregateRepository {
   constructor (redis) {
     super(CheckingAccountModel, 'checkingAccount', redis)
   }

@@ -1,37 +1,34 @@
-import {AggregateRoot, AggregateIdType} from '@rheactorjs/event-store'
+import {ImmutableAggregateRoot, AggregateMeta, AggregateIdType} from '@rheactorjs/event-store'
 import {CheckingAccountUserCreatedEvent} from '../events'
 import {UnhandledDomainEventError} from '@rheactorjs/errors'
 
-/**
- * @param {String} checkingAccount
- * @param {String} user
- * @constructor
- * @throws ValidationFailedError if the creation fails due to invalid data
- */
-export class CheckingAccountUserModel extends AggregateRoot {
-  constructor (checkingAccount, user) {
-    super()
-    AggregateIdType(checkingAccount)
-    AggregateIdType(user)
-    this.checkingAccount = checkingAccount
-    this.user = user
+export class CheckingAccountUserModel extends ImmutableAggregateRoot {
+  /**
+   * @param {String} checkingAccount
+   * @param {String} user
+   * @param {AggregateMeta} meta
+   * @throws TypeError
+   */
+  constructor (checkingAccount, user, meta) {
+    super(meta)
+    this.checkingAccount = AggregateIdType(checkingAccount, ['CheckingAccountUserModel()', 'checkingAccount:AggregateIdType'])
+    this.user = AggregateIdType(user, ['CheckingAccountUserModel()', 'user:AggregateIdType'])
   }
 
   /**
    * Applies the event
    *
    * @param {ModelEvent} event
+   * @param {CheckingAccountUserModel|undefined} checkingAccountUser
+   * @return {CheckingAccountUserModel}
+   * @throws UnhandledDomainEventError
    */
-  applyEvent (event) {
-    const data = event.data
-    switch (event.name) {
+  static applyEvent (event, checkingAccountUser) {
+    const {name, data: {checkingAccount, user}, createdAt, aggregateId} = event
+    switch (name) {
       case CheckingAccountUserCreatedEvent:
-        this.checkingAccount = data.checkingAccount
-        this.user = data.user
-        this.persisted(event.aggregateId, event.createdAt)
-        break
+        return new CheckingAccountUserModel(checkingAccount, user, new AggregateMeta(aggregateId, 1, createdAt))
       default:
-        console.error('Unhandled CheckingAccountUserModel event', event.name)
         throw new UnhandledDomainEventError(event.name)
     }
   }

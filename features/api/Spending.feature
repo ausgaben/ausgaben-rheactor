@@ -73,7 +73,7 @@ Feature: Spendings
     --------------
     And "1" is the If-Match header
     When I PUT to {tanjasSalarySpending}
-    Then the status code should be 204
+    Then the status code should be 202
     When I GET {tanjasSalarySpending}
     Then "$version" should equal 2
     And "title" should equal "Tanja's Salary for April 2015"
@@ -93,9 +93,7 @@ Feature: Spendings
     Given the request body is empty
     And "1" is the If-Match header
     When I DELETE {dogFoodSpending}
-    Then the status code should be 204
-    And the etag header should equal "2"
-    And the last-modified header should be now
+    Then the status code should be 202
     # Spending should be deleted
     When I GET {dogFoodSpending}
     Then the status code should be 404

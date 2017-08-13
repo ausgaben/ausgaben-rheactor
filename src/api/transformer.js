@@ -19,11 +19,11 @@ export class AusgabenModelTransformer {
       case 'CheckingAccountModel':
         return new CheckingAccount({
           $id: jsonld.createId(CheckingAccount.$context, model.meta.id),
-          $version: model.aggregateVersion(),
+          $version: model.meta.version,
           $links: jsonld.createLinks(CheckingAccount.$context, model.meta.id),
-          $createdAt: model.createdAt(),
-          $updatedAt: model.updatedAt(),
-          $deletedAt: model.deletedAt(),
+          $createdAt: model.meta.createdAt,
+          $updatedAt: model.meta.updatedAt,
+          $deletedAt: model.meta.deletedAt,
           identifier: model.meta.id,
           name: model.name,
           monthly: model.monthly,
@@ -32,11 +32,11 @@ export class AusgabenModelTransformer {
       case 'SpendingModel':
         return new Spending({
           $id: jsonld.createId(Spending.$context, model.meta.id),
-          $version: model.aggregateVersion(),
+          $version: model.meta.version,
           $links: jsonld.createLinks(Spending.$context, model.meta.id),
-          $createdAt: model.createdAt(),
-          $updatedAt: model.updatedAt(),
-          $deletedAt: model.deletedAt(),
+          $createdAt: model.meta.createdAt,
+          $updatedAt: model.meta.updatedAt,
+          $deletedAt: model.meta.deletedAt,
           category: model.category,
           title: model.title,
           amount: model.amount,
@@ -47,11 +47,11 @@ export class AusgabenModelTransformer {
       case PeriodicalModel.name:
         return new Periodical({
           $id: jsonld.createId(Spending.$context, model.meta.id),
-          $version: model.aggregateVersion(),
+          $version: model.meta.version,
           $links: jsonld.createLinks(Spending.$context, model.meta.id),
-          $createdAt: model.createdAt(),
-          $updatedAt: model.updatedAt(),
-          $deletedAt: model.deletedAt(),
+          $createdAt: model.meta.createdAt,
+          $updatedAt: model.meta.updatedAt,
+          $deletedAt: model.meta.deletedAt,
           category: model.category,
           title: model.title,
           amount: model.amount,

@@ -1,6 +1,5 @@
-import {ImmutableAggregateRepository, AggregateRelation, ModelEvent} from '@rheactorjs/event-store'
+import {ImmutableAggregateRepository, AggregateRelation} from '@rheactorjs/event-store'
 import {SpendingModel} from '../model/spending'
-import {SpendingCreatedEvent, SpendingDeletedEvent} from '../events'
 
 /**
  * Creates a new spending repository
@@ -30,16 +29,10 @@ export class SpendingRepository extends ImmutableAggregateRepository {
     if (spending.bookedAt) {
       data.bookedAt = spending.bookedAt
     }
-    return this.redis.incrAsync(`${this.aggregateAlias}:id`)
-      .then(aggregateId => {
-        const event = new ModelEvent(aggregateId, SpendingCreatedEvent, data)
-        return Promise
-          .all([
-            this.persistEvent(event),
-            this.relation.addRelatedId('checkingAccount', data.checkingAccount, aggregateId)
-          ])
-          .then(() => event)
-      })
+    return super.add(data)
+      .then(event => this.relation.addRelatedId('checkingAccount', data.checkingAccount, event.aggregateId)
+        .then(() => event)
+      )
   }
 
   /**
@@ -50,10 +43,10 @@ export class SpendingRepository extends ImmutableAggregateRepository {
    * @return {Promise.<SpendingDeletedEvent>}
    */
   remove (spending, author) {
-    const event = new ModelEvent(spending.meta.id, SpendingDeletedEvent, {}, new Date(), author.meta.id)
-    return this.persistEvent(event)
-      .then(() => this.relation.removeRelatedId('checkingAccount', spending.checkingAccount, spending.meta.id))
-      .then(() => event)
+    return super.remove(spending.meta.id, author.meta.id)
+      .then(event => this.relation.removeRelatedId('checkingAccount', spending.checkingAccount, spending.meta.id)
+        .then(() => event)
+      )
   }
 
   findByCheckingAccountId (checkingAccountId) {

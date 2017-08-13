@@ -1,4 +1,4 @@
-import {AggregateRepository, AggregateIndex, AggregateRelation} from '@rheactorjs/event-store'
+import {ImmutableAggregateRepository, AggregateRelation, AggregateIndex, AggregateIdType} from '@rheactorjs/event-store'
 import {CheckingAccountUserModel} from '../model/checking-account-user'
 
 /**
@@ -7,10 +7,10 @@ import {CheckingAccountUserModel} from '../model/checking-account-user'
  * @param {redis.client} redis
  * @constructor
  */
-export class CheckingAccountUserRepository extends AggregateRepository {
+export class CheckingAccountUserRepository extends ImmutableAggregateRepository {
   constructor (redis) {
     super(CheckingAccountUserModel, 'checkingAccountUser', redis)
-    this.index = new AggregateIndex(this.aggregateAlias, redis)
+    this.index = new AggregateIndex(this.alias, redis)
     this.relation = new AggregateRelation(this, redis)
   }
 
@@ -18,10 +18,12 @@ export class CheckingAccountUserRepository extends AggregateRepository {
    * @param {CheckingAccountUserModel} checkingAccountUserModel
    * @returns {Promise.<CheckingAccountUserCreatedEvent>}
    */
-  add (checkingAccountUserModel) {
-    return this.index.addToListIfNotPresent(`user-checkingAccounts:${checkingAccountUserModel.user}`, checkingAccountUserModel.checkingAccount)
-      .then(() => super.add(checkingAccountUserModel)
-        .then((event) => this.relation.addRelatedId('checkingAccount', checkingAccountUserModel.checkingAccount, event.aggregateId)
+  add (checkingAccount, user) {
+    AggregateIdType(checkingAccount, ['CheckingAccountUserRepository.add()', 'account:AggregateIdType'])
+    AggregateIdType(user, ['CheckingAccountUserRepository.add()', 'user:AggregateIdType'])
+    return this.index.addToListIfNotPresent(`user-checkingAccounts:${user}`, checkingAccount)
+      .then(() => super.add({user, checkingAccount})
+        .then(event => this.relation.addRelatedId('checkingAccount', checkingAccount, event.aggregateId)
           .then(() => event)
         )
       )

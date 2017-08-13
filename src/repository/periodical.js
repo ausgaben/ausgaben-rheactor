@@ -1,6 +1,5 @@
-import {ImmutableAggregateRepository, AggregateRelation, ModelEvent} from '@rheactorjs/event-store'
+import {ImmutableAggregateRepository, AggregateRelation} from '@rheactorjs/event-store'
 import {PeriodicalModel} from '../model/periodical'
-import {PeriodicalCreatedEvent} from '../events'
 import {Date as DateType} from 'tcomb'
 
 /**
@@ -16,7 +15,7 @@ export class PeriodicalRepository extends ImmutableAggregateRepository {
   }
 
   /**
-   * @param {PeriodicalModel} periodical
+   * @param {object} periodical
    */
   add (periodical) {
     const data = {
@@ -26,20 +25,13 @@ export class PeriodicalRepository extends ImmutableAggregateRepository {
       title: periodical.title,
       amount: periodical.amount,
       estimate: periodical.estimate,
-      startsAt: periodical.startsAt,
+      startsAt: periodical.startsAt ? periodical.startsAt.toISOString() : undefined,
       enabledIn: periodical.enabledIn,
       saving: periodical.saving
     }
-    return this.redis.incrAsync(`${this.aggregateAlias}:id`)
-      .then(aggregateId => {
-        const event = new ModelEvent(aggregateId, PeriodicalCreatedEvent, data)
-        return Promise
-            .all([
-              this.persistEvent(event),
-              this.relation.addRelatedId('checkingAccount', data.checkingAccount, aggregateId)
-            ])
-            .then(() => event)
-      }
+    return super.add(data)
+      .then(event => this.relation.addRelatedId('checkingAccount', data.checkingAccount, event.aggregateId)
+        .then(() => event)
       )
   }
 

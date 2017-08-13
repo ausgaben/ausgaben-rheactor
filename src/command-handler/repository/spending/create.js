@@ -1,5 +1,4 @@
 import CreateSpendingCommand from '../../../command/spending/create'
-import {SpendingModel} from '../../../model/spending'
 
 export default {
   command: CreateSpendingCommand,
@@ -9,8 +8,14 @@ export default {
    * @param {CreateSpendingCommand} cmd
    * @return {Promise.<SpendingUpdatedEvent>}
    */
-  handler: (emitter, repository, cmd) => {
-    let spending = new SpendingModel(cmd.checkingAccount.meta.id, cmd.author.meta.id, cmd.category, cmd.title, cmd.amount, cmd.booked, cmd.bookedAt, cmd.saving)
-    return repository.add(spending)
-  }
+  handler: (emitter, repository, cmd) => repository.add({
+    checkingAccount: cmd.checkingAccount.meta.id,
+    author: cmd.author.meta.id,
+    category: cmd.category,
+    title: cmd.title,
+    amount: cmd.amount,
+    booked: cmd.booked,
+    bookedAt: cmd.bookedAt,
+    saving: cmd.saving
+  })
 }

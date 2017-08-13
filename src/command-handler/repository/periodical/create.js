@@ -47,17 +47,16 @@ export default {
     if (cmd.enabledIn12) {
       enabledIn = enabledIn | PeriodicalModel.monthFlags[11]
     }
-    let periodical = new PeriodicalModel(
-      cmd.checkingAccount.meta.id,
-      cmd.author.meta.id,
-      cmd.category,
-      cmd.title,
-      cmd.amount,
-      cmd.estimate,
-      cmd.startsAt,
+    return repository.add({
+      checkingAccount: cmd.checkingAccount.meta.id,
+      author: cmd.author.meta.id,
+      category: cmd.category,
+      title: cmd.title,
+      amount: cmd.amount,
+      estimate: cmd.estimate,
+      startsAt: cmd.startsAt,
       enabledIn,
-      cmd.saving
-    )
-    return repository.add(periodical)
+      saving: cmd.saving
+    })
   }
 }

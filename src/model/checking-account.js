@@ -1,48 +1,47 @@
 import {ValidationFailedError, UnhandledDomainEventError} from '@rheactorjs/errors'
-import {AggregateRoot, ModelEvent} from '@rheactorjs/event-store'
+import {ImmutableAggregateRoot, ModelEvent, AggregateMeta} from '@rheactorjs/event-store'
 import {CheckingAccountPropertyChangedEvent, CheckingAccountCreatedEvent} from '../events'
 import {Boolean as BooleanType, String as StringType, refinement} from 'tcomb'
 
 const NonEmptyStringType = refinement(StringType, s => s.length > 0, 'NonEmptyStringType')
 
-/**
- * @param {String} name
- * @param {Boolean} monthly
- * @param {Boolean} savings
- * @constructor
- * @throws ValidationFailedError if the creation fails due to invalid data
- */
-export class CheckingAccountModel extends AggregateRoot {
-  constructor (name, monthly = false, savings = false) {
-    super()
-    NonEmptyStringType(name)
-    BooleanType(monthly)
-    BooleanType(savings)
-    this.name = name
-    this.monthly = monthly
-    this.savings = savings
+export class CheckingAccountModel extends ImmutableAggregateRoot {
+  /**
+   * @param {String} name
+   * @param {Boolean} monthly
+   * @param {Boolean} savings
+   * @param {AggregateMeta} meta
+   * @throws TypeError if the creation fails due to invalid data
+   */
+  constructor (name, monthly = false, savings = false, meta) {
+    super(meta)
+    this.name = NonEmptyStringType(name, ['CheckingAccountModel()', 'name:String'])
+    this.monthly = BooleanType(monthly, ['CheckingAccountModel()', 'monthly:Boolean'])
+    this.savings = BooleanType(savings, ['CheckingAccountModel()', 'savings:Boolean'])
   }
 
   /**
    * Applies the event
    *
    * @param {ModelEvent} event
+   * @param {CheckingAccountModel|undefined} checkingAccount
+   * @return {CheckingAccountModel}
+   * @throws UnhandledDomainEventError
    */
-  applyEvent (event) {
-    const data = event.data
+  static applyEvent (event, checkingAccount) {
+    const {data: {name, monthly, savings, property, value}, createdAt, aggregateId} = event
     switch (event.name) {
       case CheckingAccountCreatedEvent:
-        this.name = data.name
-        this.monthly = data.monthly
-        this.savings = data.savings
-        this.persisted(event.aggregateId, event.createdAt)
-        break
+        return new CheckingAccountModel(name, monthly, savings, new AggregateMeta(aggregateId, 1, createdAt))
       case CheckingAccountPropertyChangedEvent:
-        this[data.property] = data.value
-        this.updated(event.createdAt)
-        break
+        const d = {
+          name: checkingAccount.name,
+          monthly: checkingAccount.monthly,
+          savings: checkingAccount.savings
+        }
+        d[property] = value
+        return new CheckingAccountModel(d.name, d.monthly, d.savings, checkingAccount.meta.updated(createdAt))
       default:
-        console.error('Unhandled CheckingAccountModel event', event.name)
         throw new UnhandledDomainEventError(event.name)
     }
   }
@@ -50,32 +49,28 @@ export class CheckingAccountModel extends AggregateRoot {
   /**
    * @param  {boolean} monthly
    * @returns {ModelEvent}
+   * @throws ValidationFailedError
+   * @throws TypeError
    */
   setMonthly (monthly = false) {
+    BooleanType(monthly, ['CheckingAccountModel.setMonthly()', 'monthly:Boolean'])
     if (this.monthly === monthly) {
       throw new ValidationFailedError('Monthly unchanged', monthly)
     }
-    this.monthly = monthly
-    this.updated()
-    return new ModelEvent(this.meta.id, CheckingAccountPropertyChangedEvent, {
-      property: 'monthly',
-      value: monthly
-    })
+    return new ModelEvent(this.meta.id, CheckingAccountPropertyChangedEvent, {property: 'monthly', value: monthly})
   }
 
   /**
    * @param  {boolean} savings
-   * @returns {SpendingUpdatedEvent}
+   * @returns {ModelEvent}
+   * @throws ValidationFailedError
+   * @throws TypeError
    */
   setSavings (savings = false) {
+    BooleanType(savings, ['CheckingAccountModel.setSavings()', 'savings:Boolean'])
     if (this.savings === savings) {
       throw new ValidationFailedError('Savings unchanged', savings)
     }
-    this.savings = savings
-    this.updated()
-    return new ModelEvent(this.meta.id, CheckingAccountPropertyChangedEvent, {
-      property: 'savings',
-      value: savings
-    })
+    return new ModelEvent(this.meta.id, CheckingAccountPropertyChangedEvent, {property: 'savings', value: savings})
   }
 }

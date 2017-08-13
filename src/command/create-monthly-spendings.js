@@ -1,5 +1,3 @@
-import {SpendingModel} from '../model/spending'
-
 /**
  * @param {PeriodicalRepository} periodicalsRepository
  * @param {SpendingRepository} spendingsRepository
@@ -16,14 +14,19 @@ class CreateMonthlySpendingsCommand {
    * @returns {Promise.<Array.<ModelEvent>>}
    */
   execute (month) {
-    let self = this
     // Find the periodicals for the given month
-    return self.periodicalsRepository
+    return this.periodicalsRepository
       .findByMonth(month)
-      .map((periodical) => {
-        let spending = SpendingModel.fromPeriodical(periodical, month)
-        return self.spendingsRepository.add(spending)
-      })
+      .map(periodical => this.spendingsRepository.add({
+        checkingAccount: periodical.checkingAccount,
+        author: periodical.author,
+        category: periodical.category,
+        title: periodical.title,
+        amount: periodical.amount,
+        booked: false,
+        bookedAt: month,
+        saving: periodical.saving
+      }))
   }
 }
 

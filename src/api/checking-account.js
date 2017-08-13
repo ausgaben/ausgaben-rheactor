@@ -5,7 +5,7 @@ import UpdateCheckingAccountPropertyCommand from '../command/checking-account/up
 import {URIValue} from '@rheactorjs/value-objects'
 import Promise from 'bluebird'
 import Joi from 'joi'
-import {Pagination, sendPaginatedListResponse, checkVersion} from '@rheactorjs/server'
+import {Pagination, sendPaginatedListResponse, checkVersionImmutable} from '@rheactorjs/server'
 import _merge from 'lodash/merge'
 
 /**
@@ -141,13 +141,12 @@ export default (app,
           if (!checkingAccountUser) {
             throw new AccessDeniedError(req.url, 'Not your checking account!')
           }
-          checkVersion(req.headers['if-match'], checkingAccount)
+          checkVersionImmutable(req.headers['if-match'], checkingAccount)
           if (checkingAccount[v.value.property] === v.value.value) throw new ValidationFailedError(`${v.value.property} unchanged`, v.value.value)
-          return emitter.emit(new UpdateCheckingAccountPropertyCommand(checkingAccount, v.value.property, v.value.value, user))
-            .then(() => checkingAccount)
+          emitter.emit(new UpdateCheckingAccountPropertyCommand(checkingAccount, v.value.property, v.value.value, user))
         })
     })
-    .then(checkingAccount => res.header('etag', checkingAccount.aggregateVersion()).header('last-modified', new Date(checkingAccount.modifiedAt()).toUTCString()).status(204).send())
+    .then(() => res.status(202).send())
     .catch(err => sendHttpProblem(res, err))
   )
 }

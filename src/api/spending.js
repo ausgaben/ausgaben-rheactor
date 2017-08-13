@@ -6,7 +6,7 @@ import DeleteSpendingCommand from '../command/spending/delete'
 import {URIValue} from '@rheactorjs/value-objects'
 import Promise from 'bluebird'
 import Joi from 'joi'
-import {checkVersion, sendPaginatedListResponse, Pagination} from '@rheactorjs/server'
+import {checkVersionImmutable, sendPaginatedListResponse, Pagination} from '@rheactorjs/server'
 import _merge from 'lodash/merge'
 
 /**
@@ -23,20 +23,18 @@ import _merge from 'lodash/merge'
  * @param {function} sendHttpProblem
  * @param {function} transformer
  */
-export default (
-  app,
-  config,
-  emitter,
-  checkingAccountRepo,
-  checkingAccountUserRepo,
-  spendingRepo,
-  userRepo,
-  search,
-  tokenAuth,
-  jsonld,
-  sendHttpProblem,
-  transformer
-) => {
+export default (app,
+                config,
+                emitter,
+                checkingAccountRepo,
+                checkingAccountUserRepo,
+                spendingRepo,
+                userRepo,
+                search,
+                tokenAuth,
+                jsonld,
+                sendHttpProblem,
+                transformer) => {
   /**
    * Search spendings in the given checking account
    */
@@ -131,18 +129,14 @@ export default (
 
   app.get('/api/spending/:id', tokenAuth, (req, res) => {
     spendingRepo.getById(req.params.id)
-      .then((spending) => {
-        return checkingAccountUserRepo.findByCheckingAccountId(spending.checkingAccount).filter(checkingAccountUser => checkingAccountUser.user === req.user)
-          .then((checkingAccountUser) => {
-            if (!checkingAccountUser) {
-              throw new AccessDeniedError(req.url, 'Not your checking account!')
-            }
-          })
-          .then(() => res
-            .header('etag', spending.aggregateVersion())
-            .header('last-modified', new Date(spending.modifiedAt()).toUTCString())
-            .send(transformer(spending)))
-      })
+      .then(spending => checkingAccountUserRepo.findByCheckingAccountId(spending.checkingAccount).filter(checkingAccountUser => checkingAccountUser.user === req.user)
+        .then((checkingAccountUser) => {
+          if (!checkingAccountUser) {
+            throw new AccessDeniedError(req.url, 'Not your checking account!')
+          }
+        })
+        .then(() => res.send(transformer(spending)))
+      )
       .catch(sendHttpProblem.bind(null, res))
   })
 
@@ -168,7 +162,7 @@ export default (
         }
         return spendingRepo.getById(req.params.id)
           .then(spending => {
-            checkVersion(req.headers['if-match'], spending)
+            checkVersionImmutable(req.headers['if-match'], spending)
             return spending
           })
           .then(spending => Promise
@@ -190,22 +184,11 @@ export default (
                 v.value.saving,
                 user
               )
-              return emitter.emit(cmd)
+              emitter.emit(cmd)
             })
-            .then(
-              /**
-               * @param {SpendingUpdatedEvent} event
-               * @returns {*}
-               */
-              event => res
-                .header('Location', jsonld.createId(Spending.$context, event.aggregateId))
-                .header('etag', spending.aggregateVersion())
-                .header('last-modified', new Date(spending.modifiedAt()).toUTCString())
-                .status(204)
-                .send()
-            )
           )
       })
+      .then(() => res.status(202).send())
       .catch(sendHttpProblem.bind(null, res))
   })
 
@@ -214,7 +197,7 @@ export default (
    */
   app.delete('/api/spending/:id', tokenAuth, (req, res) => spendingRepo.getById(req.params.id)
     .then(spending => {
-      checkVersion(req.headers['if-match'], spending)
+      checkVersionImmutable(req.headers['if-match'], spending)
       return spending
     })
     .then(spending => Promise
@@ -227,14 +210,10 @@ export default (
           throw new AccessDeniedError(req.url, 'Not your checking account!')
         }
         let cmd = new DeleteSpendingCommand(spending, user)
-        return emitter.emit(cmd)
+        emitter.emit(cmd)
       })
-      .then(event => res
-        .header('etag', spending.aggregateVersion())
-        .header('last-modified', new Date(spending.modifiedAt()).toUTCString())
-        .status(204)
-        .send())
     )
+    .then(() => res.status(202).send())
     .catch(sendHttpProblem.bind(null, res))
   )
 }

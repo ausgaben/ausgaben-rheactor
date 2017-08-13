@@ -1,5 +1,4 @@
 import {ImmutableAggregateRoot, ModelEvent, AggregateIdType, AggregateMeta} from '@rheactorjs/event-store'
-import {PeriodicalModelType} from './periodical'
 import {UnhandledDomainEventError} from '@rheactorjs/errors'
 import {SpendingCreatedEvent, SpendingUpdatedEvent, SpendingDeletedEvent} from '../events'
 import {Boolean as BooleanType, Integer as IntegerType, String as StringType, refinement, maybe, Date as DateType, irreducible} from 'tcomb'
@@ -38,6 +37,7 @@ export class SpendingModel extends ImmutableAggregateRoot {
    * @param {ModelEvent} event
    * @param {SpendingModel|undefined} spending
    * @return {SpendingModel}
+   * @throws UnhandledDomainEventError
    */
   static applyEvent (event, spending) {
     const {name, data: {checkingAccount, author, category, title, amount, booked, bookedAt, saving}, createdAt, aggregateId} = event
@@ -50,7 +50,7 @@ export class SpendingModel extends ImmutableAggregateRoot {
         const d = {
           checkingAccount, author, category, title, amount, booked, bookedAt, saving
         }
-        return new SpendingModel(d.checkingAccount, d.author, d.category, d.title, d.amount, d.booked, d.bookedAt, d.saving, spending.meta.updated(createdAt))
+        return new SpendingModel(d.checkingAccount, d.author, d.category, d.title, d.amount, d.booked, d.bookedAt ? new Date(d.bookedAt) : undefined, d.saving, spending.meta.updated(createdAt))
       default:
         throw new UnhandledDomainEventError(event.name)
     }
@@ -61,30 +61,16 @@ export class SpendingModel extends ImmutableAggregateRoot {
    * @returns {ModelEvent}
    */
   update (data) {
-    const {checkingAccount, author, category, title, amount, booked, bookedAt, saving} = data
-    return new ModelEvent(this.meta.id, SpendingUpdatedEvent, {checkingAccount, author, category, title, amount, booked, bookedAt: bookedAt ? bookedAt.toISOString() : undefined, saving}, new Date())
-  }
-
-  /**
-   * @param {PeriodicalModel} periodical
-   * @param {Number} bookedAt
-   * @return {SpendingModel}
-   */
-  static fromPeriodical (periodical, bookedAt) {
-    PeriodicalModelType(periodical)
-    DateType(bookedAt)
-    const spending = new SpendingModel(
-      periodical.checkingAccount,
-      periodical.author,
-      periodical.category,
-      periodical.title,
-      periodical.amount,
-      false,
-      bookedAt,
-      periodical.saving
-    )
-    spending.periodical = periodical.meta.id
-    return spending
+    return new ModelEvent(this.meta.id, SpendingUpdatedEvent, {
+      checkingAccount: this.checkingAccount,
+      author: this.author,
+      category: data.category || this.category,
+      title: data.title || this.title,
+      amount: data.amount || this.amount,
+      booked: data.booked !== undefined ? data.booked : this.booked,
+      bookedAt: data.bookedAt ? data.bookedAt.toISOString() : (this.bookedAt ? this.bookedAt.toISOString() : undefined),
+      saving: data.saving !== undefined ? data.saving : this.saving
+    }, new Date())
   }
 }
 

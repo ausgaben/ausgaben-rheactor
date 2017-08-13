@@ -46,6 +46,7 @@ export class PeriodicalModel extends ImmutableAggregateRoot {
    * @param {ModelEvent} event
    * @param {PeriodicalModel|undefined} periodical
    * @return {PeriodicalModel}
+   * @throws UnhandledDomainEventError
    */
   static applyEvent (event, periodical) {
     const {name, data: {checkingAccount, author, category, title, amount, estimate, startsAt, enabledIn, saving}, createdAt, aggregateId} = event

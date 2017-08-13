@@ -61,9 +61,7 @@ Feature: Spendings
     --------------
     And "1" is the If-Match header
     When I PUT to {UpdateMonthlyEndpoint}
-    Then the status code should be 204
-    And the etag header should equal "2"
-    And the last-modified header should be now
+    Then the status code should be 202
     When I GET {createdCheckingAccount}
     Then the status code should be 200
     And "monthly" should equal true

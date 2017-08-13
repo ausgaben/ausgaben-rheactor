@@ -6,7 +6,8 @@ const EmailValue = require('rheactor-value-objects/email')
 
 module.exports = {
   description: 'manage the users for an account',
-  arguments: '<account>', options: [
+  arguments: '<account>',
+  options: [
     ['-a, --add <email>', 'Add user to account']
   ],
   action: (backend, accountId, options) => {

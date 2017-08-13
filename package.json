@@ -46,7 +46,7 @@
     "browserify-shim": "^3.8.12",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
-    "compare-versions": "^3.0.0",
+    "compare-versions": "^3.0.1",
     "event-source-polyfill": "0.0.7",
     "express": "^4.14.0",
     "glob": "^7.1.1",

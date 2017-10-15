@@ -1,4 +1,4 @@
-/* global describe, it, after */
+/* global describe expect, it, afterAll */
 
 import CreateMonthlySpendingsCommand from '../../../../src/command/create-monthly-spendings'
 import {PeriodicalRepository} from '../../../../src/repository/periodical'
@@ -6,7 +6,7 @@ import {SpendingRepository} from '../../../../src/repository/spending'
 import {PeriodicalModel} from '../../../../src/model/periodical'
 import Promise from 'bluebird'
 import simple from 'simple-mock'
-import {expect} from 'chai'
+
 import {AggregateMeta} from '@rheactorjs/event-store'
 
 simple.Promise = Promise
@@ -42,7 +42,7 @@ describe('CreateMonthlySpendingsCommand', () => {
     new AggregateMeta(1, 1)
   )
 
-  after(() => {
+  afterAll(() => {
     simple.restore()
   })
 
@@ -55,9 +55,9 @@ describe('CreateMonthlySpendingsCommand', () => {
     let month = new Date()
     task = new CreateMonthlySpendingsCommand(mockPeriodicalRepository, mockSpendingRepository)
     task.execute(month).then(() => {
-      expect(mockPeriodicalRepository.findByMonth.callCount).to.equal(1)
-      expect(mockPeriodicalRepository.findByMonth.lastCall.arg.getTime()).to.equal(month.getTime())
-      expect(mockSpendingRepository.add.callCount).to.equal(periodicals.length)
+      expect(mockPeriodicalRepository.findByMonth.callCount).toEqual(1)
+      expect(mockPeriodicalRepository.findByMonth.lastCall.arg.getTime()).toEqual(month.getTime())
+      expect(mockSpendingRepository.add.callCount).toEqual(periodicals.length)
       done()
     })
   })

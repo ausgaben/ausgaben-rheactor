@@ -6,14 +6,14 @@
   "scripts": {
     "start": "node src/server.js",
     "dev-server": "environment=development nodemon -e 'js,html,css' -w ./src -w ./util -d 1 ./src/server.js",
-    "test": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/\\*\\*/\\*.js",
-    "test:api": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/yadda/\\*\\*/\\*.js",
-    "test:backend": "environment=testing mocha --require babel-polyfill --compilers js:babel-register --reporter=dot --timeout=1350 test/mocha/\\*\\*/\\*.js",
-    "test:coverage": "NODE_ENV=nyc babel src --out-dir instrumented-server > /dev/null && nyc --reporter=text-summary --reporter=lcov npm run test",
+    "test": "environment=testing jest -i --forceExit",
+    "test:api": "environment=testing jest -i --forceExit test/features",
+    "test:backend": "environment=testing jest -i --forceExit test/backend",
+    "test:coverage": "environment=testing jest -i --forceExit --coverage",
     "test:coverage-travis": "npm run test:coverage && codeclimate-test-reporter < ./coverage/lcov.info && rm -rf ./coverage",
     "lint": "standard",
     "precommit": "npm run lint",
-    "commitmsg": "validate-commit-msg"
+    "commitmsg": "commitlint -e"
   },
   "repository": {
     "type": "git",
@@ -63,6 +63,8 @@
     "tether": "^1.4.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^4.2.0",
+    "@commitlint/config-angular": "^4.2.0",
     "@rheactorjs/bdd-contexts": "^2.0.0",
     "@rheactorjs/build-views": "^1.0.1",
     "@rheactorjs/yadda-feature-runner": "^3.0.1",
@@ -77,21 +79,18 @@
     "babel-register": "^6.23.0",
     "babel-types": "^6.25.0",
     "babylon": "^6.17.4",
-    "chai": "^4.1.1",
     "codeclimate-test-reporter": "^0.5.0",
     "eslint": "^4.4.1",
     "husky": "^0.14.3",
     "inotifywait": "^1.8.3",
+    "jest": "^21.2.1",
     "lolex": "^2.1.2",
-    "mocha": "^4.0.1",
     "nodemon": "^1.11.0",
-    "nyc": "^11.1.0",
     "simple-mock": "^0.8.0",
     "standard": "^10.0.3",
     "superagent": "^3.5.0",
     "supertest": "^3.0.0",
     "toposort": "^1.0.3",
-    "validate-commit-msg": "^2.14.0",
     "yadda": "^1.4.0"
   },
   "engines": {

@@ -65,7 +65,7 @@
   "devDependencies": {
     "@rheactorjs/bdd-contexts": "^2.0.0",
     "@rheactorjs/build-views": "^1.0.1",
-    "@rheactorjs/yadda-feature-runner": "^1.0.0",
+    "@rheactorjs/yadda-feature-runner": "^2.0.0",
     "babel-cli": "^6.24.1",
     "babel-helper-function-name": "^6.24.1",
     "babel-helper-get-function-arity": "^6.24.1",

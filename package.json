@@ -63,7 +63,7 @@
     "tether": "^1.4.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^4.2.0",
+    "@commitlint/cli": "^5.0.0",
     "@commitlint/config-angular": "^4.2.0",
     "@rheactorjs/bdd-contexts": "^2.0.0",
     "@rheactorjs/build-views": "^1.0.1",

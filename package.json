@@ -35,7 +35,7 @@
     "@rheactorjs/errors": "^1.0.1",
     "@rheactorjs/event-store": "^3.0.2",
     "@rheactorjs/models": "^2.0.2",
-    "@rheactorjs/server": "^2.2.8",
+    "@rheactorjs/server": "^3.0.0",
     "@rheactorjs/template-mailer-client": "^1.0.1",
     "@rheactorjs/value-objects": "^1.0.4",
     "aws-sdk": "^2.162.0",

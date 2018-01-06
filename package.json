@@ -34,7 +34,7 @@
     "@ausgaben/models": "^1.1.0",
     "@rheactorjs/errors": "^1.0.1",
     "@rheactorjs/event-store": "^3.0.2",
-    "@rheactorjs/models": "^2.0.2",
+    "@rheactorjs/models": "^3.0.0",
     "@rheactorjs/server": "^2.2.8",
     "@rheactorjs/template-mailer-client": "^1.0.1",
     "@rheactorjs/value-objects": "^1.0.4",

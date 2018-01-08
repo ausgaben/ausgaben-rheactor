@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/ausgaben/ausgaben-rheactor#readme",
   "dependencies": {
-    "@ausgaben/models": "^1.1.0",
+    "@ausgaben/models": "^2.0.1",
     "@rheactorjs/errors": "^1.0.1",
     "@rheactorjs/event-store": "^3.0.2",
     "@rheactorjs/models": "^2.0.2",

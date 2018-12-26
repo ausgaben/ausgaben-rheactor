@@ -88,7 +88,7 @@
     "nodemon": "^1.12.1",
     "simple-mock": "^0.8.0",
     "standard": "^10.0.3",
-    "superagent": "^3.8.1",
+    "superagent": "^4.1.0",
     "supertest": "^3.0.0",
     "toposort": "^1.0.6",
     "yadda": "^1.4.0"

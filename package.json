@@ -38,7 +38,7 @@
     "@rheactorjs/server": "^2.2.8",
     "@rheactorjs/template-mailer-client": "^1.0.1",
     "@rheactorjs/value-objects": "^1.0.4",
-    "aws-sdk": "^2.162.0",
+    "aws-sdk": "^2.385.0",
     "bcrypt": "^1.0.3",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",

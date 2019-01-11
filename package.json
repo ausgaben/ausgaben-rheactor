@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^5.2.0",
-    "@commitlint/config-angular": "^5.1.1",
+    "@commitlint/config-angular": "^7.3.1",
     "@rheactorjs/bdd-contexts": "^2.0.1",
     "@rheactorjs/build-views": "^1.0.2",
     "@rheactorjs/yadda-feature-runner": "^3.0.1",
